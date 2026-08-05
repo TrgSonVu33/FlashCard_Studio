@@ -18,51 +18,36 @@ const FLASHCARDS = [
 ];
 
 function App() {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [answers, setAnswers] = useState({});
-    const [showResult, setShowResult] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [showResult, setShowResult] = useState(false);
+  const [showBegin, setShowBegin] = useState(false);
 
-    const handleNext = () => {
-        if (currentIndex < FLASHCARDS.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-        }
-    };
+  const handleNext = () => {
+    if (currentIndex < FLASHCARDS.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
 
-    const handlePrev = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-        }
-    };
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
 
-    const handleAnswerCheck = (value) => {
-        setAnswers({ ...answers, [currentIndex]: value });
-    };
-    const handleReset = () => {
-        setAnswers({});
-        setCurrentIndex(0);
-        setShowResult(false);
-    };
+  const handleAnswerCheck = (value) => {
+    setAnswers({ ...answers, [currentIndex]: value });
+  };
 
-    const correctCount = Object.values(answers).filter(v => v === 'yes').length;
+  const handleReset = () => {
+    setAnswers({});
+    setCurrentIndex(0);
+    setShowResult(false);
+    setShowBegin(false);
+  };
 
-    const renderCard = (index) => {
-        const card = FLASHCARDS[index];
-        if (!card) return null;
-
-        return (
-        <Flashcard
-            key={card.id}
-            question={
-            <>
-                <span>Question {index + 1} </span>
-                <br />
-                {card.q}
-            </>
-            }
-            answer={card.a}
-        />
-        );
-    };
+  const correctCount = Object.values(answers).filter(v => v === 'yes').length;
+  const currentCard = FLASHCARDS[currentIndex];
 
   return (
     <div className="app-container">
@@ -70,14 +55,32 @@ function App() {
       <h2>Learn New Words About Different Animals</h2>
       <h3>Try to get the meaning of the word</h3>
       
-      {!showResult ? (
+      {!showBegin ? (
+        <div className="welcome-container">
+          <button className="begin-button" onClick={() => setShowBegin(true)}>
+            Begin
+          </button>
+        </div>
+      ) : !showResult ? (
         <>
           <div className="progress">
             Card {currentIndex + 1} of {FLASHCARDS.length}
           </div>
 
           <div className="flashcards">
-            {renderCard(currentIndex)}
+            {currentCard && (
+              <Flashcard
+                key={currentCard.id}
+                question={
+                  <>
+                    <span>Question {currentIndex + 1} </span>
+                    <br />
+                    {currentCard.q}
+                  </>
+                }
+                answer={currentCard.a}
+              />
+            )}
           </div>
 
           <div className="button-group">
@@ -107,7 +110,6 @@ function App() {
           onReset={handleReset}
         />
       )}
-
     </div>
   );
 }

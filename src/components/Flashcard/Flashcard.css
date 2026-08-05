@@ -1,12 +1,12 @@
 .flashcard-container {
-  width: 380px;
-  height: 230px;
+  width: 500px;
+  height: 400px;
   cursor: pointer;
   position: relative;
 
   @media (max-width: 768px) {
     width: 320px;
-    height: 200px;
+    height: 280px;
   }
 }
 
