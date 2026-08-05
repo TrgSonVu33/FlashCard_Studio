@@ -5,16 +5,16 @@ import ResultScreen from './components/ResultScreen/ResultScreen';
 import './App.css';
 
 const FLASHCARDS = [
-  { id: 1, q: "Horse", a: "Ngựa" },
-  { id: 2, q: "Goat", a: "Dê" },
-  { id: 3, q: "Sheep", a: "Cừu" },
-  { id: 4, q: "Tiger", a: "Hổ" },
-  { id: 5, q: "Lion", a: "Sư tử" },
-  { id: 6, q: "Elephant", a: "Voi" },
-  { id: 7, q: "Bear", a: "Gấu" },
-  { id: 8, q: "Monkey", a: "Khỉ" },
-  { id: 9, q: "Giraffe", a: "Hươu cao cổ" },
-  { id: 10, q: "Rabbit", a: "Thỏ" },
+  { id: 1, q: "Horse", a: "Con Ngựa" },
+  { id: 2, q: "Goat", a: "Con Dê" },
+  { id: 3, q: "Sheep", a: "Con Cừu" },
+  { id: 4, q: "Tiger", a: "Con Hổ" },
+  { id: 5, q: "Lion", a: "Con Sư tử" },
+  { id: 6, q: "Elephant", a: "Con Voi" },
+  { id: 7, q: "Bear", a: "Con Gấu" },
+  { id: 8, q: "Monkey", a: "Con Khỉ" },
+  { id: 9, q: "Giraffe", a: "Con Hươu cao cổ" },
+  { id: 10, q: "Rabbit", a: "Con Thỏ" },
 ];
 
 function App() {
@@ -54,7 +54,7 @@ function App() {
             key={card.id}
             question={
             <>
-                <span>Question {index + 1}:</span>
+                <span>Question {index + 1} </span>
                 <br />
                 {card.q}
             </>
