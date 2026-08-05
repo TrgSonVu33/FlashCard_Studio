@@ -117,8 +117,8 @@
 }
 
 .begin-button {
-  margin: 0;
+  margin-top: -110px;
   padding: 20px 56px;
-  min-height: 45px;
+  height: 65px;
   font-size: 1.25rem;
 }
