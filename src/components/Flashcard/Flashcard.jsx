@@ -11,13 +11,15 @@ export default function Flashcard({ question, answer }) {
       onClick={() => setIsFlipped(!isFlipped)}
     >
       <div className="flashcard-inner">
+
         <div className="flashcard-front">
-            <p>{question}</p>
+          <p>{question}</p>
         </div>
 
         <div className="flashcard-back">
-            <p>{answer}</p>
+          <p>{answer}</p>
         </div>
+        
       </div>
     </div>
   );

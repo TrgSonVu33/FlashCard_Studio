@@ -1,0 +1,19 @@
+.result-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px 20px;
+}
+
+.result-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.reset-button {
+  padding: 10px 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+}

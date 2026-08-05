@@ -1,75 +1,113 @@
 import { useState } from 'react';
-import Flashcard from './components/Flashcard';
+import Flashcard from './components/Flashcard/Flashcard';
+import AnswerCheck from './components/AnswerCheck/AnswerCheck';
+import ResultScreen from './components/ResultScreen/ResultScreen';
 import './App.css';
 
 const FLASHCARDS = [
-  { id: 1, q: "What is a React Component?", a: "A reusable piece of UI that can have its own logic and state." },
-  { id: 2, q: "What is JSX?", a: "A syntax extension for JavaScript that looks like HTML." },
-  { id: 3, q: "What is the Virtual DOM?", a: "A lightweight copy of the actual DOM used for performance optimization." },
-  { id: 4, q: "What are Props?", a: "Arguments passed into React components to give them data." },
-  { id: 5, q: "What is State?", a: "An object that stores data that can change over the lifecycle of a component." },
-  { id: 6, q: "What does useState do?", a: "It allows you to add state variables to functional components." },
-  { id: 7, q: "What does useEffect do?", a: "It lets you perform side effects (like data fetching) in components." },
-  { id: 8, q: "What is a Hook?", a: "A special function that lets you 'hook into' React features." },
-  { id: 9, q: "Can a component mutate its own props?", a: "No, props are read-only." },
-  { id: 10, q: "What is Conditional Rendering?", a: "Rendering different UI elements based on certain conditions or state." }
+  { id: 1, q: "Horse", a: "Ngựa" },
+  { id: 2, q: "Goat", a: "Dê" },
+  { id: 3, q: "Sheep", a: "Cừu" },
+  { id: 4, q: "Tiger", a: "Hổ" },
+  { id: 5, q: "Lion", a: "Sư tử" },
+  { id: 6, q: "Elephant", a: "Voi" },
+  { id: 7, q: "Bear", a: "Gấu" },
+  { id: 8, q: "Monkey", a: "Khỉ" },
+  { id: 9, q: "Giraffe", a: "Hươu cao cổ" },
+  { id: 10, q: "Rabbit", a: "Thỏ" },
 ];
 
 function App() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [answers, setAnswers] = useState({});
+    const [showResult, setShowResult] = useState(false);
 
-  const handleNext = () => {
-    if (currentIndex < FLASHCARDS.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
-
-  const renderCard = (index) => {
-    const card = FLASHCARDS[index];
-    if (!card) return null;
-
-    return (
-      <Flashcard
-        key={card.id}
-        question={
-          <>
-            <span>Question {index + 1}:</span>
-            <br />
-            {card.q}
-          </>
+    const handleNext = () => {
+        if (currentIndex < FLASHCARDS.length - 1) {
+            setCurrentIndex(currentIndex + 1);
         }
-        answer={card.a}
-      />
-    );
-  };
+    };
+
+    const handlePrev = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+
+    const handleAnswerCheck = (value) => {
+        setAnswers({ ...answers, [currentIndex]: value });
+    };
+    const handleReset = () => {
+        setAnswers({});
+        setCurrentIndex(0);
+        setShowResult(false);
+    };
+
+    const correctCount = Object.values(answers).filter(v => v === 'yes').length;
+
+    const renderCard = (index) => {
+        const card = FLASHCARDS[index];
+        if (!card) return null;
+
+        return (
+        <Flashcard
+            key={card.id}
+            question={
+            <>
+                <span>Question {index + 1}:</span>
+                <br />
+                {card.q}
+            </>
+            }
+            answer={card.a}
+        />
+        );
+    };
 
   return (
     <div className="app-container">
       <h1>FlashCards App</h1>
+      <h2>Learn New Words About Different Animals</h2>
+      <h3>Try to get the meaning of the word</h3>
       
-      <div className="progress">
-        Card {currentIndex + 1} of {FLASHCARDS.length}
-      </div>
+      {!showResult ? (
+        <>
+          <div className="progress">
+            Card {currentIndex + 1} of {FLASHCARDS.length}
+          </div>
 
-      <div className="flashcards-wrapper">
-        {renderCard(currentIndex)}
-        {renderCard(currentIndex + 1)}
-      </div>
+          <div className="flashcards">
+            {renderCard(currentIndex)}
+          </div>
 
-      <div className="button-group">
-        <button onClick={handlePrev} disabled={currentIndex === 0}>
-          Prev
-        </button>
-        <button onClick={handleNext} disabled={currentIndex === FLASHCARDS.length - 1}>
-          Next
-        </button>
-      </div>
+          <div className="button-group">
+            <button onClick={handlePrev} disabled={currentIndex === 0}>
+              Prev
+            </button>
+            <button onClick={handleNext} disabled={currentIndex === FLASHCARDS.length - 1}>
+              Next
+            </button>
+          </div>
+
+          <AnswerCheck
+            currentAnswer={answers[currentIndex]}
+            onAnswerChange={handleAnswerCheck}
+          />
+
+          {currentIndex === FLASHCARDS.length - 1 && (
+            <button className="finish-button" onClick={() => setShowResult(true)}>
+              Finish
+            </button>
+          )}
+        </>
+      ) : (
+        <ResultScreen
+          correctCount={correctCount}
+          total={FLASHCARDS.length}
+          onReset={handleReset}
+        />
+      )}
+
     </div>
   );
 }

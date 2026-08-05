@@ -161,15 +161,15 @@
   }
 }
 
-.flashcards-wrapper {
+.flashcards{
   display: flex;
-  flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 20px;
   flex-wrap: wrap;
   margin: 20px 0;
 }
+
+
 
 .button-group {
     display: flex;
