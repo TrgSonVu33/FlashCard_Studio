@@ -26,6 +26,9 @@ function App() {
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [page, setPage] = useState(0);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const PAGE_SIZE = 3;
 
   useEffect(() => {
     fetchHistory(0);
@@ -33,8 +36,8 @@ function App() {
 
   const fetchHistory = async (pageNum) => {
     setLoadingHistory(true);
-    const from = pageNum * 10;
-    const to = from + 9;
+    const from = pageNum * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
     
     const { data, error } = await supabase
       .from('history')
@@ -79,6 +82,15 @@ function App() {
     fetchHistory(0);
   };
 
+  const handleQuit = () => {
+    setAnswers({});
+    setCurrentIndex(0);
+    setShowResult(false);
+    setShowBegin(false);
+    setPage(0);
+    fetchHistory(0);
+  };
+
   const saveResult = async (correct, totalAmount) => {
     console.log('Saving result:', { score: correct, total: totalAmount });
     const { data, error } = await supabase
@@ -112,42 +124,64 @@ function App() {
             Begin
           </button>
           
-          <div className="history-dashboard">
-            <h2>History Dashboard</h2>
-            {loadingHistory && page === 0 ? (
-              <p>Loading history...</p>
-            ) : history.length === 0 ? (
-              <p>No history yet. Play a game!</p>
-            ) : (
-              <>
-                <ul className="history-list">
-                  {history.map((item) => (
-                    <li key={item.id} className="history-item">
-                      <span className="history-date">
-                        {new Date(item.created_at).toLocaleDateString()} {new Date(item.created_at).toLocaleTimeString()}
-                      </span>
-                      <span className="history-score">
-                        Score: <strong>{item.score} / {item.total}</strong>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                {history.length >= (page + 1) * 10 && (
-                  <button 
-                    className="show-more-button" 
-                    onClick={() => {
-                      const nextPage = page + 1;
-                      setPage(nextPage);
-                      fetchHistory(nextPage);
-                    }}
-                    disabled={loadingHistory}
-                  >
-                    {loadingHistory ? 'Loading...' : 'Show More'}
-                  </button>
-                )}
-              </>
-            )}
-          </div>
+          <button 
+            className="history-toggle-button" 
+            onClick={() => setShowHistory(!showHistory)}
+          >
+            {showHistory ? '▲ Hide History' : '▼ History Dashboard'}
+          </button>
+
+          {showHistory && (
+            <div className="history-dashboard">
+              <h2>History Dashboard</h2>
+              {loadingHistory && page === 0 ? (
+                <p>Loading history...</p>
+              ) : history.length === 0 ? (
+                <p>No history yet. Play a game!</p>
+              ) : (
+                <>
+                  <ul className="history-list">
+                    {history.map((item) => (
+                      <li key={item.id} className="history-item">
+                        <span className="history-date">
+                          {new Date(item.created_at).toLocaleDateString()} {new Date(item.created_at).toLocaleTimeString()}
+                        </span>
+                        <span className="history-score">
+                          Score: <strong>{item.score} / {item.total}</strong>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="history-buttons">
+                    {history.length > PAGE_SIZE && (
+                      <button 
+                        className="show-more-button" 
+                        onClick={() => {
+                          setPage(0);
+                          fetchHistory(0);
+                        }}
+                      >
+                        Show Less
+                      </button>
+                    )}
+                    {history.length >= (page + 1) * PAGE_SIZE && (
+                      <button 
+                        className="show-more-button" 
+                        onClick={() => {
+                          const nextPage = page + 1;
+                          setPage(nextPage);
+                          fetchHistory(nextPage);
+                        }}
+                        disabled={loadingHistory}
+                      >
+                        {loadingHistory ? 'Loading...' : 'Show More'}
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
       ) : !showResult ? (
         <>
@@ -190,6 +224,10 @@ function App() {
               Finish
             </button>
           )}
+
+          <button className="quit-button" onClick={handleQuit}>
+            ✕ Quit
+          </button>
         </>
       ) : (
         <ResultScreen

@@ -28,17 +28,23 @@
   font-weight: 600;
   cursor: pointer;
   border-radius: var(--radius-md);
-  background: var(--accent);
-  color: #ffffff;
-  border: none;
-  box-shadow: var(--shadow);
-  transition: all 0.15s ease;
+  background: var(--glass-bg);
+  color: var(--glass-text);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
 
   &:hover {
-    background: var(--accent-hover);
+    background: var(--glass-hover-bg);
+    box-shadow: var(--glass-hover-shadow);
+    border-color: var(--accent);
+    color: var(--glass-text);
+    transform: translateY(-2px);
   }
 
   &:active {
-    box-shadow: var(--shadow-sm);
+    transform: translateY(0);
   }
 }
