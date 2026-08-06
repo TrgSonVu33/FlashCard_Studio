@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Flashcard from './components/Flashcard/Flashcard';
 import AnswerCheck from './components/AnswerCheck/AnswerCheck';
 import ResultScreen from './components/ResultScreen/ResultScreen';
+import { supabase } from './supabaseClient';
 import './App.css';
 
 const FLASHCARDS = [
@@ -22,6 +23,36 @@ function App() {
   const [answers, setAnswers] = useState({});
   const [showResult, setShowResult] = useState(false);
   const [showBegin, setShowBegin] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+  const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    fetchHistory(0);
+  }, []);
+
+  const fetchHistory = async (pageNum) => {
+    setLoadingHistory(true);
+    const from = pageNum * 10;
+    const to = from + 9;
+    
+    const { data, error } = await supabase
+      .from('history')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (error) {
+      console.error('Error fetching history:', error);
+    } else {
+      if (pageNum === 0) {
+        setHistory(data || []);
+      } else {
+        setHistory(prev => [...prev, ...data]);
+      }
+    }
+    setLoadingHistory(false);
+  };
 
   const handleNext = () => {
     if (currentIndex < FLASHCARDS.length - 1) {
@@ -44,6 +75,20 @@ function App() {
     setCurrentIndex(0);
     setShowResult(false);
     setShowBegin(false);
+    setPage(0);
+    fetchHistory(0);
+  };
+
+  const saveResult = async (correct, totalAmount) => {
+    const { error } = await supabase
+      .from('history')
+      .insert([{ score: correct, total: totalAmount }]);
+    if (error) console.error('Error saving result:', error);
+  };
+
+  const handleFinish = () => {
+    setShowResult(true);
+    saveResult(correctCount, FLASHCARDS.length);
   };
 
   const correctCount = Object.values(answers).filter(v => v === 'yes').length;
@@ -60,6 +105,43 @@ function App() {
           <button className="begin-button" onClick={() => setShowBegin(true)}>
             Begin
           </button>
+          
+          <div className="history-dashboard">
+            <h2>History Dashboard</h2>
+            {loadingHistory && page === 0 ? (
+              <p>Loading history...</p>
+            ) : history.length === 0 ? (
+              <p>No history yet. Play a game!</p>
+            ) : (
+              <>
+                <ul className="history-list">
+                  {history.map((item) => (
+                    <li key={item.id} className="history-item">
+                      <span className="history-date">
+                        {new Date(item.created_at).toLocaleDateString()} {new Date(item.created_at).toLocaleTimeString()}
+                      </span>
+                      <span className="history-score">
+                        Score: <strong>{item.score} / {item.total}</strong>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {history.length >= (page + 1) * 10 && (
+                  <button 
+                    className="show-more-button" 
+                    onClick={() => {
+                      const nextPage = page + 1;
+                      setPage(nextPage);
+                      fetchHistory(nextPage);
+                    }}
+                    disabled={loadingHistory}
+                  >
+                    {loadingHistory ? 'Loading...' : 'Show More'}
+                  </button>
+                )}
+              </>
+            )}
+          </div>
         </div>
       ) : !showResult ? (
         <>
@@ -98,7 +180,7 @@ function App() {
           />
 
           {currentIndex === FLASHCARDS.length - 1 && (
-            <button className="finish-button" onClick={() => setShowResult(true)}>
+            <button className="finish-button" onClick={handleFinish}>
               Finish
             </button>
           )}
