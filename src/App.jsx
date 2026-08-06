@@ -80,10 +80,16 @@ function App() {
   };
 
   const saveResult = async (correct, totalAmount) => {
-    const { error } = await supabase
+    console.log('Saving result:', { score: correct, total: totalAmount });
+    const { data, error } = await supabase
       .from('history')
-      .insert([{ score: correct, total: totalAmount }]);
-    if (error) console.error('Error saving result:', error);
+      .insert([{ score: correct, total: totalAmount }])
+      .select();
+    if (error) {
+      console.error('Error saving result:', error);
+    } else {
+      console.log('Result saved successfully:', data);
+    }
   };
 
   const handleFinish = () => {
