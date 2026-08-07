@@ -1,0 +1,73 @@
+.category-select {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 16px 0;
+}
+
+.category-select-title {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  color: var(--text-h) !important;
+  margin-bottom: 24px !important;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  width: 100%;
+  max-width: 460px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    max-width: 280px;
+  }
+}
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  color: var(--glass-text);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.category-card:hover {
+  background: var(--glass-hover-bg);
+  box-shadow: var(--glass-hover-shadow);
+  transform: translateY(-3px) scale(1.02);
+  border-color: var(--accent);
+}
+
+.category-card:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.category-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.category-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.category-count {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.85;
+}

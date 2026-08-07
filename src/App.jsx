@@ -2,27 +2,17 @@ import { useState, useEffect } from 'react';
 import Flashcard from './components/Flashcard/Flashcard';
 import AnswerCheck from './components/AnswerCheck/AnswerCheck';
 import ResultScreen from './components/ResultScreen/ResultScreen';
+import CategorySelect from './components/CategorySelect/CategorySelect';
+import { CATEGORIES, FLASHCARDS } from './flashcardData';
 import { supabase } from './supabaseClient';
 import './App.css';
-
-const FLASHCARDS = [
-  { id: 1, q: "Horse", a: "Con Ngựa" },
-  { id: 2, q: "Goat", a: "Con Dê" },
-  { id: 3, q: "Sheep", a: "Con Cừu" },
-  { id: 4, q: "Tiger", a: "Con Hổ" },
-  { id: 5, q: "Lion", a: "Con Sư tử" },
-  { id: 6, q: "Elephant", a: "Con Voi" },
-  { id: 7, q: "Bear", a: "Con Gấu" },
-  { id: 8, q: "Monkey", a: "Con Khỉ" },
-  { id: 9, q: "Giraffe", a: "Con Hươu cao cổ" },
-  { id: 10, q: "Rabbit", a: "Con Thỏ" },
-];
 
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [showResult, setShowResult] = useState(false);
   const [showBegin, setShowBegin] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [page, setPage] = useState(0);
@@ -34,16 +24,22 @@ function App() {
     fetchHistory(0);
   }, []);
 
-  const fetchHistory = async (pageNum) => {
+  const fetchHistory = async (pageNum, categoryKey) => {
     setLoadingHistory(true);
     const from = pageNum * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
     
-    const { data, error } = await supabase
+    let query = supabase
       .from('history')
       .select('*')
-      .order('id', { ascending: false })
-      .range(from, to);
+      .order('id', { ascending: false });
+
+    // Filter by category if provided
+    if (categoryKey) {
+      query = query.eq('category', categoryKey);
+    }
+
+    const { data, error } = await query.range(from, to);
 
     if (error) {
       console.error('Error fetching history:', error);
@@ -58,7 +54,8 @@ function App() {
   };
 
   const handleNext = () => {
-    if (currentIndex < FLASHCARDS.length - 1) {
+    const cards = FLASHCARDS[selectedCategory];
+    if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -73,11 +70,19 @@ function App() {
     setAnswers({ ...answers, [currentIndex]: value });
   };
 
+  const handleCategorySelect = (categoryKey) => {
+    setSelectedCategory(categoryKey);
+    setAnswers({});
+    setCurrentIndex(0);
+    setPage(0);
+    fetchHistory(0, categoryKey);
+  };
+
   const handleReset = () => {
     setAnswers({});
     setCurrentIndex(0);
     setShowResult(false);
-    setShowBegin(false);
+    setSelectedCategory(null);
     setPage(0);
     fetchHistory(0);
   };
@@ -86,13 +91,13 @@ function App() {
     setAnswers({});
     setCurrentIndex(0);
     setShowResult(false);
-    setShowBegin(false);
+    setSelectedCategory(null);
     setPage(0);
     fetchHistory(0);
   };
 
   const saveResult = async (correct, totalAmount) => {
-    console.log('Saving result:', { score: correct, total: totalAmount });
+    console.log('Saving result:', { score: correct, total: totalAmount, category: selectedCategory });
 
     // 1. Get the current count to generate a sequential ID (1, 2, 3...)
     const { count, error: countError } = await supabase
@@ -105,12 +110,13 @@ function App() {
     const dateObj = new Date();
     const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
 
-    // 3. Insert the explicitly defined id and created_at
+    // 3. Insert with id, created_at, category, score, total
     const { data, error } = await supabase
       .from('history')
       .insert([{ 
         id: newId, 
         created_at: formattedDate,
+        category: selectedCategory,
         score: correct, 
         total: totalAmount 
       }])
@@ -124,111 +130,149 @@ function App() {
   };
 
   const handleFinish = () => {
+    const cards = FLASHCARDS[selectedCategory];
     setShowResult(true);
-    saveResult(correctCount, FLASHCARDS.length);
+    saveResult(correctCount, cards.length);
   };
 
   const correctCount = Object.values(answers).filter(v => v === 'yes').length;
-  const currentCard = FLASHCARDS[currentIndex];
+  const cards = selectedCategory ? FLASHCARDS[selectedCategory] : [];
+  const currentCard = cards[currentIndex];
+  const categoryInfo = selectedCategory
+    ? CATEGORIES.find(c => c.key === selectedCategory)
+    : null;
 
   return (
     <div className="app-container">
       <h1>FlashCards App</h1>
-      <h2>Learn New Words About Different Animals</h2>
-      <h3>Try to get the meaning of the word</h3>
-      
-      {!showBegin ? (
-        <div className="welcome-container">
-          <button className="begin-button" onClick={() => setShowBegin(true)}>
-            Begin
-          </button>
-          
-          <button 
-            className="history-toggle-button" 
-            onClick={() => setShowHistory(!showHistory)}
-          >
-            {showHistory ? '▲ Hide History' : '▼ History Dashboard'}
-          </button>
 
-          {showHistory && (
-            <div className="history-dashboard">
-              <h2>History Dashboard</h2>
-              {loadingHistory && page === 0 ? (
-                <p>Loading history...</p>
-              ) : history.length === 0 ? (
-                <p>No history yet. Play a game!</p>
-              ) : (
-                <>
-                  <ul className="history-list">
-                    {history.map((item) => {
-                      let displayDate = item.created_at;
-                      
-                      // Format if it's an older ISO timestamp
-                      if (typeof item.created_at === 'string' && item.created_at.includes('T')) {
-                        const dateObj = new Date(item.created_at);
-                        if (!isNaN(dateObj)) {
-                          displayDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
+      {!showBegin ? (
+        <>
+          <h2>Learn New Vocabulary Words</h2>
+          <h3>Choose a category and test your knowledge</h3>
+
+          <div className="welcome-container">
+            <button className="begin-button" onClick={() => setShowBegin(true)}>
+              Begin
+            </button>
+            
+            <button 
+              className="history-toggle-button" 
+              onClick={() => {
+                setShowHistory(!showHistory);
+                if (!showHistory) {
+                  setPage(0);
+                  fetchHistory(0);
+                }
+              }}
+            >
+              {showHistory ? '▲ Hide History' : '▼ History Dashboard'}
+            </button>
+
+            {showHistory && (
+              <div className="history-dashboard">
+                <h2>History Dashboard</h2>
+                {loadingHistory && page === 0 ? (
+                  <p>Loading history...</p>
+                ) : history.length === 0 ? (
+                  <p>No history yet. Play a game!</p>
+                ) : (
+                  <>
+                    <ul className="history-list">
+                      {history.map((item) => {
+                        let displayDate = item.created_at;
+                        
+                        if (typeof item.created_at === 'string' && item.created_at.includes('T')) {
+                          const dateObj = new Date(item.created_at);
+                          if (!isNaN(dateObj)) {
+                            displayDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
+                          }
                         }
-                      }
-                      
-                      return (
-                        <li key={item.id} className="history-item">
-                          <div className="history-info">
-                            <span className="history-id">
-                              {item.id}.&nbsp;
+
+                        const catInfo = CATEGORIES.find(c => c.key === item.category);
+                        
+                        return (
+                          <li key={item.id} className="history-item">
+                            <div className="history-info">
+                              <span className="history-id">
+                                {item.id}.&nbsp;
+                              </span>
+                              <span className="history-date">
+                                {displayDate}
+                              </span>
+                              {catInfo && (
+                                <span className="history-category">
+                                  &nbsp;{catInfo.emoji} {catInfo.label}
+                                </span>
+                              )}
+                            </div>
+                            <span className="history-score">
+                              Score: <strong>{item.score} / {item.total}</strong>
                             </span>
-                            <span className="history-date">
-                              {displayDate}
-                            </span>
-                          </div>
-                          <span className="history-score">
-                            Score: <strong>{item.score} / {item.total}</strong>
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                  <div className="history-buttons">
-                    {history.length > PAGE_SIZE && (
-                      <button 
-                        className="show-more-button" 
-                        onClick={() => {
-                          setPage(0);
-                          fetchHistory(0);
-                        }}
-                      >
-                        Show Less
-                      </button>
-                    )}
-                    {history.length >= (page + 1) * PAGE_SIZE && (
-                      <button 
-                        className="show-more-button" 
-                        onClick={() => {
-                          const nextPage = page + 1;
-                          setPage(nextPage);
-                          fetchHistory(nextPage);
-                        }}
-                        disabled={loadingHistory}
-                      >
-                        {loadingHistory ? 'Loading...' : 'Show More'}
-                      </button>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <div className="history-buttons">
+                      {history.length > PAGE_SIZE && (
+                        <button 
+                          className="show-more-button" 
+                          onClick={() => {
+                            setPage(0);
+                            fetchHistory(0);
+                          }}
+                        >
+                          Show Less
+                        </button>
+                      )}
+                      {history.length >= (page + 1) * PAGE_SIZE && (
+                        <button 
+                          className="show-more-button" 
+                          onClick={() => {
+                            const nextPage = page + 1;
+                            setPage(nextPage);
+                            fetchHistory(nextPage);
+                          }}
+                          disabled={loadingHistory}
+                        >
+                          {loadingHistory ? 'Loading...' : 'Show More'}
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </>
+      ) : !selectedCategory ? (
+        <>
+          <h2>Select a Category</h2>
+          <h3>Pick a topic to practice</h3>
+
+          <CategorySelect
+            categories={CATEGORIES}
+            flashcards={FLASHCARDS}
+            onSelect={handleCategorySelect}
+          />
+
+          <button className="quit-button" onClick={() => setShowBegin(false)}>
+            ← Back
+          </button>
+        </>
       ) : !showResult ? (
         <>
+          <h2>Learn New Words About {categoryInfo?.label}</h2>
+          <h3>Try to get the meaning of the word</h3>
+
           <div className="progress">
-            Card {currentIndex + 1} of {FLASHCARDS.length}
+            Card {currentIndex + 1} of {cards.length}
           </div>
 
           <div className="flashcards">
             {currentCard && (
               <Flashcard
-                key={currentCard.id}
+                key={`${selectedCategory}-${currentCard.id}`}
                 question={
                   <>
                     <span>Question {currentIndex + 1} </span>
@@ -245,7 +289,7 @@ function App() {
             <button className="prev-button" onClick={handlePrev} disabled={currentIndex === 0}>
               Prev
             </button>
-            <button className="next-button" onClick={handleNext} disabled={currentIndex === FLASHCARDS.length - 1}>
+            <button className="next-button" onClick={handleNext} disabled={currentIndex === cards.length - 1}>
               Next
             </button>
           </div>
@@ -255,7 +299,7 @@ function App() {
             onAnswerChange={handleAnswerCheck}
           />
 
-          {currentIndex === FLASHCARDS.length - 1 && (
+          {currentIndex === cards.length - 1 && (
             <button className="finish-button" onClick={handleFinish}>
               Finish
             </button>
@@ -268,7 +312,7 @@ function App() {
       ) : (
         <ResultScreen
           correctCount={correctCount}
-          total={FLASHCARDS.length}
+          total={cards.length}
           onReset={handleReset}
         />
       )}

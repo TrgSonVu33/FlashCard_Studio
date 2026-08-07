@@ -1,6 +1,6 @@
 # FlashCards App
 
-A vocabulary learning application built with React. Users study English-to-Vietnamese animal flashcards, self-assess their knowledge, and track their scores over time through a history dashboard powered by Supabase.
+A vocabulary learning application built with React. Users choose from 6 categories, study English-to-Vietnamese flashcards, self-assess their knowledge, and track scores over time through a history dashboard powered by Supabase.
 
 ## Tech Stack
 
@@ -10,10 +10,11 @@ A vocabulary learning application built with React. Users study English-to-Vietn
 
 ## Features
 
+- **Category Selection** — Choose from 6 vocabulary topics: Animals, Fruits, Colors, Body Parts, Drinks, and School Supplies.
 - **Interactive Flashcards** — Click to flip between English words and Vietnamese translations.
 - **Self-Assessment** — Mark each card as correct or incorrect during a session.
 - **Score Summary** — View your final score at the end of each session.
-- **History Dashboard** — Browse past session results with paginated history, sorted newest-first.
+- **History Dashboard** — Browse past session results with category labels, paginated and sorted newest-first.
 
 ## Getting Started
 
@@ -41,14 +42,15 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ### Supabase Table Setup
 
-Create a `history` table with the following columns:
+Create a `history` table with the following columns (in this order):
 
-| Column       | Type    | Description              |
-|--------------|---------|--------------------------|
-| `id`         | int8    | Sequential ID (Primary Key) |
-| `created_at` | text    | Date in dd/mm/yyyy format |
-| `score`      | int8    | Number of correct answers |
-| `total`      | int8    | Total number of cards     |
+| Column       | Type    | Description                              |
+|--------------|---------|------------------------------------------|
+| `id`         | int8    | Sequential ID (Primary Key)              |
+| `created_at` | text    | Date in dd/mm/yyyy format                |
+| `category`   | text    | Category key (e.g. `animals`, `fruits`)  |
+| `score`      | int8    | Number of correct answers                |
+| `total`      | int8    | Total number of cards                    |
 
 ### Run Development Server
 
@@ -64,8 +66,10 @@ The app will be available at `http://localhost:5173`.
 src/
 ├── components/
 │   ├── AnswerCheck/       # Correct/incorrect selection buttons
+│   ├── CategorySelect/    # Category selection grid
 │   ├── Flashcard/         # Flip card component
 │   └── ResultScreen/      # End-of-session score display
+├── flashcardData.js       # All categories and flashcard data
 ├── App.jsx                # Main application logic
 ├── App.css                # Application styles
 ├── supabaseClient.js      # Supabase client configuration
