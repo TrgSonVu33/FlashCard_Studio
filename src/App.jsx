@@ -206,10 +206,10 @@ function App() {
           </div>
 
           <div className="button-group">
-            <button onClick={handlePrev} disabled={currentIndex === 0}>
+            <button className="prev-button" onClick={handlePrev} disabled={currentIndex === 0}>
               Prev
             </button>
-            <button onClick={handleNext} disabled={currentIndex === FLASHCARDS.length - 1}>
+            <button className="next-button" onClick={handleNext} disabled={currentIndex === FLASHCARDS.length - 1}>
               Next
             </button>
           </div>
