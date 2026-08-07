@@ -28,7 +28,7 @@ function App() {
   const [page, setPage] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
 
-  const PAGE_SIZE = 3;
+  const PAGE_SIZE = 5;
 
   useEffect(() => {
     fetchHistory(0);
@@ -42,7 +42,7 @@ function App() {
     const { data, error } = await supabase
       .from('history')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('id', { ascending: false })
       .range(from, to);
 
     if (error) {
@@ -93,10 +93,29 @@ function App() {
 
   const saveResult = async (correct, totalAmount) => {
     console.log('Saving result:', { score: correct, total: totalAmount });
+
+    // 1. Get the current count to generate a sequential ID (1, 2, 3...)
+    const { count, error: countError } = await supabase
+      .from('history')
+      .select('*', { count: 'exact', head: true });
+    
+    const newId = countError ? 1 : (count || 0) + 1;
+
+    // 2. Format the date as dd/mm/yyyy
+    const dateObj = new Date();
+    const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
+
+    // 3. Insert the explicitly defined id and created_at
     const { data, error } = await supabase
       .from('history')
-      .insert([{ score: correct, total: totalAmount }])
+      .insert([{ 
+        id: newId, 
+        created_at: formattedDate,
+        score: correct, 
+        total: totalAmount 
+      }])
       .select();
+
     if (error) {
       console.error('Error saving result:', error);
     } else {
@@ -141,16 +160,33 @@ function App() {
               ) : (
                 <>
                   <ul className="history-list">
-                    {history.map((item) => (
-                      <li key={item.id} className="history-item">
-                        <span className="history-date">
-                          {new Date(item.created_at).toLocaleDateString()} {new Date(item.created_at).toLocaleTimeString()}
-                        </span>
-                        <span className="history-score">
-                          Score: <strong>{item.score} / {item.total}</strong>
-                        </span>
-                      </li>
-                    ))}
+                    {history.map((item) => {
+                      let displayDate = item.created_at;
+                      
+                      // Format if it's an older ISO timestamp
+                      if (typeof item.created_at === 'string' && item.created_at.includes('T')) {
+                        const dateObj = new Date(item.created_at);
+                        if (!isNaN(dateObj)) {
+                          displayDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
+                        }
+                      }
+                      
+                      return (
+                        <li key={item.id} className="history-item">
+                          <div className="history-info">
+                            <span className="history-id">
+                              {item.id}.&nbsp;
+                            </span>
+                            <span className="history-date">
+                              {displayDate}
+                            </span>
+                          </div>
+                          <span className="history-score">
+                            Score: <strong>{item.score} / {item.total}</strong>
+                          </span>
+                        </li>
+                      );
+                    })}
                   </ul>
                   <div className="history-buttons">
                     {history.length > PAGE_SIZE && (
