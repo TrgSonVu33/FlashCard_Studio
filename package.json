@@ -1,7 +1,10 @@
 {
-  "name": "project-react",
+  "name": "flashcards-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A vocabulary learning flashcard app built with React, featuring English-to-Vietnamese translations, self-assessment, and a Supabase-powered history dashboard.",
+  "author": "TrgSonVu33",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",

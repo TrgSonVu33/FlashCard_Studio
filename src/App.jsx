@@ -1,146 +1,69 @@
-import { useState, useEffect } from 'react';
-import Flashcard from './components/Flashcard/Flashcard';
-import AnswerCheck from './components/AnswerCheck/AnswerCheck';
-import ResultScreen from './components/ResultScreen/ResultScreen';
-import CategorySelect from './components/CategorySelect/CategorySelect';
-import { CATEGORIES, FLASHCARDS } from './flashcardData';
-import { supabase } from './supabaseClient';
+import { Flashcard, AnswerCheck, ResultScreen, CategorySelect } from './components';
+import { CATEGORIES, FLASHCARDS } from './data/flashcardData';
+import { useFlashcards } from './hooks/useFlashcards';
+import { useHistory } from './hooks/useHistory';
 import './App.css';
 
 function App() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [showResult, setShowResult] = useState(false);
-  const [showBegin, setShowBegin] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [history, setHistory] = useState([]);
-  const [loadingHistory, setLoadingHistory] = useState(true);
-  const [page, setPage] = useState(0);
-  const [showHistory, setShowHistory] = useState(false);
+  const {
+    currentIndex,
+    answers,
+    showResult,
+    showBegin,
+    selectedCategory,
+    cards,
+    currentCard,
+    correctCount,
+    handleNext,
+    handlePrev,
+    handleAnswerCheck,
+    handleCategorySelect,
+    handleFinish,
+    resetSession,
+    beginSession,
+    goBack,
+  } = useFlashcards();
 
-  const PAGE_SIZE = 5;
+  const {
+    history,
+    loadingHistory,
+    page,
+    showHistory,
+    PAGE_SIZE,
+    fetchHistory,
+    saveResult,
+    toggleHistory,
+    loadMore,
+    showLess,
+    resetPagination,
+  } = useHistory();
 
-  useEffect(() => {
-    fetchHistory(0);
-  }, []);
-
-  const fetchHistory = async (pageNum, categoryKey) => {
-    setLoadingHistory(true);
-    const from = pageNum * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
-    
-    let query = supabase
-      .from('history')
-      .select('*')
-      .order('id', { ascending: false });
-
-    // Filter by category if provided
-    if (categoryKey) {
-      query = query.eq('category', categoryKey);
-    }
-
-    const { data, error } = await query.range(from, to);
-
-    if (error) {
-      console.error('Error fetching history:', error);
-    } else {
-      if (pageNum === 0) {
-        setHistory(data || []);
-      } else {
-        setHistory(prev => [...prev, ...data]);
-      }
-    }
-    setLoadingHistory(false);
-  };
-
-  const handleNext = () => {
-    const cards = FLASHCARDS[selectedCategory];
-    if (currentIndex < cards.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
-
-  const handleAnswerCheck = (value) => {
-    setAnswers({ ...answers, [currentIndex]: value });
-  };
-
-  const handleCategorySelect = (categoryKey) => {
-    setSelectedCategory(categoryKey);
-    setAnswers({});
-    setCurrentIndex(0);
-    setPage(0);
-    fetchHistory(0, categoryKey);
-  };
-
-  const handleReset = () => {
-    setAnswers({});
-    setCurrentIndex(0);
-    setShowResult(false);
-    setSelectedCategory(null);
-    setPage(0);
-    fetchHistory(0);
-  };
-
-  const handleQuit = () => {
-    setAnswers({});
-    setCurrentIndex(0);
-    setShowResult(false);
-    setSelectedCategory(null);
-    setPage(0);
-    fetchHistory(0);
-  };
-
-  const saveResult = async (correct, totalAmount) => {
-    console.log('Saving result:', { score: correct, total: totalAmount, category: selectedCategory });
-
-    // 1. Get the current count to generate a sequential ID (1, 2, 3...)
-    const { count, error: countError } = await supabase
-      .from('history')
-      .select('*', { count: 'exact', head: true });
-    
-    const newId = countError ? 1 : (count || 0) + 1;
-
-    // 2. Format the date as dd/mm/yyyy
-    const dateObj = new Date();
-    const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
-
-    // 3. Insert with id, created_at, category, score, total
-    const { data, error } = await supabase
-      .from('history')
-      .insert([{ 
-        id: newId, 
-        created_at: formattedDate,
-        category: selectedCategory,
-        score: correct, 
-        total: totalAmount 
-      }])
-      .select();
-
-    if (error) {
-      console.error('Error saving result:', error);
-    } else {
-      console.log('Result saved successfully:', data);
-    }
-  };
-
-  const handleFinish = () => {
-    const cards = FLASHCARDS[selectedCategory];
-    setShowResult(true);
-    saveResult(correctCount, cards.length);
-  };
-
-  const correctCount = Object.values(answers).filter(v => v === 'yes').length;
-  const cards = selectedCategory ? FLASHCARDS[selectedCategory] : [];
-  const currentCard = cards[currentIndex];
   const categoryInfo = selectedCategory
     ? CATEGORIES.find(c => c.key === selectedCategory)
     : null;
+
+  const onCategorySelect = (categoryKey) => {
+    handleCategorySelect(categoryKey);
+    resetPagination();
+    fetchHistory(0, categoryKey);
+  };
+
+  const onFinish = () => {
+    handleFinish();
+    saveResult(selectedCategory, correctCount, cards.length);
+  };
+
+  const onReset = () => {
+    resetSession();
+    resetPagination();
+    fetchHistory(0);
+  };
+
+  const onQuit = () => {
+    resetSession();
+    resetPagination();
+    fetchHistory(0);
+  };
 
   return (
     <div className="app-container">
@@ -152,19 +75,13 @@ function App() {
           <h3>Choose a category and test your knowledge</h3>
 
           <div className="welcome-container">
-            <button className="begin-button" onClick={() => setShowBegin(true)}>
+            <button className="begin-button" onClick={beginSession}>
               Begin
             </button>
             
             <button 
               className="history-toggle-button" 
-              onClick={() => {
-                setShowHistory(!showHistory);
-                if (!showHistory) {
-                  setPage(0);
-                  fetchHistory(0);
-                }
-              }}
+              onClick={toggleHistory}
             >
               {showHistory ? '▲ Hide History' : '▼ History Dashboard'}
             </button>
@@ -189,7 +106,7 @@ function App() {
                           }
                         }
 
-                        const catInfo = CATEGORIES.find(c => c.key === item.category);
+                        const catInfo = CATEGORIES.find(c => c.key === item.categories);
                         
                         return (
                           <li key={item.id} className="history-item">
@@ -217,10 +134,7 @@ function App() {
                       {history.length > PAGE_SIZE && (
                         <button 
                           className="show-more-button" 
-                          onClick={() => {
-                            setPage(0);
-                            fetchHistory(0);
-                          }}
+                          onClick={showLess}
                         >
                           Show Less
                         </button>
@@ -228,11 +142,7 @@ function App() {
                       {history.length >= (page + 1) * PAGE_SIZE && (
                         <button 
                           className="show-more-button" 
-                          onClick={() => {
-                            const nextPage = page + 1;
-                            setPage(nextPage);
-                            fetchHistory(nextPage);
-                          }}
+                          onClick={loadMore}
                           disabled={loadingHistory}
                         >
                           {loadingHistory ? 'Loading...' : 'Show More'}
@@ -253,10 +163,10 @@ function App() {
           <CategorySelect
             categories={CATEGORIES}
             flashcards={FLASHCARDS}
-            onSelect={handleCategorySelect}
+            onSelect={onCategorySelect}
           />
 
-          <button className="quit-button" onClick={() => setShowBegin(false)}>
+          <button className="quit-button" onClick={goBack}>
             ← Back
           </button>
         </>
@@ -300,12 +210,12 @@ function App() {
           />
 
           {currentIndex === cards.length - 1 && (
-            <button className="finish-button" onClick={handleFinish}>
+            <button className="finish-button" onClick={onFinish}>
               Finish
             </button>
           )}
 
-          <button className="quit-button" onClick={handleQuit}>
+          <button className="quit-button" onClick={onQuit}>
             ✕ Quit
           </button>
         </>
@@ -313,7 +223,7 @@ function App() {
         <ResultScreen
           correctCount={correctCount}
           total={cards.length}
-          onReset={handleReset}
+          onReset={onReset}
         />
       )}
     </div>

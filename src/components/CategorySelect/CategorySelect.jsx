@@ -8,7 +8,7 @@ export default function CategorySelect({ categories, flashcards, onSelect }) {
         {categories.map((cat) => (
           <button
             key={cat.key}
-            className="category-card"
+            className={`category-card category-${cat.key}`}
             onClick={() => onSelect(cat.key)}
           >
             <span className="category-emoji">{cat.emoji}</span>

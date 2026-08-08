@@ -65,15 +65,24 @@ The app will be available at `http://localhost:5173`.
 ```
 src/
 ├── components/
-│   ├── AnswerCheck/       # Correct/incorrect selection buttons
-│   ├── CategorySelect/    # Category selection grid
-│   ├── Flashcard/         # Flip card component
-│   └── ResultScreen/      # End-of-session score display
-├── flashcardData.js       # All categories and flashcard data
-├── App.jsx                # Main application logic
-├── App.css                # Application styles
-├── supabaseClient.js      # Supabase client configuration
-└── main.jsx               # App entry point
+│   ├── index.js               # Barrel export for all components
+│   ├── AnswerCheck/           # Correct/incorrect selection buttons
+│   ├── CategorySelect/        # Category selection grid
+│   ├── Flashcard/             # Flip card component
+│   └── ResultScreen/          # End-of-session score display
+├── data/
+│   └── flashcardData.js       # All categories and flashcard data
+├── hooks/
+│   ├── useFlashcards.js       # Card navigation and answer tracking
+│   └── useHistory.js          # History fetching and pagination
+├── services/
+│   └── supabase.js            # Supabase client configuration
+├── assets/
+│   └── hero.png               # Hero image asset
+├── App.jsx                    # Main application orchestrator
+├── App.css                    # Application styles
+├── index.css                  # Global styles and design tokens
+└── main.jsx                   # App entry point
 ```
 
 ## Available Scripts
