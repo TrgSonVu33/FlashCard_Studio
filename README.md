@@ -1,6 +1,8 @@
 # FlashCards App
 
-A vocabulary learning application built with React. Users choose from 6 categories, study English-to-Vietnamese flashcards, self-assess their knowledge, and track scores over time through a history dashboard powered by Supabase.
+A vocabulary learning application built with React. Users choose from 6 categories, study English-to-Vietnamese flashcards, self-assess their knowledge, and track scores over time through a history dashboard powered by Supabase. 
+
+The project features a clean, modular architecture separating UI components, state management (custom hooks), static data, and backend services.
 
 ## Tech Stack
 
@@ -33,8 +35,13 @@ npm install
 
 ### Environment Variables
 
-Create a `.env` file in the project root:
+Copy the example environment file and fill in your Supabase credentials:
 
+```bash
+cp .env.example .env.local
+```
+
+Inside `.env.local` (or `.env`):
 ```env
 VITE_SUPABASE_URL=your_supabase_project_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -46,9 +53,9 @@ Create a `history` table with the following columns (in this order):
 
 | Column       | Type    | Description                              |
 |--------------|---------|------------------------------------------|
-| `id`         | int8    | Sequential ID (Primary Key)              |
+| `id`         | int8    | Sequential ID (Primary Key, Identity)    |
 | `created_at` | text    | Date in dd/mm/yyyy format                |
-| `category`   | text    | Category key (e.g. `animals`, `fruits`)  |
+| `categories` | text    | Category key (e.g. `animals`, `fruits`)  |
 | `score`      | int8    | Number of correct answers                |
 | `total`      | int8    | Total number of cards                    |
 
@@ -62,7 +69,7 @@ The app will be available at `http://localhost:5173`.
 
 ## Project Structure
 
-```
+```text
 src/
 ├── components/
 │   ├── index.js               # Barrel export for all components
@@ -88,11 +95,11 @@ src/
 ## Available Scripts
 
 | Command           | Description                  |
-|--------------------|------------------------------|
-| `npm run dev`      | Start development server     |
-| `npm run build`    | Build for production         |
-| `npm run preview`  | Preview production build     |
-| `npm run lint`     | Run ESLint                   |
+|-------------------|------------------------------|
+| `npm run dev`     | Start development server     |
+| `npm run build`   | Build for production         |
+| `npm run preview` | Preview production build     |
+| `npm run lint`    | Run ESLint                   |
 
 ## License
 
