@@ -3,12 +3,12 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  padding: 16px 0;
+  padding: 24px 0;
 }
 
 .category-select-title {
-  font-size: 1.3rem !important;
-  font-weight: 600 !important;
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
   color: var(--text-h) !important;
   margin-bottom: 24px !important;
 }
@@ -16,13 +16,13 @@
 .category-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 12px;
   width: 100%;
-  max-width: 460px;
+  max-width: 480px;
 
   @media (max-width: 480px) {
     grid-template-columns: 1fr;
-    max-width: 280px;
+    max-width: 300px;
   }
 }
 
@@ -33,41 +33,42 @@
   justify-content: center;
   gap: 8px;
   padding: 24px 16px;
-  border-radius: var(--radius-lg);
-  background: var(--glass-bg);
-  color: var(--glass-text);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  color: var(--text-h);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .category-card:hover {
-  background: var(--glass-hover-bg);
-  box-shadow: var(--glass-hover-shadow);
-  transform: translateY(-3px) scale(1.02);
-  border-color: var(--accent);
+  background: var(--bg-hover);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
 }
 
 .category-card:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-bg);
 }
 
 .category-emoji {
-  font-size: 2.2rem;
+  font-size: 2rem;
   line-height: 1;
 }
 
 .category-label {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 700;
+  color: var(--text-h);
   letter-spacing: 0.01em;
 }
 
 .category-count {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  opacity: 0.85;
+  color: var(--text);
 }

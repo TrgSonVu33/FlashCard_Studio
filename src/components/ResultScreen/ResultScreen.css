@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding: 48px 24px;
+  padding: 64px 24px;
 }
 
 .result-text {
@@ -11,8 +11,8 @@
   font-weight: 700;
   color: var(--text-h);
   background: var(--bg-card);
-  padding: 24px 40px;
-  border-radius: var(--radius-xl);
+  padding: 28px 44px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
 
@@ -23,24 +23,21 @@
 }
 
 .reset-button {
-  padding: 10px 32px;
+  padding: 12px 36px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   border-radius: var(--radius-md);
-  background: var(--glass-bg);
-  color: var(--glass-text);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.25s ease;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: 1px solid var(--btn-primary-bg);
+  box-shadow: 0 1px 3px rgba(255, 79, 0, 0.2);
+  transition: all 0.2s ease;
 
   &:hover {
-    background: var(--glass-hover-bg);
-    box-shadow: var(--glass-hover-shadow);
-    border-color: var(--accent);
-    color: var(--glass-text);
+    background: var(--btn-primary-hover);
+    border-color: var(--btn-primary-hover);
+    box-shadow: 0 4px 12px rgba(255, 79, 0, 0.25);
     transform: translateY(-2px);
   }
 

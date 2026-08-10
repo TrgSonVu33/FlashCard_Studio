@@ -1,11 +1,12 @@
 .flashcard-container {
-  width: 500px;
-  height: 400px;
+  width: 520px;
+  height: 340px;
   cursor: pointer;
   position: relative;
 
   @media (max-width: 768px) {
-    width: 320px;
+    width: 100%;
+    max-width: 360px;
     height: 280px;
   }
 }
@@ -28,16 +29,21 @@
   justify-content: center;
   padding: 2rem;
   box-sizing: border-box;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   font-size: 1.3rem;
   font-weight: 600;
   text-align: center;
   white-space: pre-line;
-  background: var(--bg);
+  background: var(--bg-card);
   color: var(--text-h);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.flashcard-front:hover,
+.flashcard-back:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .flashcard-front {
@@ -46,12 +52,12 @@
 
   p span {
     display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--accent);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
 }
 
@@ -60,7 +66,7 @@
   transform: scale(0.97);
 
   p {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--accent);
   }
