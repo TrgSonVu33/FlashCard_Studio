@@ -1,14 +1,23 @@
 import { useState } from 'react';
 import './Navbar.css';
 
-export default function Navbar({ onStartStudying }) {
+export default function Navbar({ onNavClick, currentView }) {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleNav = (view) => {
+    onNavClick(view);
+    setMenuOpen(false);
+  };
 
   return (
     <header className="navbar" id="navbar">
       <div className="navbar-inner">
         {/* Brand */}
-        <div className="navbar-brand">
+        <div 
+          className="navbar-brand" 
+          onClick={() => handleNav('home')}
+          style={{ cursor: 'pointer' }}
+        >
           <span className="navbar-logo-dot" aria-hidden="true"></span>
           <span className="navbar-title">FlashCard Studio</span>
         </div>
@@ -26,9 +35,30 @@ export default function Navbar({ onStartStudying }) {
         {/* Nav Links + Actions */}
         <nav className={`navbar-menu ${menuOpen ? 'navbar-menu--open' : ''}`}>
           <ul className="navbar-links">
-            <li><a href="#study-sets" className="navbar-link">Study Sets</a></li>
-            <li><a href="#categories" className="navbar-link">Categories</a></li>
-            <li><a href="#history" className="navbar-link">History</a></li>
+            <li>
+              <button 
+                className={`navbar-link ${currentView === 'studySets' ? 'active' : ''}`}
+                onClick={() => handleNav('studySets')}
+              >
+                Study Sets
+              </button>
+            </li>
+            <li>
+              <button 
+                className={`navbar-link ${currentView === 'deckSelect' ? 'active' : ''}`}
+                onClick={() => handleNav('deckSelect')}
+              >
+                Decks
+              </button>
+            </li>
+            <li>
+              <button 
+                className={`navbar-link ${currentView === 'history' ? 'active' : ''}`}
+                onClick={() => handleNav('history')}
+              >
+                History
+              </button>
+            </li>
           </ul>
 
           <div className="navbar-actions">
@@ -38,7 +68,7 @@ export default function Navbar({ onStartStudying }) {
             <button
               className="navbar-btn navbar-btn--primary"
               id="nav-start-btn"
-              onClick={onStartStudying}
+              onClick={() => handleNav('deckSelect')}
             >
               Start Studying
             </button>

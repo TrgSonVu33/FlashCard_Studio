@@ -3,3 +3,7 @@ export { default as AnswerCheck } from './AnswerCheck/AnswerCheck';
 export { default as ResultScreen } from './ResultScreen/ResultScreen';
 export { default as CategorySelect } from './CategorySelect/CategorySelect';
 export { default as Navbar } from './Navbar/Navbar';
+export { default as CreateDeck } from './CreateDeck/CreateDeck';
+export { default as StudySetsSelect } from './StudySetsSelect/StudySetsSelect';
+export { default as Footer } from './Footer/Footer';
+export { default as Contact } from './Contact/Contact';

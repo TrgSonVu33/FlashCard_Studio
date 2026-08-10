@@ -1,3 +1,10 @@
+.flashcard-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .flashcard-container {
   width: 520px;
   height: 340px;
@@ -61,6 +68,15 @@
   }
 }
 
+.flashcard-hint {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-top: 12px;
+  opacity: 0.6;
+}
+
 .flashcard-back {
   opacity: 0;
   transform: scale(0.97);
@@ -80,4 +96,118 @@
 .flashcard-container.flipped .flashcard-back {
   opacity: 1;
   transform: scale(1);
+}
+
+/* ── SRS Rating Bar ── */
+
+.srs-rating-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  animation: fadeInUp 0.25s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.srs-rating-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+  margin: 0;
+}
+
+.srs-rating-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.srs-btn {
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.srs-btn:hover {
+  transform: translateY(-1px);
+}
+
+.srs-btn:active {
+  transform: translateY(0);
+}
+
+/* Again — Red */
+.srs-btn--again {
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.2);
+}
+.srs-btn--again:hover {
+  background: rgba(220, 38, 38, 0.14);
+  border-color: rgba(220, 38, 38, 0.35);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
+}
+
+/* Hard — Orange */
+.srs-btn--hard {
+  background: rgba(255, 79, 0, 0.08);
+  color: #FF4F00;
+  border-color: rgba(255, 79, 0, 0.2);
+}
+.srs-btn--hard:hover {
+  background: rgba(255, 79, 0, 0.14);
+  border-color: rgba(255, 79, 0, 0.35);
+  box-shadow: 0 2px 8px rgba(255, 79, 0, 0.15);
+}
+
+/* Good — Green */
+.srs-btn--good {
+  background: rgba(22, 163, 74, 0.08);
+  color: #16a34a;
+  border-color: rgba(22, 163, 74, 0.2);
+}
+.srs-btn--good:hover {
+  background: rgba(22, 163, 74, 0.14);
+  border-color: rgba(22, 163, 74, 0.35);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);
+}
+
+/* Easy — Blue */
+.srs-btn--easy {
+  background: rgba(37, 99, 235, 0.08);
+  color: #2563eb;
+  border-color: rgba(37, 99, 235, 0.2);
+}
+.srs-btn--easy:hover {
+  background: rgba(37, 99, 235, 0.14);
+  border-color: rgba(37, 99, 235, 0.35);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 480px) {
+  .srs-rating-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .srs-btn {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
 }
