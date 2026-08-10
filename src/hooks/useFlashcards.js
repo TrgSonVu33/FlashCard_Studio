@@ -14,6 +14,7 @@ export function useFlashcards() {
   const [ratings, setRatings] = useState({});        // { cardIndex: rating (1-4) }
   const [showResult, setShowResult] = useState(false);
   const [showBegin, setShowBegin] = useState(false);
+  const [isSessionComplete, setIsSessionComplete] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState(null);
   const [studyMode, setStudyMode] = useState('standard');
   const [cards, setCards] = useState([]);             // Fetched from DB
@@ -167,12 +168,22 @@ export function useFlashcards() {
     }));
 
     // Advance to next due card or show results
-    if (dueIndex < dueQueue.length - 1) {
-      setDueIndex(prev => prev + 1);
+    if (dueQueue.length > 0) {
+      if (dueIndex < dueQueue.length - 1) {
+        setDueIndex(prev => prev + 1);
+      } else {
+        // All due cards reviewed
+        setIsSessionComplete(true);
+      }
     } else {
-      // All due cards reviewed — wait for manual Finish Session click
+      // Manual study mode (no due cards)
+      if (currentIndex < cards.length - 1) {
+        setCurrentIndex(prev => prev + 1);
+      } else {
+        setIsSessionComplete(true);
+      }
     }
-  }, [selectedDeck, currentCard, progressMap, dueIndex, dueQueue, actualIndex]);
+  }, [selectedDeck, currentCard, progressMap, dueIndex, dueQueue, actualIndex, cards.length, currentIndex]);
 
 
 
@@ -190,6 +201,7 @@ export function useFlashcards() {
     setRatings({});
     setCurrentIndex(0);
     setDueIndex(0);
+    setIsSessionComplete(false);
     
     // Extract IDs
     const deckIds = isMixedMode ? deckInput.map(d => d.id) : deckInput.id;
@@ -207,6 +219,7 @@ export function useFlashcards() {
     setDueQueue([]);
     setProgressMap({});
     setShowResult(false);
+    setIsSessionComplete(false);
     setSelectedDeck(null);
     setCards([]);
   }, []);
@@ -224,6 +237,7 @@ export function useFlashcards() {
     answers: ratings,
     ratings,
     showResult,
+    isSessionComplete,
     showBegin,
     selectedDeck,
     studyMode,

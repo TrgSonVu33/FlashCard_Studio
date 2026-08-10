@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { supabase } from '../../services/supabase';
 import './CreateDeck.css';
+const PRESET_ICONS = ['✨', '🌟', '💻', '🗣️', '🧪', '🌍', '🎨', '🎵', '⚽️', '🧠', '📚', '🚀', '💡', '🔥'];
 
 export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
   const [deckName, setDeckName] = useState('');
   const [description, setDescription] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState('✨');
   const [cards, setCards] = useState([{ front: '', back: '' }]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -44,15 +46,28 @@ export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
 
     try {
       // Insert deck
-      const { data: deckData, error: deckError } = await supabase
+      const deckPayload = {
+        title: deckName.trim(),
+        description: description.trim() || null,
+        is_system: false,
+        icon: selectedIcon,
+      };
+
+      let { data: deckData, error: deckError } = await supabase
         .from('decks')
-        .insert([{
-          title: deckName.trim(),
-          description: description.trim() || null,
-          is_system: false,
-        }])
+        .insert([deckPayload])
         .select()
         .single();
+
+      // Graceful fallback if the user hasn't run the migration yet
+      if (deckError && deckError.code === '42703') {
+        console.warn('Icon column not found, falling back to legacy insert.');
+        const fallbackPayload = { ...deckPayload };
+        delete fallbackPayload.icon;
+        const fallbackRes = await supabase.from('decks').insert([fallbackPayload]).select().single();
+        deckData = fallbackRes.data;
+        deckError = fallbackRes.error;
+      }
 
       if (deckError) throw deckError;
 
@@ -72,6 +87,7 @@ export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
       // Reset form and close
       setDeckName('');
       setDescription('');
+      setSelectedIcon('✨');
       setCards([{ front: '', back: '' }]);
       onDeckCreated?.(deckData);
       onClose();
@@ -105,6 +121,21 @@ export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
           )}
 
           {/* Deck Info */}
+          <div className="create-deck-field">
+            <label className="create-deck-label">Deck Icon</label>
+            <div className="create-deck-icon-picker">
+              {PRESET_ICONS.map((icon) => (
+                <button
+                  key={icon}
+                  className={`create-deck-icon-btn ${selectedIcon === icon ? 'create-deck-icon-btn--active' : ''}`}
+                  onClick={() => setSelectedIcon(icon)}
+                >
+                  {icon}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="create-deck-field">
             <label htmlFor="deck-name" className="create-deck-label">Deck Name</label>
             <input

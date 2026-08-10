@@ -10,6 +10,7 @@ function App() {
   const {
     currentIndex,
     showResult,
+    isSessionComplete,
     selectedDeck,
     studyMode,
     cards,
@@ -217,16 +218,27 @@ function App() {
                           }
                         }
                         const deckInfo = allDecks.find(
-                          d => d.id === item.categories || d.title.toLowerCase() === item.categories
+                          d => d.id === item.categories || 
+                               (d.title && item.categories && d.title.toLowerCase() === item.categories.toLowerCase())
                         );
+
+                        let displayCategory = null;
+                        if (['easy', 'normal', 'hard'].includes(item.mode)) {
+                          const modeName = item.mode.charAt(0).toUpperCase() + item.mode.slice(1);
+                          displayCategory = <span className="history-category">&nbsp;🎯 {modeName} Study Set</span>;
+                        } else if (deckInfo) {
+                          const icon = deckInfo.icon || '📚';
+                          displayCategory = <span className="history-category">&nbsp;{icon} {deckInfo.title}</span>;
+                        } else if (item.categories) {
+                          displayCategory = <span className="history-category">&nbsp;📚 {item.categories}</span>;
+                        }
+
                         return (
                           <li key={item.id} className="history-item">
                             <div className="history-info">
                               <span className="history-id">{item.id}.&nbsp;</span>
                               <span className="history-date">{displayDate}</span>
-                              {deckInfo && (
-                                <span className="history-category">&nbsp;📚 {deckInfo.title}</span>
-                              )}
+                              {displayCategory}
                             </div>
                             <span className="history-score">
                               Score: <strong>{item.score} / {item.total}</strong>
@@ -314,7 +326,7 @@ function App() {
                 )}
               </div>
 
-              {isLastCard && (
+              {isSessionComplete && (
                 <div className="button-group">
                   <button
                     className="finish-session-btn"

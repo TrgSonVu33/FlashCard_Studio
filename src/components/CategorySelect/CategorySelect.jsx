@@ -7,9 +7,10 @@ export default function CategorySelect({ decks, onSelect, onCreateDeck }) {
   const systemDecks = decks.filter((d) => d.is_system);
   const customDecks = decks.filter((d) => !d.is_system);
 
-  const getDeckEmoji = (title, isSystem) => {
-    if (!isSystem) return '✨';
-    const t = title.toLowerCase();
+  const getDeckEmoji = (deck) => {
+    if (deck.icon) return deck.icon;
+    if (!deck.is_system) return '✨';
+    const t = deck.title.toLowerCase();
     if (t.includes('animal')) return '🐾';
     if (t.includes('fruit')) return '🥭';
     if (t.includes('color')) return '🎨';
@@ -61,7 +62,7 @@ export default function CategorySelect({ decks, onSelect, onCreateDeck }) {
               className="category-card"
               onClick={() => onSelect(deck)}
             >
-              <span className="category-emoji">{getDeckEmoji(deck.title, deck.is_system)}</span>
+              <span className="category-emoji">{getDeckEmoji(deck)}</span>
               <span className="category-label">{deck.title}</span>
               <span className="category-count">{deck.card_count} cards</span>
             </button>
