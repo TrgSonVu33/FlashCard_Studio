@@ -11,16 +11,16 @@ function App() {
     currentIndex,
     showResult,
     selectedDeck,
+    studyMode,
     cards,
     currentCard,
     correctCount,
     dueCount,
     dueIndex,
     loadingCards,
-    handleNext,
-    handlePrev,
     handleSrsRating,
     handleCategorySelect,
+    handleFinish,
     resetSession,
   } = useFlashcards();
 
@@ -30,6 +30,7 @@ function App() {
     page,
     PAGE_SIZE,
     fetchHistory,
+    saveResult,
     loadMore,
     showLess,
     resetPagination,
@@ -92,8 +93,14 @@ function App() {
     if (mode === 'normal') selectedDecks = shuffled.slice(0, 4);
     if (mode === 'hard') selectedDecks = shuffled.slice(0, 6);
 
-    handleCategorySelect(selectedDecks);
+    handleCategorySelect(selectedDecks, mode);
     setCurrentView('study');
+  };
+
+  const onFinishSession = () => {
+    const total = dueCount > 0 ? dueCount : cards.length;
+    saveResult(selectedDeck?.title || 'Unknown', correctCount, total, studyMode);
+    handleFinish();
   };
 
   const onReset = () => {
@@ -113,6 +120,10 @@ function App() {
 
   const systemDeckCount = allDecks.filter(d => d.is_system).length;
   const customDeckCount = allDecks.filter(d => !d.is_system).length;
+  
+  const isLastCard = dueCount > 0 
+    ? dueIndex === dueCount - 1 
+    : currentIndex === (cards ? cards.length - 1 : 0);
 
   return (
     <div className="page-wrapper">
@@ -303,22 +314,16 @@ function App() {
                 )}
               </div>
 
-              <div className="button-group">
-                <button
-                  className="prev-button"
-                  onClick={handlePrev}
-                  disabled={dueCount > 0 ? dueIndex === 0 : currentIndex === 0}
-                >
-                  Prev
-                </button>
-                <button
-                  className="next-button"
-                  onClick={handleNext}
-                  disabled={dueCount > 0 ? dueIndex === dueCount - 1 : currentIndex === cards.length - 1}
-                >
-                  Next
-                </button>
-              </div>
+              {isLastCard && (
+                <div className="button-group">
+                  <button
+                    className="finish-session-btn"
+                    onClick={onFinishSession}
+                  >
+                    Finish Session
+                  </button>
+                </div>
+              )}
 
               <button className="quit-button" onClick={onQuit}>✕ Quit</button>
             </>
@@ -326,7 +331,9 @@ function App() {
             <ResultScreen
               correctCount={correctCount}
               total={dueCount > 0 ? dueCount : cards.length}
+              mode={studyMode}
               onReset={onReset}
+              onViewHistory={() => setCurrentView('history')}
             />
           )
         )}

@@ -15,6 +15,7 @@ export function useFlashcards() {
   const [showResult, setShowResult] = useState(false);
   const [showBegin, setShowBegin] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState(null);
+  const [studyMode, setStudyMode] = useState('standard');
   const [cards, setCards] = useState([]);             // Fetched from DB
   const [progressMap, setProgressMap] = useState({}); // { card_id: progressRow }
   const [dueQueue, setDueQueue] = useState([]);       // Ordered card indices
@@ -106,7 +107,9 @@ export function useFlashcards() {
       return a.dueDate - b.dueDate;
     });
 
-    const orderedIndices = queue.map(q => q.index);
+    // Limit session to exactly 10 questions
+    const orderedIndices = queue.map(q => q.index).slice(0, 10);
+    
     setDueQueue(orderedIndices);
     setDueIndex(0);
     setLoadingCards(false);
@@ -167,32 +170,13 @@ export function useFlashcards() {
     if (dueIndex < dueQueue.length - 1) {
       setDueIndex(prev => prev + 1);
     } else {
-      // All due cards reviewed — show result
-      setShowResult(true);
+      // All due cards reviewed — wait for manual Finish Session click
     }
   }, [selectedDeck, currentCard, progressMap, dueIndex, dueQueue, actualIndex]);
 
-  const handleNext = useCallback(() => {
-    if (dueQueue.length > 0) {
-      if (dueIndex < dueQueue.length - 1) {
-        setDueIndex(dueIndex + 1);
-      }
-    } else if (currentIndex < cards.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  }, [currentIndex, cards.length, dueIndex, dueQueue]);
 
-  const handlePrev = useCallback(() => {
-    if (dueQueue.length > 0) {
-      if (dueIndex > 0) {
-        setDueIndex(dueIndex - 1);
-      }
-    } else if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  }, [currentIndex, dueIndex, dueQueue]);
 
-  const handleCategorySelect = useCallback((deckInput) => {
+  const handleCategorySelect = useCallback((deckInput, mode = 'standard') => {
     // deckInput could be a single deck object OR an array of deck objects (Study Sets)
     const isMixedMode = Array.isArray(deckInput);
     
@@ -202,6 +186,7 @@ export function useFlashcards() {
       : deckInput;
       
     setSelectedDeck(activeDeck);
+    setStudyMode(mode);
     setRatings({});
     setCurrentIndex(0);
     setDueIndex(0);
@@ -241,6 +226,7 @@ export function useFlashcards() {
     showResult,
     showBegin,
     selectedDeck,
+    studyMode,
     cards,
     currentCard,
     correctCount,
@@ -248,8 +234,6 @@ export function useFlashcards() {
     dueIndex,
     dueQueue,
     loadingCards,
-    handleNext,
-    handlePrev,
     handleSrsRating,
     handleCategorySelect,
     handleFinish,

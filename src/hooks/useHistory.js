@@ -63,22 +63,31 @@ export function useHistory() {
     return () => { cancelled = true; };
   }, [queryHistory]);
 
-  const saveResult = useCallback(async (selectedCategory, correct, totalAmount) => {
-    console.log('Saving result:', { score: correct, total: totalAmount, category: selectedCategory });
+  const saveResult = useCallback(async (selectedCategory, correct, totalAmount, mode = 'standard') => {
+    console.log('Saving result:', { score: correct, total: totalAmount, category: selectedCategory, mode });
 
-    // Format the date as dd/mm/yyyy
     const dateObj = new Date();
     const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
 
-    const { data, error } = await supabase
-      .from('history')
-      .insert([{
-        created_at: formattedDate,
-        categories: selectedCategory,
-        score: correct,
-        total: totalAmount
-      }])
-      .select();
+    const payload = {
+      created_at: formattedDate,
+      categories: selectedCategory,
+      score: correct,
+      total: totalAmount,
+      mode: mode
+    };
+
+    let { data, error } = await supabase.from('history').insert([payload]).select();
+
+    // Fallback if the user hasn't run the SQL migration to add the 'mode' column
+    if (error && error.code === '42703') {
+      console.warn('Mode column not found, falling back to legacy insert without mode.');
+      const fallbackPayload = { ...payload };
+      delete fallbackPayload.mode;
+      const fallbackRes = await supabase.from('history').insert([fallbackPayload]).select();
+      data = fallbackRes.data;
+      error = fallbackRes.error;
+    }
 
     if (error) {
       console.error('Error saving result:', error);
