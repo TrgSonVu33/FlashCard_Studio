@@ -1,12 +1,14 @@
 import { useState } from 'react';
+import data from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
 import { supabase } from '../../services/supabase';
 import './CreateDeck.css';
-const PRESET_ICONS = ['✨', '🌟', '💻', '🗣️', '🧪', '🌍', '🎨', '🎵', '⚽️', '🧠', '📚', '🚀', '💡', '🔥'];
 
 export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
   const [deckName, setDeckName] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedIcon, setSelectedIcon] = useState('✨');
+  const [selectedIcon, setSelectedIcon] = useState('📁');
+  const [showPicker, setShowPicker] = useState(false);
   const [cards, setCards] = useState([{ front: '', back: '' }]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -87,7 +89,7 @@ export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
       // Reset form and close
       setDeckName('');
       setDescription('');
-      setSelectedIcon('✨');
+      setSelectedIcon('📁');
       setCards([{ front: '', back: '' }]);
       onDeckCreated?.(deckData);
       onClose();
@@ -123,16 +125,30 @@ export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
           {/* Deck Info */}
           <div className="create-deck-field">
             <label className="create-deck-label">Deck Icon</label>
-            <div className="create-deck-icon-picker">
-              {PRESET_ICONS.map((icon) => (
-                <button
-                  key={icon}
-                  className={`create-deck-icon-btn ${selectedIcon === icon ? 'create-deck-icon-btn--active' : ''}`}
-                  onClick={() => setSelectedIcon(icon)}
-                >
-                  {icon}
-                </button>
-              ))}
+            <div className="create-deck-icon-picker-container">
+              <button
+                className="create-deck-icon-trigger"
+                onClick={() => setShowPicker(!showPicker)}
+                title="Choose an icon"
+              >
+                {selectedIcon}
+              </button>
+              {showPicker && (
+                <div className="create-deck-emoji-popover">
+                  <div className="create-deck-emoji-overlay" onClick={() => setShowPicker(false)} />
+                  <div className="create-deck-picker-wrapper">
+                    <Picker 
+                      data={data} 
+                      set="apple" 
+                      onEmojiSelect={(emoji) => {
+                        setSelectedIcon(emoji.native);
+                        setShowPicker(false);
+                      }} 
+                      theme="light"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
