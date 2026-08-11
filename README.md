@@ -27,7 +27,6 @@ src/
 ├── features/             # Domain-driven feature modules
 │   ├── decks/            # Deck creation, editing, and selection logic
 │   └── study/            # The core SRS study engine (Flashcard, Results)
-├── pages/                # Top-level page views (e.g., Contact page)
 ├── services/             # External service integrations (Supabase client)
 ├── hooks/                # Custom React hooks (e.g., useFlashcards)
 ├── data/                 # Static fallback or mock data
@@ -73,7 +72,7 @@ src/
    ```bash
    npm run dev
    ```
-   Open `http://localhost:5173` to view it in your browser.
+   Vite will provide a local address (usually `http://localhost:5173`) in your terminal. Open it in your browser.
 
 ## Scripts
 
