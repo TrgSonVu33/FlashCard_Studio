@@ -7,7 +7,7 @@
 
 FlashCard Studio is a modern, production-ready SaaS application designed to help users build custom decks, mix categories, and accelerate their learning through a Supabase-powered Spaced Repetition System (SRS).
 
-## 🚀 Tech Stack
+## Tech Stack
 
 - **Framework**: React 19 + Vite
 - **Styling**: Vanilla CSS (CSS Variables, Flexbox/Grid layouts)
@@ -15,7 +15,7 @@ FlashCard Studio is a modern, production-ready SaaS application designed to help
 - **Icons/Emoji**: Emoji Mart (`@emoji-mart/react`)
 - **Linting**: ESLint + React Hooks Plugin
 
-## 🏗 Architecture Overview
+## Architecture Overview
 
 The codebase follows a strictly **Feature-Driven / Domain-Driven Architecture**, making it highly scalable and easy for onboarding developers to navigate:
 
@@ -34,7 +34,7 @@ src/
 └── utils/                # Helper functions and utilities
 ```
 
-## ✨ Core Features
+## Core Features
 
 - **Spaced Repetition System (SRS)**: Optimize learning efficiency with algorithmic study modes (Easy, Normal, Hard).
 - **Custom Deck Creation**: Build, edit, and organize personalized flashcard decks with custom emoji icons.
@@ -42,7 +42,7 @@ src/
 - **Analytics & History**: Track session scores and review past study history via a real-time Supabase dashboard.
 - **Premium UX/UI**: Fully responsive design with glassmorphism touches, CSS grid layouts, and animated micro-interactions.
 
-## 🛠 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (v18+)
@@ -75,7 +75,7 @@ src/
    ```
    Open `http://localhost:5173` to view it in your browser.
 
-## 📦 Scripts
+## Scripts
 
 - `npm run dev`: Starts the Vite development server.
 - `npm run build`: Bundles the app into static files for production into the `dist/` folder.
