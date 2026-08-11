@@ -83,4 +83,3 @@ src/
 - `npm run preview`: Bootstraps a local server to preview the production build.
 
 ---
-*Built with ❤️ for vocabulary mastery.*
