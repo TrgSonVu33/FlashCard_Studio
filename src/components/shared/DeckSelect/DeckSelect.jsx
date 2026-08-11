@@ -37,7 +37,7 @@ export default function DeckSelect({ decks, onSelect, onCreateDeck, onEditDeck }
           className={`deck-tab ${activeTab === 'custom' ? 'deck-tab--active' : ''}`}
           onClick={() => setActiveTab('custom')}
         >
-          My Custom Decks
+          Custom Decks
           <span className="deck-tab-count">{customDecks.length}</span>
         </button>
       </div>

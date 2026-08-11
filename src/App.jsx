@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { DeckSelect, Navbar, Footer } from './components';
+import { DeckSelect, Navbar, Footer, ContactDropdown } from './components';
 import { CreateDeck, EditDeck, StudySetsSelect } from './features/decks';
 import { Flashcard, ResultScreen } from './features/study';
 import { Contact } from './pages';
@@ -186,7 +186,7 @@ function App() {
 
         {/* ─── VIEW: HISTORY ─── */}
         {currentView === 'history' && (
-          <div className="view-centered">
+          <div className="view-centered view-full-height">
             <div className="history-page">
               <div className="history-page-header">
                 <button className="quit-button header-back-btn" onClick={() => setCurrentView('home')}>
@@ -270,7 +270,7 @@ function App() {
 
         {/* ─── VIEW: DECK SELECT ─── */}
         {currentView === 'deckSelect' && (
-          <div className="view-centered">
+          <div className="view-centered view-full-height">
             <div className="study-header">
               <h2 className="study-title">Select a Deck</h2>
               <p className="study-subtitle">Pick a topic to practice</p>
@@ -287,7 +287,7 @@ function App() {
 
         {/* ─── VIEW: STUDY SETS ─── */}
         {currentView === 'studySets' && (
-          <div className="view-centered">
+          <div className="view-centered view-full-height">
             <StudySetsSelect onSelectMode={onStudySetSelect} />
             <button className="quit-button" onClick={() => setCurrentView('home')}>← Back</button>
           </div>
@@ -372,7 +372,8 @@ function App() {
         }}
       />
 
-      <Footer showContact={currentView === 'home'} />
+      <ContactDropdown />
+      <Footer showContact={false} />
     </div>
   );
 }
