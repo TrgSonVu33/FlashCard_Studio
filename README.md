@@ -72,7 +72,7 @@ src/
    ```bash
    npm run dev
    ```
-   Vite will provide a local address (usually `http://localhost:5173`) in your terminal. Open it in your browser.
+   Vite will provide a local address (example `http://localhost:8000`) in your terminal. Open it in your browser.
 
 ## Scripts
 
