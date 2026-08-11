@@ -1,12 +1,12 @@
 import './Footer.css';
 
-export default function Footer({ showContact = true }) {
+export default function Footer() {
   return (
-    <footer className={`saas-footer ${!showContact ? 'saas-footer--clean' : ''}`}>
-      <div className={`footer-content ${!showContact ? 'footer-content--clean' : ''}`}>
+    <footer className="saas-footer">
+      <div className="footer-content">
         
         {/* Left Side: Brand & Links */}
-        <div className={`footer-left ${!showContact ? 'footer-left--clean' : ''}`}>
+        <div className="footer-left">
           <div className="footer-brand">
             <div className="footer-logo">
               <span className="footer-logo-dot"></span>
@@ -31,25 +31,8 @@ export default function Footer({ showContact = true }) {
             </div>
           </div>
         </div>
-
-        {/* Right Side: Embedded Contact Form */}
-        {showContact && (
-          <div className="footer-contact-box">
-            <h4 className="footer-column-title">Get in Touch</h4>
-            <p className="footer-contact-desc">Have a question? Drop us a message.</p>
-            <form className="footer-contact-form" onSubmit={(e) => e.preventDefault()}>
-              <div className="footer-form-row">
-                <input type="text" placeholder="Name" className="footer-input" />
-                <input type="email" placeholder="Email" className="footer-input" />
-              </div>
-              <input type="text" placeholder="Reason for Contact" className="footer-input" />
-              <textarea placeholder="How can we help you?" rows="3" className="footer-input footer-textarea"></textarea>
-              <button type="submit" className="footer-submit-btn">Send Message</button>
-            </form>
-          </div>
-        )}
-
       </div>
+      
       <div className="footer-bottom">
         <p>© {new Date().getFullYear()} FlashCard Studio. All rights reserved.</p>
       </div>

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { DeckSelect, Navbar, Footer, ContactDropdown } from './components';
 import { CreateDeck, EditDeck, StudySetsSelect } from './features/decks';
 import { Flashcard, ResultScreen } from './features/study';
-import { Contact } from './pages';
 import { useFlashcards } from './hooks/useFlashcards';
 import { useHistory } from './hooks/useHistory';
 import { supabase } from './services/supabase';
@@ -373,7 +372,7 @@ function App() {
       />
 
       <ContactDropdown />
-      <Footer showContact={false} />
+      <Footer />
     </div>
   );
 }
