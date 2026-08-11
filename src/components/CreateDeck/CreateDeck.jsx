@@ -62,7 +62,7 @@ export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
         .single();
 
       // Graceful fallback if the user hasn't run the migration yet
-      if (deckError && deckError.code === '42703') {
+      if (deckError && (deckError.code === '42703' || deckError.code === 'PGRST204' || deckError.message?.includes('icon'))) {
         console.warn('Icon column not found, falling back to legacy insert.');
         const fallbackPayload = { ...deckPayload };
         delete fallbackPayload.icon;
@@ -139,7 +139,7 @@ export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
                   <div className="create-deck-picker-wrapper">
                     <Picker 
                       data={data} 
-                      set="apple" 
+                      native={true}
                       onEmojiSelect={(emoji) => {
                         setSelectedIcon(emoji.native);
                         setShowPicker(false);

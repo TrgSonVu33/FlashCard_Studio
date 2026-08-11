@@ -1,15 +1,3 @@
-/**
- * SM-2 Spaced Repetition Algorithm
- *
- * Calculates the next review date, ease factor, interval, and repetition count
- * based on the user's self-assessed rating of recall quality.
- *
- * @param {number} rating       - 1: Again, 2: Hard, 3: Good, 4: Easy
- * @param {number} interval     - Current interval in days (default 0)
- * @param {number} repetitions  - Number of consecutive successful reviews (default 0)
- * @param {number} easeFactor   - Current ease factor (default 2.5)
- * @returns {{ easeFactor: number, intervalDays: number, repetitions: number, dueDate: string }}
- */
 export function calculateNextReview(rating, interval = 0, repetitions = 0, easeFactor = 2.5) {
   let newInterval = 0;
   let newRepetitions = repetitions;

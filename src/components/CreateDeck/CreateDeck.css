@@ -161,6 +161,55 @@
   opacity: 0.6;
 }
 
+/* ── Emoji Picker ── */
+
+.create-deck-icon-picker-container {
+  position: relative;
+  display: inline-block;
+}
+
+.create-deck-icon-trigger {
+  font-size: 1.5rem;
+  padding: 8px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.create-deck-icon-trigger:hover,
+.create-deck-icon-trigger:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+  outline: none;
+}
+
+.create-deck-emoji-popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 300;
+  margin-top: 8px;
+}
+
+.create-deck-emoji-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 299;
+}
+
+.create-deck-picker-wrapper {
+  position: relative;
+  z-index: 300;
+  box-shadow: var(--shadow-lg);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
 /* ── Divider ── */
 
 .create-deck-divider {
