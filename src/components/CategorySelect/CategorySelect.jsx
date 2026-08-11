@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './CategorySelect.css';
 
-export default function CategorySelect({ decks, onSelect, onCreateDeck }) {
+export default function CategorySelect({ decks, onSelect, onCreateDeck, onEditDeck }) {
   const [activeTab, setActiveTab] = useState('system');
 
   const systemDecks = decks.filter((d) => d.is_system);
@@ -46,26 +46,40 @@ export default function CategorySelect({ decks, onSelect, onCreateDeck }) {
       {visibleDecks.length > 0 || activeTab === 'custom' ? (
         <div className="category-grid">
           {activeTab === 'custom' && (
-            <button
-              className="category-card"
-              onClick={onCreateDeck}
-              style={{ borderStyle: 'dashed', background: 'transparent' }}
-            >
-              <span className="category-emoji">✚</span>
-              <span className="category-label">Create New Deck</span>
-              <span className="category-count">Custom</span>
-            </button>
+            <div className="category-card-wrapper">
+              <button
+                className="category-card"
+                onClick={onCreateDeck}
+                style={{ borderStyle: 'dashed', background: 'transparent' }}
+              >
+                <span className="category-emoji">✚</span>
+                <span className="category-label">Create New Deck</span>
+              </button>
+            </div>
           )}
           {visibleDecks.map((deck) => (
-            <button
-              key={deck.id}
-              className="category-card"
-              onClick={() => onSelect(deck)}
-            >
-              <span className="category-emoji">{getDeckEmoji(deck)}</span>
-              <span className="category-label">{deck.title}</span>
-              <span className="category-count">{deck.card_count} cards</span>
-            </button>
+            <div key={deck.id} className="category-card-wrapper">
+              <button
+                className="category-card"
+                onClick={() => onSelect(deck)}
+              >
+                <span className="category-emoji">{getDeckEmoji(deck)}</span>
+                <span className="category-label">{deck.title}</span>
+              </button>
+              {activeTab === 'custom' && (
+                <button
+                  className="category-edit-btn"
+                  onClick={(e) => { e.stopPropagation(); onEditDeck?.(deck); }}
+                  title="Edit Deck Settings"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="1.5" />
+                    <circle cx="12" cy="5" r="1.5" />
+                    <circle cx="12" cy="19" r="1.5" />
+                  </svg>
+                </button>
+              )}
+            </div>
           ))}
         </div>
       ) : (

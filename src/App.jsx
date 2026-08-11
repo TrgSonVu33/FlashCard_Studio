@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Flashcard, ResultScreen, CategorySelect, Navbar, StudySetsSelect, Footer, Contact } from './components';
 import CreateDeck from './components/CreateDeck/CreateDeck';
+import EditDeck from './components/EditDeck/EditDeck';
 import { useFlashcards } from './hooks/useFlashcards';
 import { useHistory } from './hooks/useHistory';
 import { supabase } from './services/supabase';
@@ -39,6 +40,8 @@ function App() {
 
   const [currentView, setCurrentView] = useState('home');
   const [showCreateDeck, setShowCreateDeck] = useState(false);
+  const [showEditDeck, setShowEditDeck] = useState(false);
+  const [deckToEdit, setDeckToEdit] = useState(null);
   const [allDecks, setAllDecks] = useState([]);
   const [totalCards, setTotalCards] = useState(0);
 
@@ -275,6 +278,7 @@ function App() {
               decks={allDecks} 
               onSelect={onCategorySelect} 
               onCreateDeck={() => setShowCreateDeck(true)}
+              onEditDeck={(deck) => { setDeckToEdit(deck); setShowEditDeck(true); }}
             />
             <button className="quit-button" onClick={() => setCurrentView('home')}>← Back</button>
           </div>
@@ -356,6 +360,15 @@ function App() {
         isOpen={showCreateDeck}
         onClose={() => setShowCreateDeck(false)}
         onDeckCreated={handleDeckCreated}
+      />
+
+      <EditDeck
+        isOpen={showEditDeck}
+        deck={deckToEdit}
+        onClose={() => setShowEditDeck(false)}
+        onDeckUpdated={(updatedDeck) => {
+          setAllDecks((prev) => prev.map(d => d.id === updatedDeck.id ? updatedDeck : d));
+        }}
       />
 
       <Footer showContact={currentView === 'home'} />
