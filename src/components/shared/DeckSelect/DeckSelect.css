@@ -1,4 +1,4 @@
-.category-select {
+.deck-select {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -75,7 +75,7 @@
 
 /* ── Deck Grid ── */
 
-.category-grid {
+.deck-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
@@ -90,12 +90,12 @@
   }
 }
 
-.category-card-wrapper {
+.deck-card-wrapper {
   position: relative;
   width: 100%;
 }
 
-.category-card {
+.deck-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -114,16 +114,16 @@
   min-height: 125px;
 }
 
-.category-card:hover {
+.deck-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
-.category-card:active {
+.deck-card:active {
   transform: translateY(0);
 }
 
-.category-edit-btn {
+.deck-edit-btn {
   position: absolute;
   top: 8px;
   right: 8px;
@@ -143,22 +143,22 @@
   box-shadow: var(--shadow-sm);
 }
 
-.category-card-wrapper:hover .category-edit-btn {
+.deck-card-wrapper:hover .deck-edit-btn {
   opacity: 1;
 }
 
-.category-edit-btn:hover {
+.deck-edit-btn:hover {
   background: var(--bg-hover);
   color: var(--text-h);
   border-color: var(--border-strong);
 }
 
-.category-emoji {
+.deck-emoji {
   font-size: 2rem;
   line-height: 1;
 }
 
-.category-label {
+.deck-label {
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-h);
@@ -166,7 +166,7 @@
   text-align: center;
 }
 
-.category-count {
+.deck-count {
   font-size: 0.72rem;
   font-weight: 500;
   color: var(--text);

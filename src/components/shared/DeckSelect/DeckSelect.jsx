@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import './CategorySelect.css';
+import './DeckSelect.css';
 
-export default function CategorySelect({ decks, onSelect, onCreateDeck, onEditDeck }) {
+export default function DeckSelect({ decks, onSelect, onCreateDeck, onEditDeck }) {
   const [activeTab, setActiveTab] = useState('system');
 
   const systemDecks = decks.filter((d) => d.is_system);
@@ -23,7 +23,7 @@ export default function CategorySelect({ decks, onSelect, onCreateDeck, onEditDe
   const visibleDecks = activeTab === 'system' ? systemDecks : customDecks;
 
   return (
-    <div className="category-select">
+    <div className="deck-select">
       {/* Tab Toggle */}
       <div className="deck-tabs">
         <button
@@ -44,31 +44,31 @@ export default function CategorySelect({ decks, onSelect, onCreateDeck, onEditDe
 
       {/* Deck Grid */}
       {visibleDecks.length > 0 || activeTab === 'custom' ? (
-        <div className="category-grid">
+        <div className="deck-grid">
           {activeTab === 'custom' && (
-            <div className="category-card-wrapper">
+            <div className="deck-card-wrapper">
               <button
-                className="category-card"
+                className="deck-card"
                 onClick={onCreateDeck}
                 style={{ borderStyle: 'dashed', background: 'transparent' }}
               >
-                <span className="category-emoji">✚</span>
-                <span className="category-label">Create New Deck</span>
+                <span className="deck-emoji">✚</span>
+                <span className="deck-label">Create New Deck</span>
               </button>
             </div>
           )}
           {visibleDecks.map((deck) => (
-            <div key={deck.id} className="category-card-wrapper">
+            <div key={deck.id} className="deck-card-wrapper">
               <button
-                className="category-card"
+                className="deck-card"
                 onClick={() => onSelect(deck)}
               >
-                <span className="category-emoji">{getDeckEmoji(deck)}</span>
-                <span className="category-label">{deck.title}</span>
+                <span className="deck-emoji">{getDeckEmoji(deck)}</span>
+                <span className="deck-label">{deck.title}</span>
               </button>
               {activeTab === 'custom' && (
                 <button
-                  className="category-edit-btn"
+                  className="deck-edit-btn"
                   onClick={(e) => { e.stopPropagation(); onEditDeck?.(deck); }}
                   title="Edit Deck Settings"
                 >

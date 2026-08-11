@@ -187,7 +187,7 @@ export function useFlashcards() {
 
 
 
-  const handleCategorySelect = useCallback((deckInput, mode = 'standard') => {
+  const handleDeckSelect = useCallback((deckInput, mode = 'standard') => {
     // deckInput could be a single deck object OR an array of deck objects (Study Sets)
     const isMixedMode = Array.isArray(deckInput);
     
@@ -249,7 +249,7 @@ export function useFlashcards() {
     dueQueue,
     loadingCards,
     handleSrsRating,
-    handleCategorySelect,
+    handleDeckSelect,
     handleFinish,
     resetSession,
     beginSession,

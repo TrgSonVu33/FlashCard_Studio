@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Flashcard, ResultScreen, CategorySelect, Navbar, StudySetsSelect, Footer, Contact } from './components';
-import CreateDeck from './components/CreateDeck/CreateDeck';
-import EditDeck from './components/EditDeck/EditDeck';
+import { DeckSelect, Navbar, Footer } from './components';
+import { CreateDeck, EditDeck, StudySetsSelect } from './features/decks';
+import { Flashcard, ResultScreen } from './features/study';
+import { Contact } from './pages';
 import { useFlashcards } from './hooks/useFlashcards';
 import { useHistory } from './hooks/useHistory';
 import { supabase } from './services/supabase';
@@ -21,7 +22,7 @@ function App() {
     dueIndex,
     loadingCards,
     handleSrsRating,
-    handleCategorySelect,
+    handleDeckSelect,
     handleFinish,
     resetSession,
   } = useFlashcards();
@@ -83,8 +84,8 @@ function App() {
     setCurrentView(view);
   };
 
-  const onCategorySelect = (deck) => {
-    handleCategorySelect(deck);
+  const onDeckSelect = (deck) => {
+    handleDeckSelect(deck);
     setCurrentView('study');
   };
 
@@ -97,7 +98,7 @@ function App() {
     if (mode === 'normal') selectedDecks = shuffled.slice(0, 4);
     if (mode === 'hard') selectedDecks = shuffled.slice(0, 6);
 
-    handleCategorySelect(selectedDecks, mode);
+    handleDeckSelect(selectedDecks, mode);
     setCurrentView('study');
   };
 
@@ -274,9 +275,9 @@ function App() {
               <h2 className="study-title">Select a Deck</h2>
               <p className="study-subtitle">Pick a topic to practice</p>
             </div>
-            <CategorySelect 
+            <DeckSelect 
               decks={allDecks} 
-              onSelect={onCategorySelect} 
+              onSelect={onDeckSelect} 
               onCreateDeck={() => setShowCreateDeck(true)}
               onEditDeck={(deck) => { setDeckToEdit(deck); setShowEditDeck(true); }}
             />

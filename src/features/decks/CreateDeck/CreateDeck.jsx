@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
-import { supabase } from '../../services/supabase';
+import { supabase } from '../../../services/supabase';
 import './CreateDeck.css';
 
 export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
