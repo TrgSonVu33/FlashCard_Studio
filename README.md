@@ -23,14 +23,15 @@ The codebase follows a strictly **Feature-Driven / Domain-Driven Architecture**,
 src/
 ├── components/           # Generic, highly reusable UI components
 │   ├── layout/           # Global layouts (Navbar, Footer)
-│   └── shared/           # Shared components (DeckSelect, ContactDropdown)
+│   └── shared/           # Shared components (ContactDropdown)
 ├── features/             # Domain-driven feature modules
-│   ├── decks/            # Deck creation, editing, and selection logic
-│   └── study/            # The core SRS study engine (Flashcard, Results)
+│   ├── decks/            # Deck selection, creation, editing, and study sets
+│   ├── history/          # Study session history and analytics
+│   ├── home/             # Main dashboard and navigation entry points
+│   └── study/            # The core SRS study engine (Flashcard, Answer Check, Results)
+├── hooks/                # Custom React hooks (e.g., useFlashCards, useHistory, useTheme)
 ├── services/             # External service integrations (Supabase client)
-├── hooks/                # Custom React hooks (e.g., useFlashcards)
-├── data/                 # Static fallback or mock data
-└── utils/                # Helper functions and utilities
+└── assets/               # Static assets and global styles
 ```
 
 ## Core Features
