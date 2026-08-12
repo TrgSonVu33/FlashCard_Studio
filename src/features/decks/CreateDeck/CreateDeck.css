@@ -76,7 +76,7 @@
   font-size: 0.85rem;
   font-weight: 500;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(220, 38, 38, 0.15);
+  border: 1px solid var(--danger);
   margin-bottom: 16px;
 }
 .create-deck-field {
@@ -307,12 +307,12 @@
   background: var(--btn-primary-bg);
   color: var(--btn-primary-text);
   border: 1px solid var(--btn-primary-bg);
-  box-shadow: 0 1px 3px rgba(255, 79, 0, 0.2);
+  box-shadow: 0 1px 3px var(--accent-border);
 }
 .create-deck-btn--save:hover:not(:disabled) {
   background: var(--btn-primary-hover);
   border-color: var(--btn-primary-hover);
-  box-shadow: 0 3px 10px rgba(255, 79, 0, 0.25);
+  box-shadow: 0 3px 10px var(--accent-border);
   transform: translateY(-1px);
 }
 .create-deck-btn--save:active:not(:disabled) {

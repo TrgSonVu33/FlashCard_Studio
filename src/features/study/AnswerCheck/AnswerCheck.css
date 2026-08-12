@@ -36,25 +36,25 @@
 
 .answerCheck-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .answerCheck-btn-yes {
-  border-color: #16a34a;
-  color: #16a34a;
-  background: rgba(22, 163, 74, 0.05);
+  border-color: var(--success);
+  color: var(--success);
+  background: var(--success-bg);
 }
 .answerCheck-btn-yes:hover {
-  background: #16a34a;
-  color: #fff;
+  background: var(--success);
+  color: #ffffff;
 }
 
 .answerCheck-btn-no {
-  border-color: #dc2626;
-  color: #dc2626;
-  background: rgba(220, 38, 38, 0.05);
+  border-color: var(--danger);
+  color: var(--danger);
+  background: var(--danger-bg);
 }
 .answerCheck-btn-no:hover {
-  background: #dc2626;
-  color: #fff;
+  background: var(--danger);
+  color: #ffffff;
 }

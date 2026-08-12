@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTheme } from '@/hooks';
 import './navbar.css';
 
 /**
@@ -12,6 +13,7 @@ import './navbar.css';
 export default function Navbar({ onNavClick, currentView }) {
   // State quản lý trạng thái mở/đóng của menu thả xuống trên giao diện điện thoại di động
   const [menuOpen, setMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   
   /**
    * Hàm xử lý chung khi người dùng click vào một mục trên Navbar.
@@ -91,6 +93,15 @@ export default function Navbar({ onNavClick, currentView }) {
           
           {/* CÁC NÚT HÀNH ĐỘNG (Call-to-Action) */}
           <div className="navbar-actions">
+            <button 
+              onClick={toggleTheme} 
+              className="navbar-btn navbar-btn--ghost theme-toggle-btn" 
+              aria-label="Toggle Dark Mode"
+              style={{ fontSize: '1.2rem', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
+            
             {/* Nút Log In: Hiện tại là giao diện tĩnh (mockup), chưa có logic xử lý đăng nhập */}
             <button className="navbar-btn navbar-btn--ghost" id="nav-login-btn">
               Log In

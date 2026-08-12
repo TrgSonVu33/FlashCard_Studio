@@ -49,6 +49,47 @@
     font-size: 15px;
   }
 }
+
+[data-theme='dark'] {
+  --bg: #0f172a; 
+  --bg-card: #1e293b; 
+  --bg-hover: #334155; 
+  --bg-elevated: #1e293b; 
+  
+  --text-h: #f8fafc; 
+  --text: #cbd5e1; 
+  --text-p: #94a3b8; 
+  --text-inverse: #0f172a;
+  
+  --accent: #FF6A22; 
+  --accent-hover: #FF854A;
+  --accent-bg: rgba(255, 106, 34, 0.15);
+  --accent-border: rgba(255, 106, 34, 0.3);
+  
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  
+  --success: #22c55e;
+  --success-bg: rgba(34, 197, 94, 0.15);
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.15);
+  
+  --btn-primary-bg: #FF6A22;
+  --btn-primary-hover: #FF854A;
+  --btn-primary-text: #ffffff;
+  
+  --btn-secondary-bg: #334155;
+  --btn-secondary-hover: #475569;
+  --btn-secondary-text: #f8fafc;
+  
+  --btn-ghost-text: #f8fafc;
+  --btn-ghost-hover: rgba(255, 255, 255, 0.08);
+}
+
+body, .dashboard-card, .deck-card, .flashcard-container, .flashcard-front, .flashcard-back, .history-item, button, input, select {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
 *,
 *::before,
 *::after {

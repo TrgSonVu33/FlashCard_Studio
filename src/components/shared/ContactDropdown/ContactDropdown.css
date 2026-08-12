@@ -29,7 +29,7 @@
 .contact-toggle-btn--active {
   background: var(--accent);
   color: var(--text-inverse);
-  box-shadow: 0 4px 12px rgba(255, 79, 0, 0.2);
+  box-shadow: 0 4px 12px var(--accent-border);
 }
 .contact-toggle-icon {
   font-size: 1.2rem;
@@ -111,12 +111,12 @@
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(255, 79, 0, 0.2);
+  box-shadow: 0 2px 8px var(--accent-border);
   transition: all 0.2s ease;
 }
 .contact-submit-btn:hover {
   background: var(--accent-hover);
-  box-shadow: 0 4px 12px rgba(255, 79, 0, 0.3);
+  box-shadow: 0 4px 12px var(--accent-border);
   transform: translateY(-1px);
 }
 .contact-submit-btn:active {
