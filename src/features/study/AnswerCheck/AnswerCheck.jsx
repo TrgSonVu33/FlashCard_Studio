@@ -1,26 +1,43 @@
-import './AnswerCheck.css';
+import './answerCheck.css';
 
-export default function AnswerCheck({ currentAnswer, onAnswerChange }) {
+/**
+ * Component: AnswerCheck
+ * Cung cấp giao diện xác nhận câu trả lời đúng/sai đơn giản.
+ * Gồm hai nút: "Yes (I got it right)" và "No (I got it wrong)".
+ * 
+ * @param {function} onAnswer - Hàm callback kích hoạt khi người dùng chọn, truyền true cho "Yes" và false cho "No"
+ */
+export default function AnswerCheck({ onAnswer }) {
   return (
     <div className="answerCheck-container">
-      <p className="answerCheck-title">Did you get it right ?</p>
+      {/* Tiêu đề hỏi thăm */}
+      <p className="answerCheck-title">Did you get it right?</p>
+      
+      {/* Nhóm các lựa chọn (Options) */}
       <div className="answerCheck-options">
-        <label className="answerCheck-label">
-          <input
-            type="checkbox"
-            className="answerCheck-checkbox-yes"
-            checked={currentAnswer === 'yes'}
-            onChange={() => onAnswerChange('yes')}
-          /> Yes
-        </label>
-        <label className="answerCheck-label">
-          <input
-            type="checkbox"
-            className="answerCheck-checkbox-no"
-            checked={currentAnswer === 'no'}
-            onChange={() => onAnswerChange('no')}
-          /> No
-        </label>
+        
+        {/* Nút kiểm tra "Có" (Đã trả lời đúng) */}
+        <button
+          className="answerCheck-btn answerCheck-btn-yes"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAnswer(true);
+          }}
+        >
+          Yes (I got it right)
+        </button>
+        
+        {/* Nút kiểm tra "Không" (Trả lời sai) */}
+        <button
+          className="answerCheck-btn answerCheck-btn-no"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAnswer(false);
+          }}
+        >
+          No (I got it wrong)
+        </button>
+        
       </div>
     </div>
   );

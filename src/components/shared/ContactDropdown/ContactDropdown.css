@@ -7,7 +7,6 @@
   flex-direction: column;
   align-items: flex-end;
 }
-
 .contact-toggle-btn {
   display: inline-flex;
   align-items: center;
@@ -23,22 +22,18 @@
   transition: all 0.2s ease;
   box-shadow: var(--shadow-xs);
 }
-
 .contact-toggle-btn:hover {
   background: var(--btn-secondary-hover);
   transform: translateY(-1px);
 }
-
 .contact-toggle-btn--active {
   background: var(--accent);
   color: var(--text-inverse);
   box-shadow: 0 4px 12px rgba(255, 79, 0, 0.2);
 }
-
 .contact-toggle-icon {
   font-size: 1.2rem;
 }
-
 .contact-dropdown-popover {
   position: absolute;
   bottom: 100%;
@@ -54,36 +49,30 @@
   z-index: 50;
   animation: popUp 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
 @keyframes popUp {
   0% { opacity: 0; transform: translateY(10px) scale(0.95); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
-
 .contact-dropdown-header {
   margin-bottom: 20px;
   text-align: left;
 }
-
 .contact-dropdown-header h4 {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-h);
   margin: 0 0 4px 0;
 }
-
 .contact-dropdown-header p {
   font-size: 0.85rem;
   color: var(--text);
   margin: 0;
 }
-
 .contact-dropdown-form {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-
 .contact-input,
 .contact-textarea {
   width: 100%;
@@ -97,24 +86,20 @@
   transition: all 0.2s ease;
   outline: none;
 }
-
 .contact-input::placeholder,
 .contact-textarea::placeholder {
   color: var(--text);
 }
-
 .contact-input:focus,
 .contact-textarea:focus {
   background: var(--bg-card);
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-bg);
 }
-
 .contact-textarea {
   resize: vertical;
   min-height: 100px;
 }
-
 .contact-submit-btn {
   margin-top: 8px;
   width: 100%;
@@ -129,13 +114,11 @@
   box-shadow: 0 2px 8px rgba(255, 79, 0, 0.2);
   transition: all 0.2s ease;
 }
-
 .contact-submit-btn:hover {
   background: var(--accent-hover);
   box-shadow: 0 4px 12px rgba(255, 79, 0, 0.3);
   transform: translateY(-1px);
 }
-
 .contact-submit-btn:active {
   transform: translateY(0);
 }

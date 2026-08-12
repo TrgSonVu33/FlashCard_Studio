@@ -1,241 +1,184 @@
 import { useState, useCallback } from 'react';
-import { supabase } from '../services/supabase';
-import { calculateNextReview } from '../utils/srs';
+import { supabase } from '@/services/supabase';
 
 /**
- * Custom hook for managing flashcard navigation, SRS ratings, and scoring.
- * Handles card index, SRS progress tracking, deck selection, and session flow.
- *
- * Queue logic: Prioritizes cards where due_date <= NOW() or cards with no progress
- * (new cards). Cards are sorted by due_date ascending so the most overdue come first.
+ * Custom hook: useFlashCards
+ * Đóng vai trò là trung tâm (brain) xử lý toàn bộ logic liên quan đến một phiên học flashcard.
+ * Phiên bản đã đơn giản hóa: Không còn lịch trình ôn tập (SRS), 
+ * chỉ lặp qua toàn bộ danh sách thẻ.
  */
-export function useFlashcards() {
+export const useFlashCards = () => {
+  // === 1. STATE ĐIỀU HƯỚNG VÀ HIỂN THỊ (UI & Navigation State) ===
+  
+  // Vị trí (index) của thẻ hiện tại trong mảng cards
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [ratings, setRatings] = useState({});        // { cardIndex: rating (1-4) }
+  
+  // Lưu trữ kết quả đúng/sai (true/false) của người dùng cho từng thẻ. 
+  // Key là index của thẻ, Value là boolean.
+  const [answers, setAnswers] = useState({});        
+  
+  // Cờ hiệu kiểm soát việc hiển thị màn hình kết quả cuối cùng
   const [showResult, setShowResult] = useState(false);
+  
+  // Cờ hiệu kiểm soát việc hiển thị màn hình bắt đầu (nếu có)
   const [showBegin, setShowBegin] = useState(false);
+  
+  // Xác định xem người dùng đã hoàn thành tất cả các thẻ hay chưa
   const [isSessionComplete, setIsSessionComplete] = useState(false);
+  
+  // Lưu trữ thông tin về bộ bài (deck) đang được người dùng chọn để học
   const [selectedDeck, setSelectedDeck] = useState(null);
+  
+  // Chế độ học ('standard' cho bộ bài đơn, 'easy'/'normal'/'hard' cho chế độ trộn bài)
   const [studyMode, setStudyMode] = useState('standard');
-  const [cards, setCards] = useState([]);             // Fetched from DB
-  const [progressMap, setProgressMap] = useState({}); // { card_id: progressRow }
-  const [dueQueue, setDueQueue] = useState([]);       // Ordered card indices
-  const [dueIndex, setDueIndex] = useState(0);        // Position within dueQueue
+  
+  // === 2. STATE DỮ LIỆU THẺ (Data State) ===
+  
+  // Danh sách toàn bộ các thẻ thuộc về (các) bộ bài đã chọn
+  const [cards, setCards] = useState([]);             
+  
+  // Trạng thái đang tải dữ liệu thẻ từ cơ sở dữ liệu
   const [loadingCards, setLoadingCards] = useState(false);
-
-  // Current card follows the due queue order
-  const currentCard = dueQueue.length > 0
-    ? cards[dueQueue[dueIndex]]
-    : cards[currentIndex];
-
-  const actualIndex = dueQueue.length > 0 ? dueQueue[dueIndex] : currentIndex;
-
-  // Count ratings >= 3 (Good/Easy) as correct
-  const correctCount = Object.values(ratings).filter(r => r >= 3).length;
-  const dueCount = dueQueue.length;
+  
+  // === 3. CÁC BIẾN TÍNH TOÁN (Computed Values) ===
+  
+  // Lấy ra object của thẻ hiện tại đang được hiển thị trên giao diện.
+  const currentCard = cards[currentIndex];
+  
+  // Đếm số lượng thẻ được trả lời đúng để tính điểm số
+  const correctCount = Object.values(answers).filter(Boolean).length;
+  
+  // === 4. CÁC HÀM XỬ LÝ CHÍNH (Core Functions) ===
 
   /**
-   * Fetch cards for a given deck (or multiple decks), then fetch existing progress rows,
-   * then build the due queue.
+   * Hàm: fetchStudyCards
+   * Lấy dữ liệu thẻ từ CSDL dựa trên danh sách deckId, 
+   * xáo trộn (shuffle) nếu là chế độ mixed.
+   * 
+   * @param {string|string[]} deckIds - ID của một hoặc nhiều bộ bài
    */
-  const buildDueQueue = useCallback(async (deckIds) => {
+  const fetchStudyCards = useCallback(async (deckIds) => {
     setLoadingCards(true);
-
-    // Normalize to array
+    // Đảm bảo đầu vào luôn là một mảng để dễ truy vấn IN trong SQL
     const idsToFetch = Array.isArray(deckIds) ? deckIds : [deckIds];
-
-    // 1. Fetch Cards for the Deck(s)
+    
+    // Bước 1: Lấy toàn bộ thẻ thuộc về các bộ bài đã chọn
     const { data: fetchedCards, error: cardsError } = await supabase
       .from('cards')
       .select('*')
       .in('deck_id', idsToFetch);
-
+      
     if (cardsError) {
       console.error('Error fetching cards:', cardsError);
       setLoadingCards(false);
       return;
     }
-
-    const deckCards = fetchedCards || [];
-    setCards(deckCards);
-    const cardIds = deckCards.map(c => c.id);
-
-    // 2. Fetch Existing Progress for those cards
-    let progressData = [];
-    if (cardIds.length > 0) {
-      const { data, error } = await supabase
-        .from('user_card_progress')
-        .select('*')
-        .in('card_id', cardIds);
-
-      if (error) {
-        console.error('Error fetching card progress:', error);
-      } else {
-        progressData = data || [];
-      }
-    }
-
-    // Build progress map: { card_id: row }
-    const pMap = {};
-    progressData.forEach(row => {
-      pMap[row.card_id] = row;
-    });
-    setProgressMap(pMap);
-
-    // 3. Build due queue: indices of cards that are due or new
-    const now = new Date();
-    const queue = [];
-
-    deckCards.forEach((card, index) => {
-      const progress = pMap[card.id];
-
-      if (!progress) {
-        // New card — always include, sort last
-        queue.push({ index, dueDate: null, isNew: true });
-      } else {
-        const dueDate = new Date(progress.due_date);
-        if (dueDate <= now) {
-          queue.push({ index, dueDate, isNew: false });
-        }
-      }
-    });
-
-    // Sort: overdue cards first (by due_date ascending), then new cards
-    queue.sort((a, b) => {
-      if (a.isNew && b.isNew) return a.index - b.index;
-      if (a.isNew) return 1;
-      if (b.isNew) return -1;
-      return a.dueDate - b.dueDate;
-    });
-
-    // Limit session to exactly 10 questions
-    const orderedIndices = queue.map(q => q.index).slice(0, 10);
     
-    setDueQueue(orderedIndices);
-    setDueIndex(0);
+    const deckCards = fetchedCards || [];
+    
+    // Nếu chế độ nhiều bộ bài thì nên xáo trộn thứ tự
+    if (Array.isArray(deckIds) && deckIds.length > 1) {
+      deckCards.sort(() => Math.random() - 0.5);
+    }
+    
+    // Giới hạn số lượng thẻ trong một phiên học (VD: 20 thẻ) để người dùng không bị mỏi
+    const limitedCards = deckCards.slice(0, 20);
+    
+    setCards(limitedCards);
+    setCurrentIndex(0);
     setLoadingCards(false);
   }, []);
 
   /**
-   * Handle SRS rating: calculate next review, upsert progress, advance queue.
+   * Hàm: handleAnswer
+   * Xử lý khi người dùng ấn nút Yes hoặc No.
+   * Cập nhật điểm và chuyển sang thẻ tiếp theo.
+   * 
+   * @param {boolean} isCorrect - Trạng thái đúng/sai
    */
-  const handleSrsRating = useCallback(async (rating) => {
+  const handleAnswer = useCallback((isCorrect) => {
     if (!selectedDeck || !currentCard) return;
-
-    const cardId = currentCard.id;
-    const existing = progressMap[cardId];
-
-    // Calculate next review using SM-2
-    const result = calculateNextReview(
-      rating,
-      existing?.interval_days || 0,
-      existing?.repetitions || 0,
-      existing?.ease_factor || 2.5,
-    );
-
-    // Store rating for scoring
-    setRatings(prev => ({ ...prev, [actualIndex]: rating }));
-
-    // Upsert to Supabase
-    const { error } = await supabase
-      .from('user_card_progress')
-      .upsert({
-        card_id: cardId,
-        ease_factor: result.easeFactor,
-        interval_days: result.intervalDays,
-        repetitions: result.repetitions,
-        due_date: result.dueDate,
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'user_id, card_id', // Adjust if unique constraint changes
-      });
-
-    if (error) {
-      console.error('Error upserting card progress:', error);
-    }
-
-    // Update local progress map
-    setProgressMap(prev => ({
-      ...prev,
-      [cardId]: {
-        ...prev[cardId],
-        card_id: cardId,
-        ease_factor: result.easeFactor,
-        interval_days: result.intervalDays,
-        repetitions: result.repetitions,
-        due_date: result.dueDate,
-      },
-    }));
-
-    // Advance to next due card or show results
-    if (dueQueue.length > 0) {
-      if (dueIndex < dueQueue.length - 1) {
-        setDueIndex(prev => prev + 1);
-      } else {
-        // All due cards reviewed
-        setIsSessionComplete(true);
-      }
+    
+    // Cập nhật kết quả vào state nội bộ để thống kê ở màn hình kết quả
+    setAnswers(prev => ({ ...prev, [currentIndex]: isCorrect }));
+    
+    // Chuyển sang thẻ tiếp theo
+    if (currentIndex < cards.length - 1) {
+      setCurrentIndex(prev => prev + 1);
     } else {
-      // Manual study mode (no due cards)
-      if (currentIndex < cards.length - 1) {
-        setCurrentIndex(prev => prev + 1);
-      } else {
-        setIsSessionComplete(true);
-      }
+      setIsSessionComplete(true); // Hết thẻ -> Kết thúc phiên học
     }
-  }, [selectedDeck, currentCard, progressMap, dueIndex, dueQueue, actualIndex, cards.length, currentIndex]);
+  }, [selectedDeck, currentCard, cards.length, currentIndex]);
 
-
-
+  /**
+   * Hàm: handleDeckSelect
+   * Khởi tạo một phiên học mới dựa trên bộ bài được chọn.
+   * Hỗ trợ chọn 1 bộ bài ('standard') hoặc trộn nhiều bộ bài ('mixed').
+   * 
+   * @param {Object|Array} deckInput - Một object bộ bài hoặc mảng các bộ bài
+   * @param {string} mode - Chế độ học ('standard', 'easy', 'normal', 'hard')
+   */
   const handleDeckSelect = useCallback((deckInput, mode = 'standard') => {
-    // deckInput could be a single deck object OR an array of deck objects (Study Sets)
+    // Kiểm tra xem đầu vào là mảng (chế độ trộn bài) hay một object đơn
     const isMixedMode = Array.isArray(deckInput);
     
-    // Set selected deck for UI title (if mixed, just use a dummy object)
+    // Tạo đối tượng bộ bài ảo (activeDeck) đại diện cho phiên học
     const activeDeck = isMixedMode 
       ? { id: 'mixed', title: `Mixed Study Set (${deckInput.length} Decks)` }
       : deckInput;
       
+    // Đặt lại các trạng thái về trạng thái ban đầu để chuẩn bị phiên học
     setSelectedDeck(activeDeck);
     setStudyMode(mode);
-    setRatings({});
+    setAnswers({});
     setCurrentIndex(0);
-    setDueIndex(0);
     setIsSessionComplete(false);
     
-    // Extract IDs
+    // Lấy ID của các bộ bài để truyền vào hàm fetch
     const deckIds = isMixedMode ? deckInput.map(d => d.id) : deckInput.id;
-    buildDueQueue(deckIds);
-  }, [buildDueQueue]);
+    fetchStudyCards(deckIds);
+  }, [fetchStudyCards]);
 
+  /**
+   * Hàm: handleFinish
+   * Được gọi khi người dùng muốn hoàn thành phiên học và xem màn hình kết quả.
+   */
   const handleFinish = useCallback(() => {
     setShowResult(true);
   }, []);
 
+  /**
+   * Hàm: resetSession
+   * Xóa sạch (Clear) toàn bộ các trạng thái phiên học hiện tại 
+   * khi người dùng thoát ra ngoài hoặc hủy học.
+   */
   const resetSession = useCallback(() => {
-    setRatings({});
+    setAnswers({});
     setCurrentIndex(0);
-    setDueIndex(0);
-    setDueQueue([]);
-    setProgressMap({});
     setShowResult(false);
     setIsSessionComplete(false);
     setSelectedDeck(null);
     setCards([]);
   }, []);
 
+  /**
+   * Hàm: beginSession (Tuỳ chọn hiển thị màn hình Start)
+   */
   const beginSession = useCallback(() => {
     setShowBegin(true);
   }, []);
 
+  /**
+   * Hàm: goBack (Hủy bỏ việc bắt đầu phiên học)
+   */
   const goBack = useCallback(() => {
     setShowBegin(false);
   }, []);
 
+  // Trả về toàn bộ các state và hàm xử lý để Component giao diện có thể sử dụng
   return {
-    currentIndex: actualIndex,
-    answers: ratings,
-    ratings,
+    currentIndex,
+    answers,
     showResult,
     isSessionComplete,
     showBegin,
@@ -244,11 +187,8 @@ export function useFlashcards() {
     cards,
     currentCard,
     correctCount,
-    dueCount,
-    dueIndex,
-    dueQueue,
     loadingCards,
-    handleSrsRating,
+    handleAnswer, // Truyền xuống thay vì handleSrsRating
     handleDeckSelect,
     handleFinish,
     resetSession,

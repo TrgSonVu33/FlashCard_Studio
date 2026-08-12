@@ -1,11 +1,9 @@
-/* ── Page Layout ── */
 
 .page-wrapper {
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100svh;
 }
-
 .app-container {
   display: flex;
   flex-direction: column;
@@ -14,12 +12,10 @@
   max-width: 960px;
   margin: 0 auto;
   padding: 0 24px 32px;
-
   @media (max-width: 768px) {
     padding: 0 16px 24px;
   }
 }
-
 .view-centered {
   display: flex;
   flex-direction: column;
@@ -28,14 +24,10 @@
   width: 100%;
   padding: 24px 0;
 }
-
 .view-full-height {
   flex: 1;
   justify-content: center;
 }
-
-/* ── Hero Section ── */
-
 .hero-section {
   display: flex;
   flex-direction: column;
@@ -44,12 +36,10 @@
   padding: 40px 24px 32px;
   width: 100%;
   max-width: 640px;
-
   @media (max-width: 768px) {
     padding: 36px 16px 28px;
   }
 }
-
 .hero-title {
   font-size: 3rem;
   font-weight: 700;
@@ -57,12 +47,10 @@
   line-height: 1.1;
   letter-spacing: -0.04em;
   margin-bottom: 32px;
-
   @media (max-width: 768px) {
     font-size: 2rem;
   }
 }
-
 .hero-subtitle {
   font-size: 1rem;
   font-weight: 400;
@@ -71,10 +59,6 @@
   max-width: 480px;
   margin-bottom: 0;
 }
-
-
-/* ── Dashboard Grid ── */
-
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -82,13 +66,11 @@
   width: 100%;
   max-width: 720px;
   margin-top: 0;
-
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
     max-width: 400px;
   }
 }
-
 .dashboard-card {
   display: flex;
   flex-direction: column;
@@ -104,17 +86,14 @@
   transition: all 0.22s ease;
   text-align: center;
 }
-
 .dashboard-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-3px);
 }
-
 .dashboard-card:active {
   transform: translateY(0);
   box-shadow: 0 0 0 2px var(--accent-bg);
 }
-
 .dashboard-card-icon {
   font-size: 2rem;
   width: 56px;
@@ -128,45 +107,34 @@
   border-radius: 50%;
   transition: all 0.2s ease;
 }
-
 .dashboard-card:hover .dashboard-card-icon {
   background: rgba(255, 79, 0, 0.12);
 }
-
 .dashboard-card-title {
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-h);
 }
-
 .dashboard-card-desc {
   font-size: 0.82rem;
   color: var(--text);
   line-height: 1.5;
 }
-
-/* ── Section Headers ── */
-
 .section-header {
   text-align: center;
   margin-bottom: 8px;
 }
-
 .section-title {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-h);
   margin-bottom: 4px;
 }
-
 .section-subtitle {
   font-size: 0.9rem;
   font-weight: 400;
   color: var(--text);
 }
-
-/* ── Progress Badge ── */
-
 .progress {
   font-size: 0.8rem;
   font-weight: 600;
@@ -177,23 +145,16 @@
   border: none;
   margin-top: 16px;
 }
-
-/* ── Flashcard Area ── */
-
 .flashcards {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   margin: 28px 0;
-
   @media (max-width: 768px) {
     margin: 20px 0;
   }
 }
-
-/* ── Study Header ── */
-
 .study-header {
   display: flex;
   flex-direction: column;
@@ -202,7 +163,6 @@
   padding-top: 40px;
   margin-bottom: 8px;
 }
-
 .study-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -210,19 +170,15 @@
   letter-spacing: -0.02em;
   margin-bottom: 4px;
 }
-
 .study-subtitle {
   font-size: 0.875rem;
   color: var(--text);
 }
-/* ── Button Group ── */
-
 .button-group {
   display: flex;
   justify-content: center;
   margin-bottom: 8px;
 }
-
 .finish-session-btn {
   padding: 10px 28px;
   border-radius: var(--radius-full);
@@ -234,18 +190,13 @@
   transition: all 0.2s ease;
   cursor: pointer;
 }
-
 .finish-session-btn:hover {
   background: #D4EDDA;
   transform: translateY(-1px);
 }
-
 .finish-session-btn:active {
   transform: translateY(0);
 }
-
-/* ── Primary Action Buttons ── */
-
 .finish-button,
 .begin-button {
   display: inline-flex;
@@ -259,33 +210,26 @@
   border: none;
   box-shadow: 0 4px 14px rgba(255, 79, 0, 0.3);
   transition: all 0.2s ease;
-
   &:hover {
     background: var(--btn-primary-hover);
     box-shadow: 0 6px 20px rgba(255, 79, 0, 0.4);
     transform: translateY(-2px);
   }
-
   &:active {
     transform: translateY(0);
   }
 }
-
 .finish-button {
   align-self: center;
   margin: 32px auto 16px;
   padding: 14px 42px;
   font-size: 1.05rem;
 }
-
 .begin-button {
   padding: 16px 48px;
   font-size: 1.1rem;
   gap: 8px;
 }
-
-/* ── Create Deck Trigger ── */
-
 .create-deck-trigger {
   padding: 12px 28px;
   font-size: 0.9rem;
@@ -297,18 +241,13 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 .create-deck-trigger:hover {
   background: var(--btn-secondary-hover);
   transform: translateY(-1px);
 }
-
 .create-deck-trigger:active {
   transform: translateY(0);
 }
-
-/* ── Quit / Back Button ── */
-
 .quit-button {
   display: inline-flex;
   justify-content: center;
@@ -325,24 +264,18 @@
   border: none;
   transition: all 0.2s ease;
 }
-
 .quit-button:hover {
   background: var(--btn-secondary-hover);
   transform: translateY(-1px);
 }
-
 .quit-button:active {
   transform: translateY(0);
 }
-
-/* ── History Page ── */
-
 .history-page {
   width: 100%;
   max-width: 720px;
   padding-top: 40px;
 }
-
 .history-page-header {
   display: flex;
   align-items: center;
@@ -351,15 +284,12 @@
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border);
 }
-
 .history-page-title-container {
   text-align: right;
 }
-
 .header-back-btn {
   margin: 0 !important;
 }
-
 .history-page-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -367,19 +297,16 @@
   letter-spacing: -0.02em;
   margin-bottom: 4px;
 }
-
 .history-page-subtitle {
   font-size: 0.85rem;
   color: var(--text);
   font-weight: 500;
 }
-
 .history-dashboard {
   width: 100%;
   display: flex;
   flex-direction: column;
 }
-
 .history-dashboard h2 {
   font-size: 1.15rem;
   font-weight: 700;
@@ -387,7 +314,6 @@
   margin-bottom: 20px;
   margin-top: 0;
 }
-
 .history-list {
   list-style: none;
   padding: 0;
@@ -397,7 +323,6 @@
   flex-direction: column;
   gap: 8px;
 }
-
 .history-item {
   display: flex;
   justify-content: space-between;
@@ -409,52 +334,43 @@
   border-radius: var(--radius-lg);
   transition: all 0.2s ease;
 }
-
 .history-item:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow);
 }
-
 .history-info {
   display: flex;
   align-items: center;
   gap: 2px;
   flex-wrap: wrap;
 }
-
 .history-id {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text);
 }
-
 .history-date {
   font-size: 0.85rem;
   color: var(--text);
 }
-
 .history-category {
   font-size: 0.8rem;
   color: var(--accent);
   font-weight: 500;
 }
-
 .history-score {
   font-size: 0.95rem;
   color: var(--text-h);
 }
-
 .history-score strong {
   color: var(--accent);
 }
-
 .history-buttons {
   display: flex;
   gap: 12px;
   justify-content: center;
   margin-top: 20px;
 }
-
 .show-more-button {
   padding: 10px 24px;
   background: var(--btn-secondary-bg);
@@ -466,19 +382,14 @@
   font-size: 0.85rem;
   transition: all 0.2s ease;
 }
-
 .show-more-button:hover:not(:disabled) {
   background: var(--btn-secondary-hover);
   transform: translateY(-1px);
 }
-
 .show-more-button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
-
-/* ── Empty State ── */
-
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -487,18 +398,15 @@
   padding: 48px 24px;
   text-align: center;
 }
-
 .empty-state-icon {
   font-size: 2.5rem;
   margin-bottom: 4px;
 }
-
 .empty-state-title {
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-h);
 }
-
 .empty-state-desc {
   font-size: 0.85rem;
   color: var(--text);

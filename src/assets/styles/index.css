@@ -1,44 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 :root {
-  /* ── Zapier Design System Tokens ── */
-
-  /* Backgrounds */
   --bg: #FBFBFD;
   --bg-card: #FFFFFF;
   --bg-hover: #F5F5F7;
   --bg-elevated: #FFFFFF;
-
-  /* Text */
   --text-h: #1D1D1F;
   --text: #86868B;
   --text-p: #86868B;
   --text-inverse: #FFFFFF;
-
-  /* Brand Accent */
   --accent: #FF4F00;
   --accent-hover: #E04500;
   --accent-bg: rgba(255, 79, 0, 0.08);
   --accent-border: rgba(255, 79, 0, 0.25);
-
-  /* Borders */
   --border: rgba(0, 0, 0, 0.06);
   --border-strong: rgba(0, 0, 0, 0.12);
-
-  /* Status */
   --success: #16a34a;
   --success-bg: rgba(22, 163, 74, 0.08);
   --danger: #dc2626;
   --danger-bg: rgba(220, 38, 38, 0.08);
-
-  /* Shadows (Apple Style Diffused) */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.03);
   --shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.08);
-
-  /* Button Variants */
   --btn-primary-bg: #FF4F00;
   --btn-primary-hover: #E04500;
   --btn-primary-text: #FFFFFF;
@@ -49,80 +33,64 @@
   --btn-ghost-hover: rgba(0, 0, 0, 0.04);
   --btn-ghost-text: #1D1D1F;
   --btn-ghost-border: transparent;
-
-  /* Radii */
   --radius-sm: 8px;
   --radius-md: 10px;
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 999px;
-
-  /* Typography */
   --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
   --mono: ui-monospace, Consolas, monospace;
-
   font: 16px/1.6 var(--sans);
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
   @media (max-width: 768px) {
     font-size: 15px;
   }
 }
-
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
-
 body {
   margin: 0;
   min-height: 100svh;
 }
-
 #root {
   width: 100%;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
 }
-
 h1, h2, h3 {
   font-family: var(--sans);
   color: var(--text-h);
   margin: 0;
 }
-
 h1 {
   font-size: 2.5rem;
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.025em;
-
   @media (max-width: 768px) {
     font-size: 1.75rem;
   }
 }
-
 h2 {
   font-size: 1.1rem;
   font-weight: 500;
   color: var(--text);
 }
-
 h3 {
   font-size: 0.9rem;
   font-weight: 400;
   color: var(--text);
 }
-
 p {
   margin: 0;
 }
-
 button {
   font-family: var(--sans);
   font-weight: 600;
@@ -131,19 +99,14 @@ button {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 a {
   color: var(--accent);
   text-decoration: none;
   transition: color 0.15s ease;
 }
-
 a:hover {
   color: var(--accent-hover);
 }
-
-/* ── Utility Classes ── */
-
 .visually-hidden {
   position: absolute;
   width: 1px;

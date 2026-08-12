@@ -1,13 +1,21 @@
 import { useState, useEffect } from 'react';
-import { DeckSelect, Navbar, Footer, ContactDropdown } from './components';
-import { CreateDeck, EditDeck, StudySetsSelect } from './features/decks';
-import { Flashcard, ResultScreen } from './features/study';
-import { useFlashcards } from './hooks/useFlashcards';
-import { useHistory } from './hooks/useHistory';
-import { supabase } from './services/supabase';
-import './App.css';
+import { Navbar, Footer, ContactDropdown } from '@/components';
+import { CreateDeck, EditDeck, StudySetsSelect, DeckSelect } from '@/features/decks';
+import { HomeView } from '@/features/home';
+import { HistoryView } from '@/features/history';
+import { StudySession } from '@/features/study';
+import { useFlashCards, useHistory, useDecks } from '@/hooks';
+import '@/assets/styles/App.css';
 
+/**
+ * Component chính (App)
+ * Đóng vai trò là container và router cấp cao nhất của ứng dụng.
+ * Quản lý toàn bộ luồng điều hướng, trạng thái giao diện hiện tại và 
+ * kết nối dữ liệu từ các custom hooks (useFlashcards, useHistory, useDecks)
+ * xuống các component con.
+ */
 function App() {
+  // Lấy các state và hàm xử lý liên quan đến phiên học flashcard từ custom hook useFlashcards
   const {
     currentIndex,
     showResult,
@@ -17,15 +25,14 @@ function App() {
     cards,
     currentCard,
     correctCount,
-    dueCount,
-    dueIndex,
     loadingCards,
-    handleSrsRating,
+    handleAnswer,
     handleDeckSelect,
     handleFinish,
     resetSession,
-  } = useFlashcards();
+  } = useFlashCards();
 
+  // Lấy các state và hàm xử lý liên quan đến lịch sử học tập từ custom hook useHistory
   const {
     history,
     loadingHistory,
@@ -38,17 +45,28 @@ function App() {
     resetPagination,
   } = useHistory();
 
+  // Lấy danh sách bộ bài và số lượng tổng hợp từ custom hook useDecks
+  const {
+    allDecks,
+    setAllDecks,
+    fetchDecks,
+    systemDeckCount,
+    customDeckCount
+  } = useDecks();
+
+  // State quản lý việc điều hướng (view hiện tại đang hiển thị)
   const [currentView, setCurrentView] = useState('home');
+  // State quản lý việc hiển thị modal tạo bộ bài mới
   const [showCreateDeck, setShowCreateDeck] = useState(false);
+  // State quản lý việc hiển thị modal chỉnh sửa bộ bài
   const [showEditDeck, setShowEditDeck] = useState(false);
+  // State lưu trữ thông tin bộ bài đang được chọn để chỉnh sửa
   const [deckToEdit, setDeckToEdit] = useState(null);
-  const [allDecks, setAllDecks] = useState([]);
-  const [totalCards, setTotalCards] = useState(0);
 
-  useEffect(() => {
-    fetchDecks();
-  }, []);
-
+  /**
+   * Effect hook: Tự động tải lại lịch sử khi người dùng chuyển sang tab 'history'
+   * Giúp dữ liệu lịch sử luôn được cập nhật mới nhất từ trang 0.
+   */
   useEffect(() => {
     if (currentView === 'history') {
       resetPagination();
@@ -56,218 +74,112 @@ function App() {
     }
   }, [currentView, fetchHistory, resetPagination]);
 
-  const fetchDecks = async () => {
-    const { data: decksData, error } = await supabase
-      .from('decks')
-      .select('*, cards(count)')
-      .order('created_at', { ascending: true });
-
-    if (error) {
-      console.error('Error fetching decks:', error);
-      return;
-    }
-
-    let tCards = 0;
-    const formattedDecks = decksData.map(d => {
-      const count = d.cards[0]?.count || 0;
-      tCards += count;
-      return { ...d, card_count: count };
-    });
-
-    setAllDecks(formattedDecks);
-    setTotalCards(tCards);
-  };
-
+  /**
+   * Hàm xử lý khi người dùng click vào các mục trên thanh Navbar
+   * @param {string} view - Tên màn hình cần chuyển đến
+   */
   const handleNavClick = (view) => {
-    resetSession();
-    setCurrentView(view);
+    resetSession(); // Reset lại toàn bộ tiến trình học dang dở
+    setCurrentView(view); // Chuyển view
   };
-
+  
+  /**
+   * Hàm xử lý khi người dùng chọn một bộ bài cụ thể để học
+   * @param {object} deck - Thông tin bộ bài được chọn
+   */
   const onDeckSelect = (deck) => {
-    handleDeckSelect(deck);
-    setCurrentView('study');
+    handleDeckSelect(deck); // Gọi hàm khởi tạo phiên học với bộ bài này
+    setCurrentView('study'); // Chuyển sang màn hình học
   };
-
+  
+  /**
+   * Hàm xử lý khi người dùng chọn chế độ trộn bài ngẫu nhiên (Study Sets)
+   * Lọc ra các bộ bài hệ thống, trộn ngẫu nhiên và cắt số lượng tương ứng với độ khó.
+   * @param {string} mode - Độ khó: 'easy' (2 bộ), 'normal' (4 bộ), 'hard' (6 bộ)
+   */
   const onStudySetSelect = (mode) => {
+    // Chỉ lấy các bộ bài mặc định của hệ thống (is_system = true)
     const defaultDecks = allDecks.filter(d => d.is_system);
+    // Trộn ngẫu nhiên danh sách bằng thuật toán sort
     const shuffled = [...defaultDecks].sort(() => 0.5 - Math.random());
-
+    
     let selectedDecks = [];
     if (mode === 'easy') selectedDecks = shuffled.slice(0, 2);
     if (mode === 'normal') selectedDecks = shuffled.slice(0, 4);
     if (mode === 'hard') selectedDecks = shuffled.slice(0, 6);
-
+    
+    // Khởi tạo phiên học với danh sách các bộ bài đã trộn
     handleDeckSelect(selectedDecks, mode);
     setCurrentView('study');
   };
-
+  
+  /**
+   * Hàm xử lý khi người dùng hoàn thành một phiên học
+   * Tính toán tổng số thẻ đã học và lưu kết quả vào CSDL
+   */
   const onFinishSession = () => {
-    const total = dueCount > 0 ? dueCount : cards.length;
-    saveResult(selectedDeck?.title || 'Unknown', correctCount, total, studyMode);
+    // Lưu kết quả phiên học
+    saveResult(selectedDeck?.title || 'Unknown', correctCount, cards.length, studyMode);
+    // Đánh dấu kết thúc phiên
     handleFinish();
   };
 
+  /**
+   * Hàm reset phiên học hiện tại và quay về màn hình chọn bộ bài
+   */
   const onReset = () => {
     resetSession();
     setCurrentView('deckSelect');
   };
-
+  
+  /**
+   * Hàm thoát khỏi phiên học giữa chừng và quay về trang chủ
+   */
   const onQuit = () => {
     resetSession();
     setCurrentView('home');
   };
-
+  
+  /**
+   * Hàm callback được gọi sau khi tạo mới bộ bài thành công
+   * Cập nhật lại danh sách bộ bài và chuyển về màn hình chọn bài
+   */
   const handleDeckCreated = () => {
-    fetchDecks();
+    fetchDecks(); // Tải lại danh sách từ Supabase
     setCurrentView('deckSelect');
   };
 
-  const systemDeckCount = allDecks.filter(d => d.is_system).length;
-  const customDeckCount = allDecks.filter(d => !d.is_system).length;
-  
-  const isLastCard = dueCount > 0 
-    ? dueIndex === dueCount - 1 
-    : currentIndex === (cards ? cards.length - 1 : 0);
-
   return (
     <div className="page-wrapper">
+      {/* Thanh điều hướng chính */}
       <Navbar onNavClick={handleNavClick} currentView={currentView} />
-
+      
       <main className="app-container">
-
-        {/* ─── VIEW: HOME ─── */}
+        {/* Render màn hình Home */}
         {currentView === 'home' && (
-          <div className="view-centered">
-            <section className="hero-section">
-              <h1 className="hero-title">
-                Welcome to your <br /> Study Workspace
-              </h1>
-              <p className="hero-subtitle">
-                Build decks, mix categories, and master new vocabulary with spaced repetition, all in one place.
-              </p>
-            </section>
-
-            <div className="dashboard-grid">
-              <button className="dashboard-card" onClick={() => setCurrentView('deckSelect')}>
-                <div className="dashboard-card-icon">📚</div>
-                <span className="dashboard-card-title">Browse Decks</span>
-                <span className="dashboard-card-desc">
-                  {systemDeckCount} default · {customDeckCount} custom
-                </span>
-              </button>
-
-              <button className="dashboard-card" onClick={() => setCurrentView('studySets')}>
-                <div className="dashboard-card-icon">🎯</div>
-                <span className="dashboard-card-title">Study Sets</span>
-                <span className="dashboard-card-desc">
-                  Mix decks in Easy, Normal, or Hard mode
-                </span>
-              </button>
-
-              <button className="dashboard-card" onClick={() => setShowCreateDeck(true)}>
-                <div className="dashboard-card-icon">✚</div>
-                <span className="dashboard-card-title">Create Deck</span>
-                <span className="dashboard-card-desc">
-                  Build a custom flashcard deck
-                </span>
-              </button>
-
-              <button className="dashboard-card" onClick={() => setCurrentView('history')}>
-                <div className="dashboard-card-icon">📊</div>
-                <span className="dashboard-card-title">History</span>
-                <span className="dashboard-card-desc">
-                  Review your past study sessions
-                </span>
-              </button>
-            </div>
-          </div>
+          <HomeView 
+            systemDeckCount={systemDeckCount}
+            customDeckCount={customDeckCount}
+            onNavigate={setCurrentView}
+            onShowCreateDeck={() => setShowCreateDeck(true)}
+          />
         )}
-
-        {/* ─── VIEW: HISTORY ─── */}
+        
+        {/* Render màn hình Lịch sử học */}
         {currentView === 'history' && (
-          <div className="view-centered view-full-height">
-            <div className="history-page">
-              <div className="history-page-header">
-                <button className="quit-button header-back-btn" onClick={() => setCurrentView('home')}>
-                  ← Back
-                </button>
-                <div className="history-page-title-container">
-                  <h1 className="history-page-title">History</h1>
-                  <p className="history-page-subtitle">Review your past study sessions</p>
-                </div>
-              </div>
-
-              <div className="history-dashboard">
-                {loadingHistory && page === 0 ? (
-                  <div className="empty-state">
-                    <span className="empty-state-icon">⏳</span>
-                    <p className="empty-state-title">Loading history...</p>
-                  </div>
-                ) : history.length === 0 ? (
-                  <div className="empty-state">
-                    <span className="empty-state-icon">📭</span>
-                    <p className="empty-state-title">No history yet</p>
-                    <p className="empty-state-desc">Complete a study session to see your results here.</p>
-                  </div>
-                ) : (
-                  <>
-                    <ul className="history-list">
-                      {history.map((item) => {
-                        let displayDate = item.created_at;
-                        if (typeof item.created_at === 'string' && item.created_at.includes('T')) {
-                          const dateObj = new Date(item.created_at);
-                          if (!isNaN(dateObj)) {
-                            displayDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
-                          }
-                        }
-                        const deckInfo = allDecks.find(
-                          d => d.id === item.categories || 
-                               (d.title && item.categories && d.title.toLowerCase() === item.categories.toLowerCase())
-                        );
-
-                        let displayCategory = null;
-                        if (['easy', 'normal', 'hard'].includes(item.mode)) {
-                          const modeName = item.mode.charAt(0).toUpperCase() + item.mode.slice(1);
-                          displayCategory = <span className="history-category">&nbsp;🎯 {modeName} Study Set</span>;
-                        } else if (deckInfo) {
-                          const icon = deckInfo.icon || '📚';
-                          displayCategory = <span className="history-category">&nbsp;{icon} {deckInfo.title}</span>;
-                        } else if (item.categories) {
-                          displayCategory = <span className="history-category">&nbsp;📚 {item.categories}</span>;
-                        }
-
-                        return (
-                          <li key={item.id} className="history-item">
-                            <div className="history-info">
-                              <span className="history-id">{item.id}.&nbsp;</span>
-                              <span className="history-date">{displayDate}</span>
-                              {displayCategory}
-                            </div>
-                            <span className="history-score">
-                              Score: <strong>{item.score} / {item.total}</strong>
-                            </span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                    <div className="history-buttons">
-                      {history.length > PAGE_SIZE && (
-                        <button className="show-more-button" onClick={showLess}>Show Less</button>
-                      )}
-                      {history.length >= (page + 1) * PAGE_SIZE && (
-                        <button className="show-more-button" onClick={loadMore} disabled={loadingHistory}>
-                          {loadingHistory ? 'Loading...' : 'Show More'}
-                        </button>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
+          <HistoryView 
+            history={history}
+            loadingHistory={loadingHistory}
+            page={page}
+            PAGE_SIZE={PAGE_SIZE}
+            allDecks={allDecks}
+            loadMore={loadMore}
+            showLess={showLess}
+            onBack={() => setCurrentView('home')}
+          />
         )}
-
-        {/* ─── VIEW: DECK SELECT ─── */}
+        
+        {/* Render màn hình Chọn bộ bài cụ thể */}
         {currentView === 'deckSelect' && (
           <div className="view-centered view-full-height">
             <div className="study-header">
@@ -283,95 +195,56 @@ function App() {
             <button className="quit-button" onClick={() => setCurrentView('home')}>← Back</button>
           </div>
         )}
-
-        {/* ─── VIEW: STUDY SETS ─── */}
+        
+        {/* Render màn hình Chọn chế độ trộn bài */}
         {currentView === 'studySets' && (
           <div className="view-centered view-full-height">
             <StudySetsSelect onSelectMode={onStudySetSelect} />
             <button className="quit-button" onClick={() => setCurrentView('home')}>← Back</button>
           </div>
         )}
-
-        {/* ─── VIEW: STUDY ─── */}
+        
+        {/* Render màn hình Phiên học Flashcard */}
         {currentView === 'study' && (
-          loadingCards ? (
-            <div className="study-header">
-              <h2 className="study-title">Loading cards...</h2>
-            </div>
-          ) : !showResult ? (
-            <>
-              <div className="study-header">
-                <h2 className="study-title">{selectedDeck?.title}</h2>
-                <p className="study-subtitle">Flip the card, then rate how well you knew it</p>
-              </div>
-
-              <div className="progress">
-                {dueCount > 0
-                  ? `Card ${dueIndex + 1} of ${dueCount} due`
-                  : `Card ${currentIndex + 1} of ${cards.length}`
-                }
-              </div>
-
-              <div className="flashcards">
-                {currentCard && (
-                  <Flashcard
-                    key={`${selectedDeck?.id}-${currentCard.id}`}
-                    question={
-                      <>
-                        <span>Question {(dueCount > 0 ? dueIndex : currentIndex) + 1} </span>
-                        <br />
-                        {currentCard.front}
-                      </>
-                    }
-                    answer={currentCard.back}
-                    showRating={true}
-                    onSrsRating={handleSrsRating}
-                  />
-                )}
-              </div>
-
-              {isSessionComplete && (
-                <div className="button-group">
-                  <button
-                    className="finish-session-btn"
-                    onClick={onFinishSession}
-                  >
-                    Finish Session
-                  </button>
-                </div>
-              )}
-
-              <button className="quit-button" onClick={onQuit}>✕ Quit</button>
-            </>
-          ) : (
-            <ResultScreen
-              correctCount={correctCount}
-              total={dueCount > 0 ? dueCount : cards.length}
-              mode={studyMode}
-              onReset={onReset}
-              onViewHistory={() => setCurrentView('history')}
-            />
-          )
+          <StudySession 
+            loadingCards={loadingCards}
+            showResult={showResult}
+            selectedDeck={selectedDeck}
+            currentIndex={currentIndex}
+            cards={cards}
+            currentCard={currentCard}
+            handleAnswer={handleAnswer}
+            isSessionComplete={isSessionComplete}
+            onFinishSession={onFinishSession}
+            onQuit={onQuit}
+            correctCount={correctCount}
+            studyMode={studyMode}
+            onReset={onReset}
+            onViewHistory={() => setCurrentView('history')}
+          />
         )}
-
       </main>
-
+      
+      {/* Modal tạo bộ bài mới */}
       <CreateDeck
         isOpen={showCreateDeck}
         onClose={() => setShowCreateDeck(false)}
         onDeckCreated={handleDeckCreated}
       />
-
+      {/* Modal chỉnh sửa bộ bài */}
       <EditDeck
         isOpen={showEditDeck}
         deck={deckToEdit}
         onClose={() => setShowEditDeck(false)}
         onDeckUpdated={(updatedDeck) => {
+          // Cập nhật lại state danh sách bộ bài sau khi sửa thành công
           setAllDecks((prev) => prev.map(d => d.id === updatedDeck.id ? updatedDeck : d));
         }}
       />
-
+      
+      {/* Nút dropdown liên hệ */}
       <ContactDropdown />
+      {/* Chân trang */}
       <Footer />
     </div>
   );

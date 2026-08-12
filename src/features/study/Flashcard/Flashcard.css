@@ -4,26 +4,22 @@
   align-items: center;
   width: 100%;
 }
-
 .flashcard-container {
   width: 520px;
   height: 340px;
   cursor: pointer;
   position: relative;
-
   @media (max-width: 768px) {
     width: 100%;
     max-width: 360px;
     height: 280px;
   }
 }
-
 .flashcard-inner {
   width: 100%;
   height: 100%;
   position: relative;
 }
-
 .flashcard-front,
 .flashcard-back {
   width: 100%;
@@ -47,16 +43,13 @@
   box-shadow: var(--shadow);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
-
 .flashcard-front:hover,
 .flashcard-back:hover {
   box-shadow: var(--shadow-md);
 }
-
 .flashcard-front {
   opacity: 1;
   transform: scale(1);
-
   p span {
     display: block;
     font-size: 0.7rem;
@@ -67,7 +60,6 @@
     margin-bottom: 8px;
   }
 }
-
 .flashcard-hint {
   display: block;
   font-size: 0.75rem;
@@ -76,31 +68,24 @@
   margin-top: 12px;
   opacity: 0.6;
 }
-
 .flashcard-back {
   opacity: 0;
   transform: scale(0.97);
-
   p {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--accent);
   }
 }
-
 .flashcard-container.flipped .flashcard-front {
   opacity: 0;
   transform: scale(0.97);
 }
-
 .flashcard-container.flipped .flashcard-back {
   opacity: 1;
   transform: scale(1);
 }
-
-/* ── SRS Rating Bar ── */
-
-.srs-rating-bar {
+.answer-check-bar {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -108,7 +93,6 @@
   margin-top: 20px;
   animation: fadeInUp 0.25s ease;
 }
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -117,97 +101,5 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-.srs-rating-title {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text);
-  margin: 0;
-}
-
-.srs-rating-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.srs-btn {
-  padding: 8px 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  border: 1px solid;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.srs-btn:hover {
-  transform: translateY(-1px);
-}
-
-.srs-btn:active {
-  transform: translateY(0);
-}
-
-/* Again — Red */
-.srs-btn--again {
-  background: rgba(220, 38, 38, 0.08);
-  color: #dc2626;
-  border-color: rgba(220, 38, 38, 0.2);
-}
-.srs-btn--again:hover {
-  background: rgba(220, 38, 38, 0.14);
-  border-color: rgba(220, 38, 38, 0.35);
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
-}
-
-/* Hard — Orange */
-.srs-btn--hard {
-  background: rgba(255, 79, 0, 0.08);
-  color: #FF4F00;
-  border-color: rgba(255, 79, 0, 0.2);
-}
-.srs-btn--hard:hover {
-  background: rgba(255, 79, 0, 0.14);
-  border-color: rgba(255, 79, 0, 0.35);
-  box-shadow: 0 2px 8px rgba(255, 79, 0, 0.15);
-}
-
-/* Good — Green */
-.srs-btn--good {
-  background: rgba(22, 163, 74, 0.08);
-  color: #16a34a;
-  border-color: rgba(22, 163, 74, 0.2);
-}
-.srs-btn--good:hover {
-  background: rgba(22, 163, 74, 0.14);
-  border-color: rgba(22, 163, 74, 0.35);
-  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);
-}
-
-/* Easy — Blue */
-.srs-btn--easy {
-  background: rgba(37, 99, 235, 0.08);
-  color: #2563eb;
-  border-color: rgba(37, 99, 235, 0.2);
-}
-.srs-btn--easy:hover {
-  background: rgba(37, 99, 235, 0.14);
-  border-color: rgba(37, 99, 235, 0.35);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
-}
-
-/* ── Responsive ── */
-
-@media (max-width: 480px) {
-  .srs-rating-buttons {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .srs-btn {
-    padding: 8px 16px;
-    font-size: 0.8rem;
   }
 }

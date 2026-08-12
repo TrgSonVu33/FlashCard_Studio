@@ -1,3 +1,4 @@
-export { default as AnswerCheck } from './AnswerCheck/AnswerCheck';
-export { default as Flashcard } from './Flashcard/Flashcard';
-export { default as ResultScreen } from './ResultScreen/ResultScreen';
+export { default as AnswerCheck } from './answerCheck/answerCheck';
+export { default as FlashCard } from './flashCard/flashCard';
+export { default as ResultScreen } from './resultScreen/resultScreen';
+export { StudySession } from './studySession/studySession';

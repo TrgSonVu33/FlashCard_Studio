@@ -6,12 +6,10 @@
   max-width: 520px;
   padding-top: 40px;
 }
-
 .study-sets-header {
   text-align: center;
   margin-bottom: 32px;
 }
-
 .study-sets-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -19,20 +17,15 @@
   margin-bottom: 4px;
   letter-spacing: -0.02em;
 }
-
 .study-sets-subtitle {
   font-size: 0.92rem;
   color: var(--text);
   line-height: 1.5;
 }
-
-/* ── Mode Selector ── */
-
 .mode-selector {
   width: 100%;
   margin-bottom: 24px;
 }
-
 .mode-selector-label {
   font-size: 0.8rem;
   font-weight: 600;
@@ -42,7 +35,6 @@
   margin-bottom: 12px;
   text-align: center;
 }
-
 .mode-toggle {
   display: flex;
   width: 100%;
@@ -52,7 +44,6 @@
   padding: 6px;
   gap: 6px;
 }
-
 .mode-toggle-btn {
   flex: 1;
   display: flex;
@@ -70,34 +61,26 @@
   transition: all 0.18s ease;
   font-family: inherit;
 }
-
 .mode-toggle-btn:hover {
   color: var(--text-h);
   background: var(--bg-hover);
 }
-
 .mode-toggle-btn--active {
   background: var(--bg-card);
   color: var(--text-h);
   border: none;
   box-shadow: var(--shadow-sm);
 }
-
 .mode-toggle-btn--active:hover {
   background: var(--bg-card);
   color: var(--text-h);
 }
-
 .mode-toggle-emoji {
   font-size: 1.1rem;
 }
-
 .mode-toggle-label {
   font-size: 0.85rem;
 }
-
-/* ── Mode Info Badge ── */
-
 .mode-info {
   display: inline-flex;
   align-items: center;
@@ -109,19 +92,14 @@
   margin-bottom: 24px;
   animation: fadeInUp 0.2s ease;
 }
-
 .mode-info-emoji {
   font-size: 1rem;
 }
-
 .mode-info-text {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--accent);
 }
-
-/* ── Start Session CTA ── */
-
 .start-session-btn {
   width: 100%;
   padding: 16px 24px;
@@ -136,24 +114,18 @@
   box-shadow: 0 4px 14px rgba(255, 79, 0, 0.3);
   font-family: inherit;
 }
-
 .start-session-btn:hover:not(:disabled) {
   background: var(--accent-hover);
   box-shadow: 0 6px 20px rgba(255, 79, 0, 0.4);
   transform: translateY(-2px);
 }
-
 .start-session-btn:active:not(:disabled) {
   transform: translateY(0);
 }
-
 .start-session-btn--disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
-
-/* ── Animation ── */
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
