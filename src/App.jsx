@@ -54,8 +54,23 @@ function App() {
     customDeckCount
   } = useDecks();
 
-  // State quản lý việc điều hướng (view hiện tại đang hiển thị)
-  const [currentView, setCurrentView] = useState('home');
+  // State quản lý việc điều hướng (view hiện tại đang hiển thị) dưới dạng Stack
+  const [viewStack, setViewStack] = useState(['home']);
+  const currentView = viewStack[viewStack.length - 1];
+
+  /**
+   * Hàm điều hướng tiến (push view mới vào stack)
+   */
+  const navigateTo = (view) => {
+    setViewStack(prev => [...prev, view]);
+  };
+
+  /**
+   * Hàm quay lại trang trước đó (pop view khỏi stack)
+   */
+  const goBack = () => {
+    setViewStack(prev => (prev.length > 1 ? prev.slice(0, -1) : prev));
+  };
   // State quản lý việc hiển thị modal tạo bộ bài mới
   const [showCreateDeck, setShowCreateDeck] = useState(false);
   // State quản lý việc hiển thị modal chỉnh sửa bộ bài
@@ -80,7 +95,7 @@ function App() {
    */
   const handleNavClick = (view) => {
     resetSession(); // Reset lại toàn bộ tiến trình học dang dở
-    setCurrentView(view); // Chuyển view
+    setViewStack([view]); // Chuyển view cấp cao nhất, reset stack
   };
   
   /**
@@ -89,7 +104,7 @@ function App() {
    */
   const onDeckSelect = (deck) => {
     handleDeckSelect(deck); // Gọi hàm khởi tạo phiên học với bộ bài này
-    setCurrentView('study'); // Chuyển sang màn hình học
+    navigateTo('study'); // Chuyển sang màn hình học
   };
   
   /**
@@ -110,7 +125,7 @@ function App() {
     
     // Khởi tạo phiên học với danh sách các bộ bài đã trộn
     handleDeckSelect(selectedDecks, mode);
-    setCurrentView('study');
+    navigateTo('study');
   };
   
   /**
@@ -129,7 +144,7 @@ function App() {
    */
   const onReset = () => {
     resetSession();
-    setCurrentView('deckSelect');
+    navigateTo('deckSelect');
   };
   
   /**
@@ -137,7 +152,7 @@ function App() {
    */
   const onQuit = () => {
     resetSession();
-    setCurrentView('home');
+    goBack();
   };
   
   /**
@@ -146,7 +161,7 @@ function App() {
    */
   const handleDeckCreated = () => {
     fetchDecks(); // Tải lại danh sách từ Supabase
-    setCurrentView('deckSelect');
+    navigateTo('deckSelect');
   };
 
   return (
@@ -160,7 +175,7 @@ function App() {
           <HomeView 
             systemDeckCount={systemDeckCount}
             customDeckCount={customDeckCount}
-            onNavigate={setCurrentView}
+            onNavigate={navigateTo}
             onShowCreateDeck={() => setShowCreateDeck(true)}
           />
         )}
@@ -175,7 +190,7 @@ function App() {
             allDecks={allDecks}
             loadMore={loadMore}
             showLess={showLess}
-            onBack={() => setCurrentView('home')}
+            onBack={goBack}
           />
         )}
         
@@ -192,7 +207,7 @@ function App() {
               onCreateDeck={() => setShowCreateDeck(true)}
               onEditDeck={(deck) => { setDeckToEdit(deck); setShowEditDeck(true); }}
             />
-            <button className="quit-button" onClick={() => setCurrentView('home')}>← Back</button>
+            <button className="quit-button" onClick={goBack}>← Back</button>
           </div>
         )}
         
@@ -200,7 +215,7 @@ function App() {
         {currentView === 'studySets' && (
           <div className="view-centered view-full-height">
             <StudySetsSelect onSelectMode={onStudySetSelect} />
-            <button className="quit-button" onClick={() => setCurrentView('home')}>← Back</button>
+            <button className="quit-button" onClick={goBack}>← Back</button>
           </div>
         )}
         
@@ -220,7 +235,7 @@ function App() {
             correctCount={correctCount}
             studyMode={studyMode}
             onReset={onReset}
-            onViewHistory={() => setCurrentView('history')}
+            onViewHistory={() => setViewStack(['history'])}
           />
         )}
       </main>
