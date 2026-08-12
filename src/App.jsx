@@ -58,6 +58,9 @@ function App() {
   const [viewStack, setViewStack] = useState(['home']);
   const currentView = viewStack[viewStack.length - 1];
 
+  // State quản lý tab (system/custom) hiện tại đang được chọn ở màn hình DeckSelect
+  const [deckTab, setDeckTab] = useState('system');
+
   /**
    * Hàm điều hướng tiến (push view mới vào stack)
    */
@@ -206,6 +209,8 @@ function App() {
               onSelect={onDeckSelect} 
               onCreateDeck={() => setShowCreateDeck(true)}
               onEditDeck={(deck) => { setDeckToEdit(deck); setShowEditDeck(true); }}
+              activeTab={deckTab}
+              onTabChange={setDeckTab}
             />
             <button className="quit-button" onClick={goBack}>← Back</button>
           </div>

@@ -14,13 +14,10 @@ import './deckSelect.css';
  * @param {function} onCreateDeck - Hàm callback được gọi khi bấm nút "Create New Deck"
  * @param {function} onEditDeck - Hàm callback được gọi khi bấm nút cài đặt (dấu 3 chấm) trên một custom deck
  */
-export default function DeckSelect({ decks, onSelect, onCreateDeck, onEditDeck }) {
-  // State quản lý tab hiện tại đang được chọn (mặc định là 'system')
-  const [activeTab, setActiveTab] = useState('system');
-  
-  // Tách danh sách bộ bài thành 2 loại dựa vào thuộc tính `is_system`
-  const systemDecks = decks.filter((d) => d.is_system); // Bộ bài hệ thống
-  const customDecks = decks.filter((d) => !d.is_system); // Bộ bài do người dùng tạo
+export default function DeckSelect({ decks, onSelect, onCreateDeck, onEditDeck, activeTab = 'system', onTabChange }) {
+  // Lọc danh sách bộ bài thành 2 loại: System (Hệ thống) và Custom (Tự tạo)
+  const systemDecks = decks.filter(d => d.is_system);
+  const customDecks = decks.filter(d => !d.is_system); // Bộ bài do người dùng tạo
   
   /**
    * Hàm xác định biểu tượng (emoji) đại diện cho từng bộ bài.
@@ -56,7 +53,7 @@ export default function DeckSelect({ decks, onSelect, onCreateDeck, onEditDeck }
         {/* Tab System Decks */}
         <button
           className={`deck-tab ${activeTab === 'system' ? 'deck-tab--active' : ''}`}
-          onClick={() => setActiveTab('system')}
+          onClick={() => onTabChange ? onTabChange('system') : null}
         >
           System Decks
           {/* Hiển thị số lượng bộ bài bên cạnh */}
@@ -66,7 +63,7 @@ export default function DeckSelect({ decks, onSelect, onCreateDeck, onEditDeck }
         {/* Tab Custom Decks */}
         <button
           className={`deck-tab ${activeTab === 'custom' ? 'deck-tab--active' : ''}`}
-          onClick={() => setActiveTab('custom')}
+          onClick={() => onTabChange ? onTabChange('custom') : null}
         >
           Custom Decks
           <span className="deck-tab-count">{customDecks.length}</span>
