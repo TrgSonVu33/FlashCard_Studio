@@ -95,11 +95,18 @@ export default function Navbar({ onNavClick, currentView }) {
           <div className="navbar-actions">
             <button 
               onClick={toggleTheme} 
-              className="navbar-btn navbar-btn--ghost theme-toggle-btn" 
+              className={`theme-switch ${theme === 'dark' ? 'theme-switch--dark' : ''}`}
               aria-label="Toggle Dark Mode"
-              style={{ fontSize: '1.2rem', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              {theme === 'dark' ? '☀️' : '🌙'}
+              <div className="theme-switch-track">
+                <div className="theme-switch-thumb">
+                  {theme === 'dark' ? (
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{color: '#f8fafc'}}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{color: '#eab308'}}><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                  )}
+                </div>
+              </div>
             </button>
             
             {/* Nút Log In: Hiện tại là giao diện tĩnh (mockup), chưa có logic xử lý đăng nhập */}

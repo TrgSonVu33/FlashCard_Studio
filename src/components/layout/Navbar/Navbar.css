@@ -208,3 +208,50 @@
     padding: 10px 18px;
   }
 }
+
+/* Theme Toggle Switch */
+.theme-switch {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+.theme-switch-track {
+  width: 48px;
+  height: 26px;
+  background: var(--bg-hover);
+  border-radius: 999px;
+  position: relative;
+  transition: background 0.3s ease;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 2px;
+}
+.theme-switch:hover .theme-switch-track {
+  border-color: var(--border-strong);
+}
+.theme-switch-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--bg-card);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s ease;
+  transform: translateX(0);
+}
+.theme-switch--dark .theme-switch-track {
+  background: var(--bg-hover);
+  border-color: var(--border);
+}
+.theme-switch--dark .theme-switch-thumb {
+  transform: translateX(22px);
+  background: #0f172a;
+}

@@ -74,8 +74,9 @@
 .footer-link-group {
   display: flex;
   flex-direction: row;
-  gap: 32px;
+  gap: 24px;
   justify-content: flex-start;
+  align-items: center;
   flex-wrap: wrap;
 }
 .footer-link {
