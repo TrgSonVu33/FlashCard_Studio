@@ -24,7 +24,7 @@ export default function AnswerCheck({ onAnswer }) {
             onAnswer(true);
           }}
         >
-          Yes (I got it right)
+          Yes
         </button>
         
         {/* Nút kiểm tra "Không" (Trả lời sai) */}
@@ -35,7 +35,7 @@ export default function AnswerCheck({ onAnswer }) {
             onAnswer(false);
           }}
         >
-          No (I got it wrong)
+          No
         </button>
         
       </div>
