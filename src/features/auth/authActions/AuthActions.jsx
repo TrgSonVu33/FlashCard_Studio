@@ -19,7 +19,6 @@ export default function AuthActions() {
           onClick={toggleTheme} 
           className={`theme-switch ${theme === 'dark' ? 'theme-switch--dark' : ''}`}
           aria-label="Toggle Dark Mode"
-          style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', padding: '6px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
           <div className="theme-switch-track" style={{ margin: 0 }}>
             <div className="theme-switch-thumb">
