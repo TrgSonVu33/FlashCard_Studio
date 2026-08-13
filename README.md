@@ -7,10 +7,16 @@
 
 FlashCard Studio is a modern, production-ready SaaS application designed to help users build custom decks, mix categories, and accelerate their learning through a Supabase-powered Spaced Repetition System (SRS).
 
+## What's New! (Latest Upgrades)
+- **Full Authentication System**: Secure user login, registration, and password recovery via Supabase Auth.
+- **Personalized Data Isolation**: User history and custom created decks are now strictly scoped to your individual account.
+- **Dark/Light Mode**: Beautifully smooth, transition-animated theme toggling globally available across the app.
+- **Enhanced UI/UX**: Re-designed authentication views (`AuthView`, `AuthActions`) featuring dynamic layouts and micro-animations.
+
 ## Tech Stack
 
 - **Framework**: React 19 + Vite
-- **Styling**: Vanilla CSS (CSS Variables, Flexbox/Grid layouts)
+- **Styling**: Vanilla CSS (CSS Variables, Flexbox/Grid layouts, Smooth transitions)
 - **Backend/BaaS**: Supabase (PostgreSQL, Auth, Edge Functions)
 - **Icons/Emoji**: Emoji Mart (`@emoji-mart/react`)
 - **Linting**: ESLint + React Hooks Plugin
@@ -23,24 +29,26 @@ The codebase follows a strictly **Feature-Driven / Domain-Driven Architecture**,
 src/
 ├── components/           # Generic, highly reusable UI components
 │   ├── layout/           # Global layouts (Navbar, Footer)
-│   └── shared/           # Shared components (ContactDropdown)
+│   └── shared/           # Shared components (ContactDropdown, ProtectedRoute)
 ├── features/             # Domain-driven feature modules
+│   ├── auth/             # Authentication flow (Login, SignUp, ForgotPass, ResetPass, AuthView)
 │   ├── decks/            # Deck selection, creation, editing, and study sets
 │   ├── history/          # Study session history and analytics
 │   ├── home/             # Main dashboard and navigation entry points
 │   └── study/            # The core SRS study engine (Flashcard, Answer Check, Results)
-├── hooks/                # Custom React hooks (e.g., useFlashCards, useHistory, useTheme)
+├── hooks/                # Custom React hooks (e.g., useAuth, useFlashCards, useHistory, useTheme, useDecks)
 ├── services/             # External service integrations (Supabase client)
 └── assets/               # Static assets and global styles
 ```
 
 ## Core Features
 
+- **User Accounts & Security**: Fully implemented authentication flow with secure sessions and password recovery.
 - **Spaced Repetition System (SRS)**: Optimize learning efficiency with algorithmic study modes (Easy, Normal, Hard).
 - **Custom Deck Creation**: Build, edit, and organize personalized flashcard decks with custom emoji icons.
 - **Dynamic Study Sets**: Mix and match multiple default and custom categories into unified practice sessions.
 - **Analytics & History**: Track session scores and review past study history via a real-time Supabase dashboard.
-- **Premium UX/UI**: Fully responsive design with glassmorphism touches, CSS grid layouts, and animated micro-interactions.
+- **Premium UX/UI**: Fully responsive design with glassmorphism touches, CSS grid layouts, smooth theme transitions, and animated micro-interactions.
 
 ## Getting Started
 
