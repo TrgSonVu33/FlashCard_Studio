@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/services/supabase';
 import AuthView from '@/features/auth/authView/AuthView';
-import '@/features/auth/auth.css';
+import '@/features/auth/styles/auth.css';
 
 /**
  * Component: Login

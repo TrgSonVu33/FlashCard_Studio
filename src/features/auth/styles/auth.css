@@ -120,8 +120,8 @@
 
 /* Mockup flashcard trang trí có thể lật */
 .auth-mock-card-container {
-  width: 240px;
-  height: 150px;
+  width: 500px;
+  height: 360px;
   perspective: 1000px;
   z-index: 1;
   cursor: pointer;
@@ -161,8 +161,8 @@
   will-change: transform;
   background-color: var(--auth-mock-bg);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 20px;
+  padding: 24px;
   backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
@@ -176,7 +176,7 @@
 }
 
 .auth-mock-card-text {
-  font-size: 1rem;
+  font-size: 1.6rem;
   color: var(--auth-mock-text);
   font-weight: 500;
   text-align: center;
@@ -191,14 +191,14 @@
 }
 
 .auth-mock-card-accent {
-  width: 40px;
-  height: 4px;
+  width: 60px;
+  height: 6px;
   background: #FF4F00;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .auth-mock-card-hint {
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   color: #64748b;
   opacity: 0.7;
 }
