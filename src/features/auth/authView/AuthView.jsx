@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 /**
- * Component: AuthBranding
- * Panel bên trái của trang xác thực (Login/SignUp/ForgotPassword).
+ * Component: AuthView
+ * Panel bên trái của trang xác thực (Login/SignUp/ForgotPass).
  * Hiển thị logo, tagline và các mock card giới thiệu ứng dụng FlashCard Studio.
  * Panel này chỉ xuất hiện trên màn hình lớn (ẩn trên di động bằng CSS).
  */
-export default function AuthBranding() {
+export default function AuthView() {
   const [isFlipped, setIsFlipped] = useState(false);
 
   return (

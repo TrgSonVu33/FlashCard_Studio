@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/services/supabase';
-import AuthBranding from '@/features/auth/authBranding/AuthBranding';
+import AuthView from '@/features/auth/authView/AuthView';
 import '@/features/auth/auth.css';
 
 /**
@@ -63,7 +63,7 @@ export default function SignUp({ onNavigate }) {
   return (
     <div className="auth-page" id="signup-page">
       {/* Panel trái: Branding */}
-      <AuthBranding />
+      <AuthView />
 
       {/* Panel phải: Form đăng ký */}
       <div className="auth-form-panel">

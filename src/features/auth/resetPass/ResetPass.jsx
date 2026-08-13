@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { supabase } from '@/services/supabase';
-import AuthBranding from '@/features/auth/authBranding/AuthBranding';
+import AuthView from '@/features/auth/authView/AuthView';
 import '@/features/auth/auth.css';
 
 /**
- * Component: ResetPassword
+ * Component: ResetPass
  * Trang đặt lại mật khẩu mới. Hiển thị khi người dùng click link reset password từ email.
  * Người dùng chỉ cần nhập mật khẩu mới, không cần xác nhận thêm gì
  * (vì Supabase đã xác thực qua token trong URL).
  * 
  * @param {function} onComplete - Hàm callback được gọi sau khi đặt lại mật khẩu thành công
  */
-export default function ResetPassword({ onComplete }) {
+export default function ResetPass({ onComplete }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -62,7 +62,7 @@ export default function ResetPassword({ onComplete }) {
   return (
     <div className="auth-page" id="reset-password-page">
       {/* Panel trái: Branding */}
-      <AuthBranding />
+      <AuthView />
 
       {/* Panel phải: Form đặt lại mật khẩu */}
       <div className="auth-form-panel">

@@ -6,9 +6,9 @@ import ContactDropdown from '@/components/shared/contactDropdown/contactDropdown
 import ProtectedRoute from '@/components/shared/protectedRoute/ProtectedRoute';
 import Login from '@/features/auth/login/Login';
 import SignUp from '@/features/auth/signup/SignUp';
-import ForgotPassword from '@/features/auth/forgotPassword/ForgotPassword';
-import ResetPassword from '@/features/auth/resetPassword/ResetPassword';
-import AuthFloatingActions from '@/features/auth/authFloatingActions/AuthFloatingActions';
+import ForgotPass from '@/features/auth/forgotPass/ForgotPass';
+import ResetPass from '@/features/auth/resetPass/ResetPass';
+import AuthActions from '@/features/auth/authActions/AuthActions';
 import CreateDeck from '@/features/decks/createDeck/createDeck';
 import EditDeck from '@/features/decks/editDeck/editDeck';
 import StudySetsSelect from '@/features/decks/studySetsSelect/studySetsSelect';
@@ -88,7 +88,7 @@ function App() {
   useEffect(() => {
     if (isRecovery) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setViewStack(['resetPassword']);
+      setViewStack(['resetPass']);
     }
   }, [isRecovery]);
 
@@ -99,7 +99,7 @@ function App() {
   useEffect(() => {
     if (!authLoading && !user) {
       // Nếu chưa đăng nhập và không đang ở trang auth → chuyển về login
-      const authViews = ['login', 'signup', 'forgotPassword', 'resetPassword'];
+      const authViews = ['login', 'signup', 'forgotPass', 'resetPass'];
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setViewStack(prev => {
         const current = prev[prev.length - 1];
@@ -110,7 +110,7 @@ function App() {
       });
     } else if (!authLoading && user && !isRecovery) {
       // Nếu đã đăng nhập và đang ở trang auth → chuyển về home
-      const authViews = ['login', 'signup', 'forgotPassword'];
+      const authViews = ['login', 'signup', 'forgotPass'];
       setViewStack(prev => {
         const current = prev[prev.length - 1];
         if (authViews.includes(current)) {
@@ -237,7 +237,7 @@ function App() {
   /**
    * Callback khi người dùng đặt lại mật khẩu thành công
    */
-  const handleResetPasswordComplete = useCallback(() => {
+  const handleResetPassComplete = useCallback(() => {
     clearRecovery();
     setViewStack(['home']);
   }, [clearRecovery]);
@@ -254,11 +254,11 @@ function App() {
   // === RENDER CÁC TRANG XÁC THỰC (không cần đăng nhập) ===
 
   // Trang đặt lại mật khẩu (từ link email)
-  if (currentView === 'resetPassword') {
+  if (currentView === 'resetPass') {
     return (
       <>
-        <ResetPassword onComplete={handleResetPasswordComplete} />
-        <AuthFloatingActions />
+        <ResetPass onComplete={handleResetPassComplete} />
+        <AuthActions />
       </>
     );
   }
@@ -268,7 +268,7 @@ function App() {
     return (
       <>
         <Login onNavigate={(view) => setViewStack([view])} />
-        <AuthFloatingActions />
+        <AuthActions />
       </>
     );
   }
@@ -278,17 +278,17 @@ function App() {
     return (
       <>
         <SignUp onNavigate={(view) => setViewStack([view])} />
-        <AuthFloatingActions />
+        <AuthActions />
       </>
     );
   }
 
   // Trang quên mật khẩu
-  if (currentView === 'forgotPassword') {
+  if (currentView === 'forgotPass') {
     return (
       <>
-        <ForgotPassword onNavigate={(view) => setViewStack([view])} />
-        <AuthFloatingActions />
+        <ForgotPass onNavigate={(view) => setViewStack([view])} />
+        <AuthActions />
       </>
     );
   }

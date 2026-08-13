@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { supabase } from '@/services/supabase';
-import AuthBranding from '@/features/auth/authBranding/AuthBranding';
+import AuthView from '@/features/auth/authView/AuthView';
 import '@/features/auth/auth.css';
 
 /**
- * Component: ForgotPassword
+ * Component: ForgotPass
  * Trang yêu cầu đặt lại mật khẩu. Người dùng nhập email và Supabase sẽ gửi
  * một link đặt lại mật khẩu đến email đó.
  * 
  * @param {function} onNavigate - Hàm callback điều hướng quay lại trang đăng nhập
  */
-export default function ForgotPassword({ onNavigate }) {
+export default function ForgotPass({ onNavigate }) {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -53,7 +53,7 @@ export default function ForgotPassword({ onNavigate }) {
   return (
     <div className="auth-page" id="forgot-password-page">
       {/* Panel trái: Branding */}
-      <AuthBranding />
+      <AuthView />
 
       {/* Panel phải: Form quên mật khẩu */}
       <div className="auth-form-panel">

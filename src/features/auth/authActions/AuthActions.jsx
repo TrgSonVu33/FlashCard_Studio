@@ -3,12 +3,12 @@ import ContactDropdown from '@/components/shared/contactDropdown/contactDropdown
 import '@/components/layout/navbar/navbar.css'; // Để dùng chung class của nút theme-switch
 
 /**
- * Component: AuthFloatingActions
+ * Component: AuthActions
  * Hiển thị các nút nổi trên các trang xác thực (Login, SignUp, v.v.):
  * - Nút chuyển đổi Light/Dark mode (Góc trên phải)
  * - Nút liên hệ (Góc dưới phải)
  */
-export default function AuthFloatingActions() {
+export default function AuthActions() {
   const { theme, toggleTheme } = useTheme();
 
   return (

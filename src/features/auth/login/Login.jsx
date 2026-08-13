@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/services/supabase';
-import AuthBranding from '@/features/auth/authBranding/AuthBranding';
+import AuthView from '@/features/auth/authView/AuthView';
 import '@/features/auth/auth.css';
 
 /**
@@ -8,7 +8,7 @@ import '@/features/auth/auth.css';
  * Trang đăng nhập sử dụng email và mật khẩu thông qua Supabase Auth.
  * Giao diện chia đôi: Bên trái là branding, bên phải là form đăng nhập.
  * 
- * @param {function} onNavigate - Hàm callback điều hướng sang các trang khác (signup, forgotPassword)
+ * @param {function} onNavigate - Hàm callback điều hướng sang các trang khác (signup, forgotPass)
  */
 export default function Login({ onNavigate }) {
   const [email, setEmail] = useState('');
@@ -48,7 +48,7 @@ export default function Login({ onNavigate }) {
   return (
     <div className="auth-page" id="login-page">
       {/* Panel trái: Branding */}
-      <AuthBranding />
+      <AuthView />
 
       {/* Panel phải: Form đăng nhập */}
       <div className="auth-form-panel">
@@ -95,7 +95,7 @@ export default function Login({ onNavigate }) {
             <button
               type="button"
               className="auth-link auth-forgot-link"
-              onClick={() => onNavigate('forgotPassword')}
+              onClick={() => onNavigate('forgotPass')}
             >
               Forgot password?
             </button>
