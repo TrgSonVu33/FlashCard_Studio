@@ -1,4 +1,4 @@
-import './answerCheck.css';
+import '@/features/study/answerCheck/answerCheck.css';
 
 /**
  * Component: AnswerCheck

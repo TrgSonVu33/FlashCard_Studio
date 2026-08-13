@@ -1,4 +1,4 @@
-import './footer.css';
+import '@/components/layout/footer/footer.css';
 
 /**
  * Component: Footer

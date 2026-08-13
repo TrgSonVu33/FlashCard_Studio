@@ -1,4 +1,5 @@
-import { FlashCard, ResultScreen } from '../';
+import FlashCard from '@/features/study/flashCard/flashCard';
+import ResultScreen from '@/features/study/resultScreen/resultScreen';
 
 /**
  * Component: StudySession

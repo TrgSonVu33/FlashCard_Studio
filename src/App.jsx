@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Navbar, Footer, ContactDropdown } from '@/components';
-import { CreateDeck, EditDeck, StudySetsSelect, DeckSelect } from '@/features/decks';
-import { HomeView } from '@/features/home';
-import { HistoryView } from '@/features/history';
-import { StudySession } from '@/features/study';
-import { useFlashCards, useHistory, useDecks } from '@/hooks';
+import Navbar from '@/components/layout/navbar/navbar';
+import Footer from '@/components/layout/footer/footer';
+import ContactDropdown from '@/components/shared/contactDropdown/contactDropdown';
+import CreateDeck from '@/features/decks/createDeck/createDeck';
+import EditDeck from '@/features/decks/editDeck/editDeck';
+import StudySetsSelect from '@/features/decks/studySetsSelect/studySetsSelect';
+import DeckSelect from '@/features/decks/deckSelect/deckSelect';
+import { HomeView } from '@/features/home/homeView/homeView';
+import { HistoryView } from '@/features/history/historyView/historyView';
+import { StudySession } from '@/features/study/studySession/studySession';
+import { useFlashCards } from '@/hooks/useFlashCards';
+import { useHistory } from '@/hooks/useHistory';
+import { useDecks } from '@/hooks/useDecks';
 import '@/assets/styles/App.css';
 
 /**

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { supabase } from '@/services/supabase';
-import '../CreateDeck/CreateDeck.css'; // Tái sử dụng chung CSS với component CreateDeck
+import '@/features/decks/createDeck/createDeck.css'; // Tái sử dụng chung CSS với component CreateDeck
 
 /**
  * Component: EditDeck

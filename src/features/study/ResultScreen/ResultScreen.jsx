@@ -1,4 +1,4 @@
-import './resultScreen.css';
+import '@/features/study/resultScreen/resultScreen.css';
 
 /**
  * Component: ResultScreen

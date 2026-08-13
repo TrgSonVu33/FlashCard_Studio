@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import './contactDropdown.css';
+import '@/components/shared/contactDropdown/contactDropdown.css';
 
 /**
  * Component: ContactDropdown

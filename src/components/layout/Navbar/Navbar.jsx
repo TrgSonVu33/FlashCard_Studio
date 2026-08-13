@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useTheme } from '@/hooks';
-import './navbar.css';
+import { useTheme } from '@/hooks/useTheme';
+import '@/components/layout/navbar/navbar.css';
 
 /**
  * Component: Navbar

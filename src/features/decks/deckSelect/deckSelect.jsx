@@ -1,4 +1,4 @@
-import './deckSelect.css';
+import '@/features/decks/deckSelect/deckSelect.css';
 
 /**
  * Component: DeckSelect

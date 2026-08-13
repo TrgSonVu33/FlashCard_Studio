@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './studySetsSelect.css';
+import '@/features/decks/studySetsSelect/studySetsSelect.css';
 
 /**
  * Cấu hình danh sách các chế độ trộn bài (Mixed Modes).

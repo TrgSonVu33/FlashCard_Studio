@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import AnswerCheck from '../answerCheck/answerCheck';
-import './flashCard.css';
+import AnswerCheck from '@/features/study/answerCheck/answerCheck';
+import '@/features/study/flashCard/flashCard.css';
 
 /**
  * Component: Flashcard
