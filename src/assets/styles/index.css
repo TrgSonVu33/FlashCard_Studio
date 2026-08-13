@@ -87,18 +87,17 @@
 }
 
 body {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  min-height: 100svh;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+  transition: background-color 0.3s ease, background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, fill 0.3s ease, stroke 0.3s ease;
 }
-body {
-  margin: 0;
-  min-height: 100svh;
-}
+
 #root {
   width: 100%;
   min-height: 100svh;

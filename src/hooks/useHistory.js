@@ -116,12 +116,20 @@ export function useHistory() {
   const saveResult = useCallback(async (selectedCategory, correct, totalAmount, mode = 'standard') => {
     console.log('Saving result:', { score: correct, total: totalAmount, category: selectedCategory, mode });
     
+    // Lấy thông tin user hiện tại để gắn user_id vào bản ghi lịch sử (bắt buộc cho RLS)
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error('Cannot save result: User not authenticated');
+      return;
+    }
+    
     // Định dạng chuỗi ngày tháng năm theo chuẩn DD/MM/YYYY để lưu vào DB (dạng chuỗi)
     const dateObj = new Date();
     const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
     
-    // Cấu trúc dữ liệu chuẩn bị gửi lên Supabase
+    // Cấu trúc dữ liệu chuẩn bị gửi lên Supabase (bao gồm user_id cho multi-user)
     const payload = {
+      user_id: user.id,
       created_at: formattedDate,
       categories: selectedCategory,
       score: correct,

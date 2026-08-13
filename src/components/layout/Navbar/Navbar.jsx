@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
+import { useAuth } from '@/hooks/useAuth';
 import '@/components/layout/navbar/navbar.css';
 
 /**
  * Component: Navbar
  * Thanh điều hướng chính (Navigation Bar) luôn hiển thị ở phía trên cùng của ứng dụng.
  * Hỗ trợ menu dạng ngang trên màn hình lớn và menu dạng hamburger (thu gọn) trên màn hình di động.
+ * 
+ * Phiên bản SaaS: Hiển thị email người dùng đã đăng nhập và nút Log Out.
+ * Ẩn các link điều hướng khi chưa đăng nhập.
  * 
  * @param {function} onNavClick - Hàm callback được gọi khi người dùng click vào một đường link trên thanh điều hướng
  * @param {string} currentView - Trạng thái màn hình hiện tại (Ví dụ: 'home', 'deckSelect') dùng để làm nổi bật (highlight) link đang kích hoạt
@@ -14,6 +18,7 @@ export default function Navbar({ onNavClick, currentView }) {
   // State quản lý trạng thái mở/đóng của menu thả xuống trên giao diện điện thoại di động
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { user, signOut } = useAuth();
   
   /**
    * Hàm xử lý chung khi người dùng click vào một mục trên Navbar.
@@ -24,6 +29,14 @@ export default function Navbar({ onNavClick, currentView }) {
   const handleNav = (view) => {
     onNavClick(view);
     setMenuOpen(false); // Đảm bảo menu điện thoại đóng lại sau khi chọn
+  };
+
+  /**
+   * Hàm xử lý đăng xuất. Gọi signOut() từ AuthContext rồi đóng menu.
+   */
+  const handleSignOut = async () => {
+    await signOut();
+    setMenuOpen(false);
   };
 
   return (
@@ -65,7 +78,7 @@ export default function Navbar({ onNavClick, currentView }) {
                 className={`navbar-link ${currentView === 'studySets' ? 'active' : ''}`}
                 onClick={() => handleNav('studySets')}
               >
-                Study Sets
+                Study
               </button>
             </li>
             
@@ -109,19 +122,30 @@ export default function Navbar({ onNavClick, currentView }) {
               </div>
             </button>
             
-            {/* Nút Log In: Hiện tại là giao diện tĩnh (mockup), chưa có logic xử lý đăng nhập */}
-            <button className="navbar-btn navbar-btn--ghost" id="nav-login-btn">
-              Log In
-            </button>
+            {/* Hiển thị email người dùng và nút Log Out khi đã đăng nhập */}
+            {user ? (
+              <>
+                <span className="navbar-user-email" title={user.email}>
+                  {user.email}
+                </span>
+                <button 
+                  className="navbar-btn navbar-btn--logout" 
+                  id="nav-logout-btn"
+                  onClick={handleSignOut}
+                >
+                  Log Out
+                </button>
+              </>
+            ) : (
+              <button 
+                className="navbar-btn navbar-btn--primary" 
+                id="nav-login-btn"
+                onClick={() => handleNav('login')}
+              >
+                Log In
+              </button>
+            )}
             
-            {/* Nút Bắt đầu học: Điều hướng nhanh sang trang chọn bộ bài */}
-            <button
-              className="navbar-btn navbar-btn--primary"
-              id="nav-start-btn"
-              onClick={() => handleNav('deckSelect')}
-            >
-              Start Studying
-            </button>
           </div>
         </nav>
         

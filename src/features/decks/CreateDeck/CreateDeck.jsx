@@ -88,8 +88,17 @@ export default function CreateDeck({ isOpen, onClose, onDeckCreated }) {
     setSaving(true); // Bật trạng thái đang lưu
     
     try {
+      // 0. Lấy thông tin user hiện tại để gắn user_id (bắt buộc cho RLS multi-user)
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setError('You must be logged in to create a deck.');
+        setSaving(false);
+        return;
+      }
+
       // 1. Chuẩn bị payload (dữ liệu) để tạo bộ bài mới
       const deckPayload = {
+        user_id: user.id,
         title: deckName.trim(),
         description: description.trim() || null, // Nếu rỗng thì gửi lên là null
         is_system: false, // Bộ bài do người dùng tạo thì is_system = false
