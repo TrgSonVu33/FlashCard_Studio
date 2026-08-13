@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useCallback, useEffect } from 'react';
 import { supabase } from '@/services/supabase';
+import { useAuth } from '@/hooks/useAuth';
 
 /**
  * Custom Hook: useDecks
@@ -10,6 +11,8 @@ import { supabase } from '@/services/supabase';
  * @returns {Object} Trả về danh sách bộ bài, tổng số thẻ, hàm tải lại bộ bài và số lượng bộ bài hệ thống/tùy chỉnh.
  */
 export const useDecks = () => {
+  const { user } = useAuth();
+  
   // State lưu trữ toàn bộ danh sách các bộ bài lấy được từ cơ sở dữ liệu
   const [allDecks, setAllDecks] = useState([]);
   
@@ -23,10 +26,20 @@ export const useDecks = () => {
    */
   const fetchDecks = useCallback(async () => {
     // Truy vấn bảng 'decks', lấy tất cả các cột và đếm số lượng thẻ (cards) tương ứng với mỗi bộ bài
-    const { data: decksData, error } = await supabase
+    let query = supabase
       .from('decks')
       .select('*, cards(count)')
       .order('created_at', { ascending: true }); // Sắp xếp theo thời gian tạo cũ nhất đến mới nhất
+      
+    if (user) {
+      // User đã đăng nhập: lấy bộ bài hệ thống HOẶC bộ bài do user này tạo
+      query = query.or(`is_system.eq.true,user_id.eq.${user.id}`);
+    } else {
+      // Chưa đăng nhập: chỉ lấy bộ bài hệ thống
+      query = query.eq('is_system', true);
+    }
+
+    const { data: decksData, error } = await query;
 
     // Xử lý lỗi nếu việc truy vấn thất bại
     if (error) {
@@ -49,7 +62,7 @@ export const useDecks = () => {
     // Cập nhật state với dữ liệu đã được định dạng
     setAllDecks(formattedDecks);
     setTotalCards(tCards);
-  }, []);
+  }, [user]);
 
   /**
    * Effect hook: Tự động tải danh sách bộ bài ngay sau khi component sử dụng hook này được mount (khởi tạo).

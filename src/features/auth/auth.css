@@ -51,6 +51,7 @@
   left: 0;
   z-index: 200;
   background-color: var(--bg);
+  animation: viewFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* === PANEL TRÁI: Branding === */

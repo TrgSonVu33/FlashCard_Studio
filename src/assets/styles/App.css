@@ -3,6 +3,7 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   min-height: 100svh;
+  animation: viewFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .app-container {
   display: flex;

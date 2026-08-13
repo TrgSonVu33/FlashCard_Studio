@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/services/supabase';
+import { useAuth } from '@/hooks/useAuth';
 
 // Hằng số quy định số lượng mục lịch sử hiển thị trên mỗi trang (phân trang)
 const PAGE_SIZE = 5;
@@ -10,6 +11,8 @@ const PAGE_SIZE = 5;
  * Cung cấp khả năng phân trang (Load More, Show Less) để không tải toàn bộ dữ liệu cùng một lúc gây nặng ứng dụng.
  */
 export function useHistory() {
+  const { user } = useAuth();
+  
   // === 1. STATES (Trạng thái) ===
   
   // Mảng chứa các bản ghi lịch sử đã tải về từ database
@@ -40,11 +43,17 @@ export function useHistory() {
     const from = pageNum * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
     
-    // Khởi tạo truy vấn: Chọn tất cả cột, sắp xếp giảm dần theo id (bản ghi mới nhất lên đầu)
+    // Khởi tạo truy vấn: Chọn tất cả cột, lọc theo user_id, sắp xếp giảm dần theo id
     let query = supabase
       .from('history')
       .select('*')
       .order('id', { ascending: false });
+      
+    if (user) {
+      query = query.eq('user_id', user.id);
+    } else {
+      return { data: [], error: { message: 'Not authenticated' } };
+    }
     
     // Nếu có truyền vào categoryKey, thêm điều kiện lọc vào câu truy vấn
     if (categoryKey) {
@@ -90,6 +99,12 @@ export function useHistory() {
   useEffect(() => {
     let cancelled = false;
     
+    if (!user) {
+      setHistory([]);
+      setLoadingHistory(false);
+      return;
+    }
+    
     queryHistory(0).then(({ data, error }) => {
       if (cancelled) return;
       if (error) {
@@ -102,7 +117,7 @@ export function useHistory() {
     
     // Cleanup function: Đánh dấu là đã huỷ nếu component chứa hook này bị gỡ bỏ
     return () => { cancelled = true; };
-  }, [queryHistory]);
+  }, [queryHistory, user]);
 
   /**
    * Hàm: saveResult
