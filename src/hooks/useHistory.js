@@ -62,7 +62,7 @@ export function useHistory() {
     
     // Trả về lệnh gọi lấy dữ liệu trong khoảng (range) đã tính
     return query.range(from, to);
-  }, []);
+  }, [user]);
 
   /**
    * Hàm: fetchHistory
@@ -100,6 +100,7 @@ export function useHistory() {
     let cancelled = false;
     
     if (!user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHistory([]);
       setLoadingHistory(false);
       return;

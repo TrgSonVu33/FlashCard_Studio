@@ -78,8 +78,18 @@ function App() {
   const [viewStack, setViewStack] = useState(['home']);
   const currentView = viewStack[viewStack.length - 1];
 
+  // State lưu trữ trang đích muốn đến sau khi đăng nhập
+  const [pendingView, setPendingView] = useState(null);
+
   // State quản lý tab (system/custom) hiện tại đang được chọn ở màn hình DeckSelect
   const [deckTab, setDeckTab] = useState('system');
+
+  // State quản lý việc hiển thị modal tạo bộ bài mới
+  const [showCreateDeck, setShowCreateDeck] = useState(false);
+  // State quản lý việc hiển thị modal chỉnh sửa bộ bài
+  const [showEditDeck, setShowEditDeck] = useState(false);
+  // State lưu trữ thông tin bộ bài đang được chọn để chỉnh sửa
+  const [deckToEdit, setDeckToEdit] = useState(null);
 
   /**
    * Effect: Khi sự kiện PASSWORD_RECOVERY xảy ra (người dùng click link reset từ email),
@@ -93,33 +103,24 @@ function App() {
   }, [isRecovery]);
 
   /**
-   * Effect: Khi user thay đổi (đăng nhập/đăng xuất), 
-   * tự động chuyển hướng phù hợp.
+   * Effect: Khi user thay đổi (đăng nhập), 
+   * tự động chuyển hướng về trang trước đó hoặc trang chủ.
    */
   useEffect(() => {
-    if (!authLoading && !user) {
-      // Nếu chưa đăng nhập và không đang ở trang auth → chuyển về login
-      const authViews = ['login', 'signup', 'forgotPass', 'resetPass'];
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setViewStack(prev => {
-        const current = prev[prev.length - 1];
-        if (!authViews.includes(current)) {
-          return ['login'];
-        }
-        return prev;
-      });
-    } else if (!authLoading && user && !isRecovery) {
-      // Nếu đã đăng nhập và đang ở trang auth → chuyển về home
+    if (!authLoading && user && !isRecovery) {
       const authViews = ['login', 'signup', 'forgotPass'];
-      setViewStack(prev => {
-        const current = prev[prev.length - 1];
-        if (authViews.includes(current)) {
-          return ['home'];
+      if (authViews.includes(currentView)) {
+        if (pendingView === 'createDeck') {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setShowCreateDeck(true);
+          setViewStack(['home']);
+        } else {
+          setViewStack([pendingView || 'home']);
         }
-        return prev;
-      });
+        setPendingView(null);
+      }
     }
-  }, [user, authLoading, isRecovery]);
+  }, [user, authLoading, isRecovery, currentView, pendingView]);
 
   /**
    * Hàm điều hướng tiến (push view mới vào stack)
@@ -134,12 +135,7 @@ function App() {
   const goBack = () => {
     setViewStack(prev => (prev.length > 1 ? prev.slice(0, -1) : prev));
   };
-  // State quản lý việc hiển thị modal tạo bộ bài mới
-  const [showCreateDeck, setShowCreateDeck] = useState(false);
-  // State quản lý việc hiển thị modal chỉnh sửa bộ bài
-  const [showEditDeck, setShowEditDeck] = useState(false);
-  // State lưu trữ thông tin bộ bài đang được chọn để chỉnh sửa
-  const [deckToEdit, setDeckToEdit] = useState(null);
+
 
   /**
    * Effect hook: Tự động tải lại lịch sử khi người dùng chuyển sang tab 'history'
@@ -166,6 +162,11 @@ function App() {
    * @param {object} deck - Thông tin bộ bài được chọn
    */
   const onDeckSelect = (deck) => {
+    if (!user) {
+      handleDeckSelect(deck); // Lưu lại lựa chọn
+      redirectToLogin('study'); // Chuyển hướng đăng nhập
+      return;
+    }
     handleDeckSelect(deck); // Gọi hàm khởi tạo phiên học với bộ bài này
     navigateTo('study'); // Chuyển sang màn hình học
   };
@@ -176,6 +177,10 @@ function App() {
    * @param {string} mode - Độ khó: 'easy' (2 bộ), 'normal' (4 bộ), 'hard' (6 bộ)
    */
   const onStudySetSelect = (mode) => {
+    if (!user) {
+      redirectToLogin('studySets');
+      return;
+    }
     // Chỉ lấy các bộ bài mặc định của hệ thống (is_system = true)
     const defaultDecks = allDecks.filter(d => d.is_system);
     // Trộn ngẫu nhiên danh sách bằng thuật toán sort
@@ -228,9 +233,11 @@ function App() {
   };
 
   /**
-   * Callback cho ProtectedRoute: Chuyển hướng sang trang đăng nhập
+   * Callback cho ProtectedRoute: Chuyển hướng sang trang đăng nhập,
+   * đồng thời lưu lại trang đích để quay lại sau khi đăng nhập thành công.
    */
-  const redirectToLogin = useCallback(() => {
+  const redirectToLogin = useCallback((destination) => {
+    setPendingView(destination);
     setViewStack(['login']);
   }, []);
 
@@ -293,12 +300,11 @@ function App() {
     );
   }
 
-  // === RENDER ỨNG DỤNG CHÍNH (cần đăng nhập) ===
+  // === RENDER ỨNG DỤNG CHÍNH (cần đăng nhập cho một số chức năng) ===
   return (
-    <ProtectedRoute onRedirectToLogin={redirectToLogin}>
-      <div className="page-wrapper">
-        {/* Thanh điều hướng chính */}
-        <Navbar onNavClick={handleNavClick} currentView={currentView} />
+    <div className="page-wrapper">
+      {/* Thanh điều hướng chính */}
+      <Navbar onNavClick={handleNavClick} currentView={currentView} />
         
         <main className="app-container">
           {/* Render màn hình Home */}
@@ -314,6 +320,8 @@ function App() {
           {/* Render màn hình Lịch sử học */}
           {currentView === 'history' && (
             <HistoryView 
+              user={user}
+              onRedirectToLogin={() => redirectToLogin('history')}
               history={history}
               loadingHistory={loadingHistory}
               page={page}
@@ -333,9 +341,18 @@ function App() {
                 <p className="study-subtitle">Pick a topic to practice</p>
               </div>
               <DeckSelect 
+                user={user}
+                onRedirectToLogin={() => redirectToLogin('deckSelect')}
                 decks={allDecks} 
                 onSelect={onDeckSelect} 
-                onCreateDeck={() => setShowCreateDeck(true)}
+                onLoginForStudy={(deck) => {
+                  handleDeckSelect(deck);
+                  redirectToLogin('study');
+                }}
+                onCreateDeck={() => {
+                  if (!user) redirectToLogin('createDeck');
+                  else setShowCreateDeck(true);
+                }}
                 onEditDeck={(deck) => { setDeckToEdit(deck); setShowEditDeck(true); }}
                 activeTab={deckTab}
                 onTabChange={setDeckTab}
@@ -347,55 +364,68 @@ function App() {
           {/* Render màn hình Chọn chế độ trộn bài */}
           {currentView === 'studySets' && (
             <div className="view-centered view-full-height">
-              <StudySetsSelect onSelectMode={onStudySetSelect} />
+              <StudySetsSelect 
+                user={user} 
+                onRedirectToLogin={() => redirectToLogin('studySets')}
+                onSelectMode={onStudySetSelect} 
+              />
               <button className="quit-button" onClick={goBack}>← Back</button>
             </div>
           )}
           
           {/* Render màn hình Phiên học Flashcard */}
           {currentView === 'study' && (
-            <StudySession 
-              loadingCards={loadingCards}
-              showResult={showResult}
-              selectedDeck={selectedDeck}
-              currentIndex={currentIndex}
-              cards={cards}
-              currentCard={currentCard}
-              handleAnswer={handleAnswer}
-              isSessionComplete={isSessionComplete}
-              onFinishSession={onFinishSession}
-              onQuit={onQuit}
-              correctCount={correctCount}
-              studyMode={studyMode}
-              onReset={onReset}
-              onViewHistory={() => setViewStack(['history'])}
-            />
+            <ProtectedRoute onRedirectToLogin={() => redirectToLogin('study')}>
+              <StudySession 
+                loadingCards={loadingCards}
+                showResult={showResult}
+                selectedDeck={selectedDeck}
+                currentIndex={currentIndex}
+                cards={cards}
+                currentCard={currentCard}
+                handleAnswer={handleAnswer}
+                isSessionComplete={isSessionComplete}
+                onFinishSession={onFinishSession}
+                onQuit={onQuit}
+                correctCount={correctCount}
+                studyMode={studyMode}
+                onReset={onReset}
+                onViewHistory={() => setViewStack(['history'])}
+              />
+            </ProtectedRoute>
           )}
         </main>
         
         {/* Modal tạo bộ bài mới */}
-        <CreateDeck
-          isOpen={showCreateDeck}
-          onClose={() => setShowCreateDeck(false)}
-          onDeckCreated={handleDeckCreated}
-        />
+        {showCreateDeck && (
+          <ProtectedRoute onRedirectToLogin={() => { setShowCreateDeck(false); redirectToLogin('createDeck'); }}>
+            <CreateDeck
+              isOpen={showCreateDeck}
+              onClose={() => setShowCreateDeck(false)}
+              onDeckCreated={handleDeckCreated}
+            />
+          </ProtectedRoute>
+        )}
         {/* Modal chỉnh sửa bộ bài */}
-        <EditDeck
-          isOpen={showEditDeck}
-          deck={deckToEdit}
-          onClose={() => setShowEditDeck(false)}
-          onDeckUpdated={(updatedDeck) => {
-            // Cập nhật lại state danh sách bộ bài sau khi sửa thành công
-            setAllDecks((prev) => prev.map(d => d.id === updatedDeck.id ? updatedDeck : d));
-          }}
-        />
+        {showEditDeck && (
+          <ProtectedRoute onRedirectToLogin={() => { setShowEditDeck(false); redirectToLogin('deckSelect'); }}>
+            <EditDeck
+              isOpen={showEditDeck}
+              deck={deckToEdit}
+              onClose={() => setShowEditDeck(false)}
+              onDeckUpdated={(updatedDeck) => {
+                // Cập nhật lại state danh sách bộ bài sau khi sửa thành công
+                setAllDecks((prev) => prev.map(d => d.id === updatedDeck.id ? updatedDeck : d));
+              }}
+            />
+          </ProtectedRoute>
+        )}
         
         {/* Nút dropdown liên hệ */}
         <ContactDropdown />
         {/* Chân trang */}
         <Footer />
       </div>
-    </ProtectedRoute>
   );
 }
 

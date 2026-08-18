@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import AuthPromptModal from '@/components/shared/authPromptModal/AuthPromptModal';
 import '@/features/decks/studySetsSelect/studySetsSelect.css';
 
 /**
@@ -24,11 +25,14 @@ const MODES = [
  * 
  * @param {function} onSelectMode - Hàm callback được gọi khi người dùng chọn xong chế độ và nhấn Bắt đầu
  */
-export default function StudySetsSelect({ onSelectMode }) {
+export default function StudySetsSelect({ user, onRedirectToLogin, onSelectMode }) {
   // State lưu trữ chế độ (key) mà người dùng đang chọn (easy, normal, hard)
   // Ban đầu là null (chưa chọn gì)
   const [selectedMode, setSelectedMode] = useState(null);
   
+  // State quản lý việc hiển thị modal yêu cầu đăng nhập
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+
   /**
    * Hàm xử lý sự kiện khi người dùng nhấn nút "Start Session".
    * Gọi hàm onSelectMode truyền từ component cha (App.jsx) để bắt đầu khởi tạo dữ liệu phiên học.
@@ -36,7 +40,11 @@ export default function StudySetsSelect({ onSelectMode }) {
   const handleStart = () => {
     // Chỉ chạy khi đã có một chế độ được chọn
     if (selectedMode) {
-      onSelectMode(selectedMode);
+      if (!user) {
+        setShowAuthPrompt(true);
+      } else {
+        onSelectMode(selectedMode);
+      }
     }
   };
 
@@ -93,6 +101,13 @@ export default function StudySetsSelect({ onSelectMode }) {
       >
         Start Session →
       </button>
+
+      {/* Modal yêu cầu đăng nhập */}
+      <AuthPromptModal
+        isOpen={showAuthPrompt}
+        onClose={() => setShowAuthPrompt(false)}
+        onLogin={() => onRedirectToLogin()}
+      />
     </div>
   );
 }

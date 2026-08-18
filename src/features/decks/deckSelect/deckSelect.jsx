@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import AuthPromptModal from '@/components/shared/authPromptModal/AuthPromptModal';
 import '@/features/decks/deckSelect/deckSelect.css';
 
 /**
@@ -13,7 +15,10 @@ import '@/features/decks/deckSelect/deckSelect.css';
  * @param {function} onCreateDeck - Hàm callback được gọi khi bấm nút "Create New Deck"
  * @param {function} onEditDeck - Hàm callback được gọi khi bấm nút cài đặt (dấu 3 chấm) trên một custom deck
  */
-export default function DeckSelect({ decks, onSelect, onCreateDeck, onEditDeck, activeTab = 'system', onTabChange }) {
+export default function DeckSelect({ user, onRedirectToLogin, decks, onSelect, onLoginForStudy, onCreateDeck, onEditDeck, activeTab = 'system', onTabChange }) {
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [pendingDeck, setPendingDeck] = useState(null);
+
   // Lọc danh sách bộ bài thành 2 loại: System (Hệ thống) và Custom (Tự tạo)
   const systemDecks = decks.filter(d => d.is_system);
   const customDecks = decks.filter(d => !d.is_system); // Bộ bài do người dùng tạo
@@ -70,8 +75,17 @@ export default function DeckSelect({ decks, onSelect, onCreateDeck, onEditDeck, 
       </div>
       
       {/* === NỘI DUNG LƯỚI BỘ BÀI === */}
-      {/* Hiển thị lưới nếu có dữ liệu HOẶC đang ở tab Custom (để hiện nút Create) */}
-      {visibleDecks.length > 0 || activeTab === 'custom' ? (
+      {/* Hiển thị yêu cầu đăng nhập nếu người dùng chưa đăng nhập và đang ở tab Custom */}
+      {activeTab === 'custom' && !user ? (
+        <div className="deck-empty">
+          <span className="deck-empty-icon">🔒</span>
+          <p className="deck-empty-title">Login Required</p>
+          <p className="deck-empty-desc">Please log in to create and view your custom decks.</p>
+          <button className="auth-submit-btn" style={{ marginTop: '1rem', width: 'auto', padding: '0.5rem 1.5rem' }} onClick={onRedirectToLogin}>
+            Login
+          </button>
+        </div>
+      ) : visibleDecks.length > 0 || activeTab === 'custom' ? (
         <div className="deck-grid">
           
           {/* Nút Tạo bộ bài mới (Chỉ hiện trong tab Custom) */}
@@ -94,7 +108,14 @@ export default function DeckSelect({ decks, onSelect, onCreateDeck, onEditDeck, 
               {/* Thẻ bộ bài chính (Bấm vào để học) */}
               <button
                 className="deck-card"
-                onClick={() => onSelect(deck)}
+                onClick={() => {
+                  if (deck.is_system && !user) {
+                    setPendingDeck(deck);
+                    setShowAuthPrompt(true);
+                  } else {
+                    onSelect(deck);
+                  }
+                }}
               >
                 <span className="deck-emoji">{getDeckEmoji(deck)}</span>
                 <span className="deck-label">{deck.title}</span>
@@ -128,6 +149,18 @@ export default function DeckSelect({ decks, onSelect, onCreateDeck, onEditDeck, 
           <p className="deck-empty-desc">System decks will appear once added to the database.</p>
         </div>
       )}
+
+      <AuthPromptModal
+        isOpen={showAuthPrompt}
+        onClose={() => setShowAuthPrompt(false)}
+        onLogin={() => {
+          if (pendingDeck && onLoginForStudy) {
+            onLoginForStudy(pendingDeck);
+          } else {
+            onRedirectToLogin();
+          }
+        }}
+      />
     </div>
   );
 }

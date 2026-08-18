@@ -53,6 +53,15 @@ export default function Login({ onNavigate }) {
       {/* Panel phải: Form đăng nhập */}
       <div className="auth-form-panel">
         <div className="auth-form-container">
+          <button 
+            type="button"
+            className="auth-link" 
+            style={{ marginBottom: '2rem', display: 'inline-block', fontSize: '0.9rem' }} 
+            onClick={() => onNavigate('home')}
+          >
+            ← Back to Homepage
+          </button>
+
           <div className="auth-form-header">
             <h1 className="auth-form-title">Welcome back</h1>
             <p className="auth-form-subtitle">Sign in to continue your study journey</p>
