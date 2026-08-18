@@ -136,3 +136,5 @@
     transform: translateY(0);
   }
 }
+
+.mode-toggle-btn--locked { opacity: 0.6; cursor: not-allowed; }

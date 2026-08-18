@@ -47,7 +47,9 @@
 .navbar-menu {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: flex-end;
+  gap: 24px;
+  flex: 1;
 }
 .navbar-links {
   display: flex;
@@ -77,6 +79,8 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  border-left: 1px solid var(--border);
+  padding-left: 24px;
 }
 .navbar-btn {
   padding: 8px 18px;
@@ -212,6 +216,8 @@
     width: 100%;
     flex-direction: column;
     gap: 8px;
+    border-left: none;
+    padding-left: 0;
   }
   .navbar-actions .navbar-btn {
     width: 100%;
@@ -264,4 +270,32 @@
 .theme-switch--dark .theme-switch-thumb {
   transform: translateX(22px);
   background: #0f172a;
+}
+
+.navbar-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar-plan-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.navbar-plan-badge--basic {
+  background-color: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.navbar-plan-badge--premium {
+  background: linear-gradient(135deg, #FF4F00 0%, #E64700 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 79, 0, 0.5);
+  box-shadow: 0 0 10px rgba(255, 79, 0, 0.3);
 }

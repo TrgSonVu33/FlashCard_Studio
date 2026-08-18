@@ -18,7 +18,7 @@ export default function Navbar({ onNavClick, currentView }) {
   // State quản lý trạng thái mở/đóng của menu thả xuống trên giao diện điện thoại di động
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const { user, signOut } = useAuth();
+  const { user, isPremium, signOut } = useAuth();
   
   /**
    * Hàm xử lý chung khi người dùng click vào một mục trên Navbar.
@@ -101,6 +101,16 @@ export default function Navbar({ onNavClick, currentView }) {
                 History
               </button>
             </li>
+
+            {/* Link: Pricing */}
+            <li>
+              <button 
+                className={`navbar-link ${currentView === 'pricing' ? 'active' : ''}`}
+                onClick={() => handleNav('pricing')}
+              >
+                Pricing
+              </button>
+            </li>
             
           </ul>
           
@@ -125,9 +135,19 @@ export default function Navbar({ onNavClick, currentView }) {
             {/* Hiển thị email người dùng và nút Log Out khi đã đăng nhập */}
             {user ? (
               <>
-                <span className="navbar-user-email" title={user.email}>
-                  {user.email}
-                </span>
+                <div className="navbar-user-info">
+                  <span className="navbar-user-email" title={user.email}>
+                    {user.email}
+                  </span>
+                  <span 
+                    className={`navbar-plan-badge ${isPremium ? 'navbar-plan-badge--premium' : 'navbar-plan-badge--basic'}`}
+                    onClick={() => handleNav('pricing')}
+                    style={{ cursor: 'pointer' }}
+                    title="View Plans"
+                  >
+                    {isPremium ? 'Premium' : 'Basic'}
+                  </span>
+                </div>
                 <button 
                   className="navbar-btn navbar-btn--logout" 
                   id="nav-logout-btn"

@@ -14,6 +14,7 @@ export default function SignUp({ onNavigate }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [selectedPlan, setSelectedPlan] = useState('basic');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -25,6 +26,11 @@ export default function SignUp({ onNavigate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (selectedPlan === 'premium') {
+      alert('Payment integration is coming soon! Please sign up for the Basic plan for now.');
+      return;
+    }
 
     // Validate 1: Không để trống email
     if (!email.trim()) {
@@ -85,6 +91,27 @@ export default function SignUp({ onNavigate }) {
           <form className="auth-form" onSubmit={handleSubmit}>
             {/* Thông báo lỗi */}
             {error && <div className="auth-error" role="alert">{error}</div>}
+
+            {/* Plan Selection */}
+            <div className="auth-field auth-plan-selection">
+              <label className="auth-label">Choose your plan</label>
+              <div className="auth-plan-cards">
+                <div 
+                  className={`auth-plan-card ${selectedPlan === 'basic' ? 'auth-plan-card--active' : ''}`}
+                  onClick={() => setSelectedPlan('basic')}
+                >
+                  <div className="auth-plan-card-title">Basic</div>
+                  <div className="auth-plan-card-price">Free</div>
+                </div>
+                <div 
+                  className={`auth-plan-card ${selectedPlan === 'premium' ? 'auth-plan-card--active' : ''}`}
+                  onClick={() => setSelectedPlan('premium')}
+                >
+                  <div className="auth-plan-card-title">Premium</div>
+                  <div className="auth-plan-card-price">$4.99/mo</div>
+                </div>
+              </div>
+            </div>
 
             {/* Email */}
             <div className="auth-field">

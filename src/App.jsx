@@ -15,6 +15,9 @@ import StudySetsSelect from '@/features/decks/studySetsSelect/studySetsSelect';
 import DeckSelect from '@/features/decks/deckSelect/deckSelect';
 import { HomeView } from '@/features/home/homeView/homeView';
 import { HistoryView } from '@/features/history/historyView/historyView';
+import PremiumUpsell from '@/components/shared/premiumUpsell/PremiumUpsell';
+import PricingView from '@/features/pricing/PricingView';
+import CheckoutModal from '@/features/payment/CheckoutModal';
 import { StudySession } from '@/features/study/studySession/studySession';
 import { useFlashCards } from '@/hooks/useFlashCards';
 import { useHistory } from '@/hooks/useHistory';
@@ -33,7 +36,7 @@ import '@/assets/styles/App.css';
  */
 function App() {
   // === AUTH: Lấy thông tin xác thực từ AuthProvider ===
-  const { user, loading: authLoading, isRecovery, clearRecovery } = useAuth();
+  const { user, isPremium, loading: authLoading, isRecovery, clearRecovery } = useAuth();
 
   // Lấy các state và hàm xử lý liên quan đến phiên học flashcard từ custom hook useFlashcards
   const {
@@ -90,6 +93,9 @@ function App() {
   const [showEditDeck, setShowEditDeck] = useState(false);
   // State lưu trữ thông tin bộ bài đang được chọn để chỉnh sửa
   const [deckToEdit, setDeckToEdit] = useState(null);
+
+  // State quản lý việc hiển thị CheckoutModal (thanh toán Premium)
+  const [showCheckout, setShowCheckout] = useState(false);
 
   /**
    * Effect: Khi sự kiện PASSWORD_RECOVERY xảy ra (người dùng click link reset từ email),
@@ -319,18 +325,27 @@ function App() {
           
           {/* Render màn hình Lịch sử học */}
           {currentView === 'history' && (
-            <HistoryView 
-              user={user}
-              onRedirectToLogin={() => redirectToLogin('history')}
-              history={history}
-              loadingHistory={loadingHistory}
-              page={page}
-              PAGE_SIZE={PAGE_SIZE}
-              allDecks={allDecks}
-              loadMore={loadMore}
-              showLess={showLess}
-              onBack={goBack}
-            />
+            !isPremium ? (
+              <PremiumUpsell 
+                featureName="Practice History" 
+                onBack={goBack} 
+                onUpgrade={() => setShowCheckout(true)} 
+                onLoginForUpgrade={() => redirectToLogin('history')}
+              />
+            ) : (
+              <HistoryView 
+                user={user}
+                onRedirectToLogin={() => redirectToLogin('history')}
+                history={history}
+                loadingHistory={loadingHistory}
+                page={page}
+                PAGE_SIZE={PAGE_SIZE}
+                allDecks={allDecks}
+                loadMore={loadMore}
+                showLess={showLess}
+                onBack={goBack}
+              />
+            )
           )}
           
           {/* Render màn hình Chọn bộ bài cụ thể */}
@@ -342,6 +357,7 @@ function App() {
               </div>
               <DeckSelect 
                 user={user}
+                isPremium={isPremium}
                 onRedirectToLogin={() => redirectToLogin('deckSelect')}
                 decks={allDecks} 
                 onSelect={onDeckSelect} 
@@ -356,6 +372,7 @@ function App() {
                 onEditDeck={(deck) => { setDeckToEdit(deck); setShowEditDeck(true); }}
                 activeTab={deckTab}
                 onTabChange={setDeckTab}
+                onUpgrade={() => setShowCheckout(true)}
               />
               <button className="quit-button" onClick={goBack}>← Back</button>
             </div>
@@ -366,8 +383,10 @@ function App() {
             <div className="view-centered view-full-height">
               <StudySetsSelect 
                 user={user} 
+                isPremium={isPremium}
                 onRedirectToLogin={() => redirectToLogin('studySets')}
-                onSelectMode={onStudySetSelect} 
+                onSelectMode={onStudySetSelect}
+                onUpgrade={() => setShowCheckout(true)}
               />
               <button className="quit-button" onClick={goBack}>← Back</button>
             </div>
@@ -393,6 +412,16 @@ function App() {
                 onViewHistory={() => setViewStack(['history'])}
               />
             </ProtectedRoute>
+          )}
+
+          {/* Render màn hình Pricing */}
+          {currentView === 'pricing' && (
+            <PricingView 
+              user={user} 
+              isPremium={isPremium} 
+              onNavigate={navigateTo}
+              onUpgrade={() => setShowCheckout(true)}
+            />
           )}
         </main>
         
@@ -421,10 +450,18 @@ function App() {
           </ProtectedRoute>
         )}
         
-        {/* Nút dropdown liên hệ */}
-        <ContactDropdown />
-        {/* Chân trang */}
-        <Footer />
+        {/* Modal Checkout (thanh toán Premium) */}
+        <CheckoutModal 
+          isOpen={showCheckout} 
+          onClose={() => setShowCheckout(false)} 
+        />
+
+        <div className="footer-wrapper">
+          {/* Nút dropdown liên hệ */}
+          <ContactDropdown />
+          {/* Chân trang */}
+          <Footer />
+        </div>
       </div>
   );
 }

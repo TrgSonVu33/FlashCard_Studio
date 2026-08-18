@@ -16,24 +16,58 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Cờ hiệu cho biết người dùng đang trong luồng khôi phục mật khẩu (PASSWORD_RECOVERY)
   const [isRecovery, setIsRecovery] = useState(false);
 
+  // Hàm gọi API lấy thông tin profile
+  const fetchProfile = async (userId) => {
+    if (!userId) {
+      setProfile(null);
+      return;
+    }
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    
+    if (data && !error) {
+      setProfile(data);
+    } else {
+      setProfile({ plan_type: 'basic' }); // Fallback
+    }
+  };
+
   useEffect(() => {
-    // 1. Lấy session hiện tại khi component mount (ví dụ: khi người dùng refresh trang)
+    // 1. Lấy session hiện tại khi component mount
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      setLoading(false);
+      const currentUser = currentSession?.user ?? null;
+      setUser(currentUser);
+      
+      if (currentUser) {
+        fetchProfile(currentUser.id).finally(() => setLoading(false));
+      } else {
+        setLoading(false);
+      }
     });
 
     // 2. Đăng ký listener cho các sự kiện thay đổi trạng thái xác thực
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
+      async (event, newSession) => {
         setSession(newSession);
-        setUser(newSession?.user ?? null);
+        const newUser = newSession?.user ?? null;
+        setUser(newUser);
+
+        if (newUser) {
+          await fetchProfile(newUser.id);
+        } else {
+          setProfile(null);
+        }
+        
         setLoading(false);
 
         // Nếu sự kiện là PASSWORD_RECOVERY (người dùng click link reset password từ email)
@@ -44,9 +78,29 @@ export function AuthProvider({ children }) {
       }
     );
 
-    // 3. Cleanup: Hủy đăng ký listener khi component unmount
+    // 3. Realtime: Lắng nghe thay đổi trên bảng profiles (VD: plan_type thay đổi)
+    // Điều này đảm bảo UI (badge, premium gates) cập nhật ngay khi DB thay đổi
+    const profileChannel = supabase
+      .channel('profile-changes')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'profiles' },
+        (payload) => {
+          // Chỉ cập nhật nếu thay đổi thuộc về user hiện tại
+          setUser((currentUser) => {
+            if (currentUser && payload.new.id === currentUser.id) {
+              setProfile(payload.new);
+            }
+            return currentUser;
+          });
+        }
+      )
+      .subscribe();
+
+    // 4. Cleanup: Hủy đăng ký tất cả listeners khi component unmount
     return () => {
       subscription.unsubscribe();
+      supabase.removeChannel(profileChannel);
     };
   }, []);
 
@@ -58,7 +112,19 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
+    setProfile(null);
     setIsRecovery(false);
+  };
+
+  /**
+   * Hàm: refreshProfile
+   * Tải lại thông tin profile từ Supabase (VD: sau khi nâng cấp Premium).
+   * Cho phép các component gọi để cập nhật trạng thái plan_type ngay lập tức.
+   */
+  const refreshProfile = async () => {
+    if (user?.id) {
+      await fetchProfile(user.id);
+    }
   };
 
   /**
@@ -69,8 +135,10 @@ export function AuthProvider({ children }) {
     setIsRecovery(false);
   };
 
+  const isPremium = profile?.plan_type === 'premium';
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, isRecovery, signOut, clearRecovery }}>
+    <AuthContext.Provider value={{ user, session, profile, isPremium, loading, isRecovery, signOut, clearRecovery, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

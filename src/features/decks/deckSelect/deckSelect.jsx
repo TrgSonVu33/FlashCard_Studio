@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AuthPromptModal from '@/components/shared/authPromptModal/AuthPromptModal';
+import PremiumUpsell from '@/components/shared/premiumUpsell/PremiumUpsell';
 import '@/features/decks/deckSelect/deckSelect.css';
 
 /**
@@ -15,7 +16,7 @@ import '@/features/decks/deckSelect/deckSelect.css';
  * @param {function} onCreateDeck - Hàm callback được gọi khi bấm nút "Create New Deck"
  * @param {function} onEditDeck - Hàm callback được gọi khi bấm nút cài đặt (dấu 3 chấm) trên một custom deck
  */
-export default function DeckSelect({ user, onRedirectToLogin, decks, onSelect, onLoginForStudy, onCreateDeck, onEditDeck, activeTab = 'system', onTabChange }) {
+export default function DeckSelect({ user, isPremium, onRedirectToLogin, decks, onSelect, onLoginForStudy, onCreateDeck, onEditDeck, activeTab = 'system', onTabChange, onUpgrade }) {
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [pendingDeck, setPendingDeck] = useState(null);
 
@@ -76,15 +77,14 @@ export default function DeckSelect({ user, onRedirectToLogin, decks, onSelect, o
       
       {/* === NỘI DUNG LƯỚI BỘ BÀI === */}
       {/* Hiển thị yêu cầu đăng nhập nếu người dùng chưa đăng nhập và đang ở tab Custom */}
-      {activeTab === 'custom' && !user ? (
+      {activeTab === 'system' && decks.length === 0 ? (
         <div className="deck-empty">
-          <span className="deck-empty-icon">🔒</span>
-          <p className="deck-empty-title">Login Required</p>
-          <p className="deck-empty-desc">Please log in to create and view your custom decks.</p>
-          <button className="auth-submit-btn" style={{ marginTop: '1rem', width: 'auto', padding: '0.5rem 1.5rem' }} onClick={onRedirectToLogin}>
-            Login
-          </button>
+          <span className="deck-empty-icon">📭</span>
+          <p className="deck-empty-title">No decks available</p>
+          <p className="deck-empty-desc">Check back later for new study topics.</p>
         </div>
+      ) : activeTab === 'custom' && !isPremium ? (
+        <PremiumUpsell featureName="Custom Decks" onUpgrade={onUpgrade} onLoginForUpgrade={onRedirectToLogin} />
       ) : visibleDecks.length > 0 || activeTab === 'custom' ? (
         <div className="deck-grid">
           

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AuthPromptModal from '@/components/shared/authPromptModal/AuthPromptModal';
+import PremiumUpsell from '@/components/shared/premiumUpsell/PremiumUpsell';
 import '@/features/decks/studySetsSelect/studySetsSelect.css';
 
 /**
@@ -12,9 +13,9 @@ import '@/features/decks/studySetsSelect/studySetsSelect.css';
  * color: Màu sắc chủ đạo (nếu cần dùng cho UI sau này)
  */
 const MODES = [
-  { key: 'easy', label: 'Easy', emoji: '🌱', desc: 'Mix 2 random default decks', color: '#16a34a' },
-  { key: 'normal', label: 'Normal', emoji: '🔥', desc: 'Mix 4 random default decks', color: '#ea580c' },
-  { key: 'hard', label: 'Hard', emoji: '⚡️', desc: 'Mix all 6 default decks', color: '#dc2626' },
+  { key: 'easy', label: 'Easy', emoji: '🌱', desc: 'Mix 2 random default decks', color: '#16a34a', premiumRequired: false },
+  { key: 'normal', label: 'Normal', emoji: '🔥', desc: 'Mix 4 random default decks', color: '#ea580c', premiumRequired: true },
+  { key: 'hard', label: 'Hard', emoji: '⚡️', desc: 'Mix all 6 default decks', color: '#dc2626', premiumRequired: true },
 ];
 
 /**
@@ -25,13 +26,14 @@ const MODES = [
  * 
  * @param {function} onSelectMode - Hàm callback được gọi khi người dùng chọn xong chế độ và nhấn Bắt đầu
  */
-export default function StudySetsSelect({ user, onRedirectToLogin, onSelectMode }) {
+export default function StudySetsSelect({ user, isPremium, onRedirectToLogin, onSelectMode, onUpgrade }) {
   // State lưu trữ chế độ (key) mà người dùng đang chọn (easy, normal, hard)
   // Ban đầu là null (chưa chọn gì)
   const [selectedMode, setSelectedMode] = useState(null);
   
   // State quản lý việc hiển thị modal yêu cầu đăng nhập
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [showPremiumUpsell, setShowPremiumUpsell] = useState(false);
 
   /**
    * Hàm xử lý sự kiện khi người dùng nhấn nút "Start Session".
@@ -64,17 +66,26 @@ export default function StudySetsSelect({ user, onRedirectToLogin, onSelectMode 
         
         {/* Nhóm các nút chọn (Toggle buttons) */}
         <div className="mode-toggle">
-          {MODES.map((mode) => (
-            <button
-              key={mode.key}
-              // Thêm class --active nếu nút này đang được chọn
-              className={`mode-toggle-btn ${selectedMode === mode.key ? 'mode-toggle-btn--active' : ''}`}
-              onClick={() => setSelectedMode(mode.key)}
-            >
-              <span className="mode-toggle-emoji">{mode.emoji}</span>
-              <span className="mode-toggle-label">{mode.label}</span>
-            </button>
-          ))}
+          {MODES.map((mode) => {
+            const isLocked = mode.premiumRequired && (!user || !isPremium);
+            return (
+              <button
+                key={mode.key}
+                // Thêm class --active nếu nút này đang được chọn
+                className={`mode-toggle-btn ${selectedMode === mode.key ? 'mode-toggle-btn--active' : ''} ${isLocked ? 'mode-toggle-btn--locked' : ''}`}
+                onClick={() => {
+                  if (isLocked) {
+                    setShowPremiumUpsell(true);
+                  } else {
+                    setSelectedMode(mode.key);
+                  }
+                }}
+              >
+                <span className="mode-toggle-emoji">{isLocked ? '🔒' : mode.emoji}</span>
+                <span className="mode-toggle-label">{mode.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
       
@@ -108,6 +119,13 @@ export default function StudySetsSelect({ user, onRedirectToLogin, onSelectMode 
         onClose={() => setShowAuthPrompt(false)}
         onLogin={() => onRedirectToLogin()}
       />
+      
+      {/* Màn hình Upsell Premium */}
+      {showPremiumUpsell && (
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--bg-app)', zIndex: 10 }}>
+          <PremiumUpsell featureName="Advanced Study Modes" onBack={() => setShowPremiumUpsell(false)} onUpgrade={onUpgrade} onLoginForUpgrade={onRedirectToLogin} />
+        </div>
+      )}
     </div>
   );
 }
