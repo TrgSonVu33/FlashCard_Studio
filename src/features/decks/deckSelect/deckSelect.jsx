@@ -16,7 +16,7 @@ import '@/features/decks/deckSelect/deckSelect.css';
  * @param {function} onCreateDeck - Hàm callback được gọi khi bấm nút "Create New Deck"
  * @param {function} onEditDeck - Hàm callback được gọi khi bấm nút cài đặt (dấu 3 chấm) trên một custom deck
  */
-export default function DeckSelect({ user, isPremium, onRedirectToLogin, decks, onSelect, onLoginForStudy, onCreateDeck, onEditDeck, activeTab = 'system', onTabChange, onUpgrade }) {
+export default function DeckSelect({ user, isPremium, onRedirectToLogin, decks, loadingDecks, onSelect, onLoginForStudy, onCreateDeck, onEditDeck, activeTab = 'system', onTabChange, onUpgrade }) {
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [pendingDeck, setPendingDeck] = useState(null);
 
@@ -76,8 +76,14 @@ export default function DeckSelect({ user, isPremium, onRedirectToLogin, decks, 
       </div>
       
       {/* === NỘI DUNG LƯỚI BỘ BÀI === */}
-      {/* Hiển thị yêu cầu đăng nhập nếu người dùng chưa đăng nhập và đang ở tab Custom */}
-      {activeTab === 'system' && decks.length === 0 ? (
+      {/* Hiển thị trạng thái đang tải nếu đang load và chưa có data */}
+      {loadingDecks && visibleDecks.length === 0 ? (
+        <div className="deck-empty">
+          <div className="auth-spinner" style={{ marginBottom: '16px', borderTopColor: '#ff7043' }}></div>
+          <p className="deck-empty-title">Loading decks...</p>
+          <p className="deck-empty-desc">Please wait while we fetch your study topics.</p>
+        </div>
+      ) : activeTab === 'system' && decks.length === 0 ? (
         <div className="deck-empty">
           <span className="deck-empty-icon">📭</span>
           <p className="deck-empty-title">No decks available</p>

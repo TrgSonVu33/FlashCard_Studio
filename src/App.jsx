@@ -75,7 +75,8 @@ function App() {
     setAllDecks,
     fetchDecks,
     systemDeckCount,
-    customDeckCount
+    customDeckCount,
+    loadingDecks
   } = useDecks();
 
   // State quản lý việc điều hướng (view hiện tại đang hiển thị) dưới dạng Stack
@@ -380,6 +381,7 @@ function App() {
                 isPremium={isPremium}
                 onRedirectToLogin={() => redirectToLogin('deckSelect')}
                 decks={allDecks} 
+                loadingDecks={loadingDecks}
                 onSelect={onDeckSelect} 
                 onLoginForStudy={(deck) => {
                   handleDeckSelect(deck);

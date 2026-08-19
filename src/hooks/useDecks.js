@@ -13,11 +13,17 @@ import { useAuth } from '@/hooks/useAuth';
 export const useDecks = () => {
   const { user } = useAuth();
   
-  // State lưu trữ toàn bộ danh sách các bộ bài lấy được từ cơ sở dữ liệu
-  const [allDecks, setAllDecks] = useState([]);
+  // State lưu trữ danh sách các bộ bài hệ thống (public)
+  const [systemDecks, setSystemDecks] = useState([]);
+  
+  // State lưu trữ danh sách các bộ bài do người dùng tạo (private)
+  const [userDecks, setUserDecks] = useState([]);
   
   // State lưu trữ tổng số lượng thẻ (flashcards) của tất cả các bộ bài cộng lại
   const [totalCards, setTotalCards] = useState(0);
+
+  // State theo dõi trạng thái đang tải dữ liệu
+  const [loadingDecks, setLoadingDecks] = useState(true);
 
   /**
    * Hàm lấy danh sách các bộ bài từ cơ sở dữ liệu Supabase.
@@ -25,46 +31,69 @@ export const useDecks = () => {
    * giúp tối ưu hiệu suất khi truyền hàm này vào useEffect.
    */
   const fetchDecks = useCallback(async (fetchState = { isActive: true }) => {
-    // Truy vấn bảng 'decks', lấy tất cả các cột và đếm số lượng thẻ (cards) tương ứng với mỗi bộ bài
-    let query = supabase
+    setLoadingDecks(true);
+
+    // Truy vấn bộ bài hệ thống
+    const systemQuery = supabase
       .from('decks')
       .select('*, cards(count)')
-      .order('created_at', { ascending: true }); // Sắp xếp theo thời gian tạo cũ nhất đến mới nhất
-      
+      .eq('is_system', true)
+      .order('created_at', { ascending: true });
+
+    const queries = [systemQuery];
+
+    // Truy vấn bộ bài của người dùng (nếu đã đăng nhập)
     if (user) {
-      // User đã đăng nhập: lấy bộ bài hệ thống HOẶC bộ bài do user này tạo
-      query = query.or(`is_system.eq.true,user_id.eq.${user.id}`);
-    } else {
-      // Chưa đăng nhập: chỉ lấy bộ bài hệ thống
-      query = query.eq('is_system', true);
+      queries.push(
+        supabase
+          .from('decks')
+          .select('*, cards(count)')
+          .eq('is_system', false)
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true })
+      );
     }
 
-    const { data: decksData, error } = await query;
+    const results = await Promise.all(queries);
 
     // Ngăn chặn ghi đè state nếu component đã unmount hoặc user đã thay đổi
     if (!fetchState.isActive) return;
 
-    // Xử lý lỗi nếu việc truy vấn thất bại
-    if (error) {
-      console.error('Error fetching decks:', error);
-      return;
-    }
-    
-    // Biến tạm để cộng dồn tổng số lượng thẻ của tất cả bộ bài
     let tCards = 0;
-    
-    // Định dạng lại cấu trúc dữ liệu trả về từ Supabase cho dễ sử dụng trong ứng dụng
-    const formattedDecks = decksData.map(d => {
-      // Lấy ra số lượng thẻ từ mảng cards trả về (nếu không có thì mặc định là 0)
-      const count = d.cards[0]?.count || 0;
-      tCards += count;
-      // Trả về object bộ bài đã được thêm thuộc tính card_count
-      return { ...d, card_count: count };
-    });
-    
-    // Cập nhật state với dữ liệu đã được định dạng
-    setAllDecks(formattedDecks);
+
+    // 1. Xử lý kết quả system decks
+    const sysRes = results[0];
+    if (sysRes.error) {
+      console.error('Error fetching system decks:', sysRes.error);
+    } else {
+      const formattedSysDecks = sysRes.data.map(d => {
+        const count = d.cards[0]?.count || 0;
+        tCards += count;
+        return { ...d, card_count: count };
+      });
+      setSystemDecks(formattedSysDecks);
+    }
+
+    // 2. Xử lý kết quả user decks
+    if (user && results[1]) {
+      const userRes = results[1];
+      if (userRes.error) {
+        console.error('Error fetching user decks:', userRes.error);
+      } else {
+        const formattedUserDecks = userRes.data.map(d => {
+          const count = d.cards[0]?.count || 0;
+          tCards += count;
+          return { ...d, card_count: count };
+        });
+        setUserDecks(formattedUserDecks);
+      }
+    } else {
+      // Đảm bảo xóa sạch custom decks khi user không đăng nhập (đã log out)
+      setUserDecks([]);
+    }
+
     setTotalCards(tCards);
+    setLoadingDecks(false);
   }, [user]);
 
   /**
@@ -74,29 +103,36 @@ export const useDecks = () => {
   useEffect(() => {
     const fetchState = { isActive: true };
     
-    // Clear existing decks before fetching to prevent flickering of stale data
-    setAllDecks([]);
-    setTotalCards(0);
+    // Clear userDecks ngay lập tức nếu auth thay đổi sang logout để tránh nhấp nháy UI
+    // Không clear systemDecks vì chúng vẫn phải hiển thị cho anonymous users
+    if (!user) {
+      setUserDecks([]);
+    }
     
     fetchDecks(fetchState);
     
     return () => {
       fetchState.isActive = false;
     };
-  }, [fetchDecks]);
+  }, [fetchDecks, user]);
 
-  // Đếm số lượng các bộ bài mặc định của hệ thống (is_system = true)
-  const systemDeckCount = allDecks.filter(d => d.is_system).length;
-  
-  // Đếm số lượng các bộ bài do người dùng tự tạo (is_system = false)
-  const customDeckCount = allDecks.filter(d => !d.is_system).length;
+  // Hợp nhất 2 danh sách lại cho các components cần hiển thị tất cả
+  const allDecks = [...systemDecks, ...userDecks];
+
+  // Đếm số lượng
+  const systemDeckCount = systemDecks.length;
+  const customDeckCount = userDecks.length;
 
   return {
-    allDecks,
-    setAllDecks,
+    allDecks, // Xuất mảng hợp nhất để tương thích với các component cũ
+    systemDecks,
+    userDecks,
+    setSystemDecks,
+    setUserDecks,
     totalCards,
     fetchDecks,
     systemDeckCount,
-    customDeckCount
+    customDeckCount,
+    loadingDecks
   };
 };
