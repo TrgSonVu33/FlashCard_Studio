@@ -58,6 +58,14 @@ export const useFlashCards = () => {
    * @param {string|string[]} deckIds - ID của một hoặc nhiều bộ bài
    */
   const fetchStudyCards = useCallback(async (deckIds) => {
+    // 1. Kiểm tra tham số đầu vào (Parameter validation)
+    if (!deckIds || (Array.isArray(deckIds) && deckIds.length === 0)) {
+      console.warn('No valid deckIds provided to fetchStudyCards.');
+      setCards([]);
+      setLoadingCards(false);
+      return;
+    }
+
     setLoadingCards(true);
     // Đảm bảo đầu vào luôn là một mảng để dễ truy vấn IN trong SQL
     const idsToFetch = Array.isArray(deckIds) ? deckIds : [deckIds];
@@ -69,7 +77,12 @@ export const useFlashCards = () => {
       .in('deck_id', idsToFetch);
       
     if (cardsError) {
-      console.error('Error fetching cards:', cardsError);
+      // 2. Log lỗi chi tiết (có thể do RLS từ chối quyền)
+      console.error('Error fetching cards (possibly RLS or missing deck):', cardsError);
+      
+      // 3. Reset state gracefully
+      setCards([]);
+      setCurrentIndex(0);
       setLoadingCards(false);
       return;
     }

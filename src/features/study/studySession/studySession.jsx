@@ -34,6 +34,21 @@ export const StudySession = ({
     );
   }
 
+  // 1.5 TRẠNG THÁI TRỐNG (EMPTY STATE)
+  if (!loadingCards && (!cards || cards.length === 0)) {
+    return (
+      <div className="study-header" style={{ textAlign: 'center', marginTop: '2rem' }}>
+        <h2 className="study-title">No cards found</h2>
+        <p className="study-subtitle" style={{ marginBottom: '2rem' }}>
+          This deck is currently empty or you do not have permission to view its contents.
+        </p>
+        <button className="finish-session-btn" onClick={onQuit}>
+          Go Back
+        </button>
+      </div>
+    );
+  }
+
   // 2. MÀN HÌNH KẾT QUẢ (RESULT SCREEN)
   if (showResult) {
     return (

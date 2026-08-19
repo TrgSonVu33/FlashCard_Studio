@@ -24,7 +24,7 @@ export const useDecks = () => {
    * Sử dụng useCallback để tránh việc hàm bị tạo lại (re-created) ở mỗi lần render, 
    * giúp tối ưu hiệu suất khi truyền hàm này vào useEffect.
    */
-  const fetchDecks = useCallback(async () => {
+  const fetchDecks = useCallback(async (fetchState = { isActive: true }) => {
     // Truy vấn bảng 'decks', lấy tất cả các cột và đếm số lượng thẻ (cards) tương ứng với mỗi bộ bài
     let query = supabase
       .from('decks')
@@ -40,6 +40,9 @@ export const useDecks = () => {
     }
 
     const { data: decksData, error } = await query;
+
+    // Ngăn chặn ghi đè state nếu component đã unmount hoặc user đã thay đổi
+    if (!fetchState.isActive) return;
 
     // Xử lý lỗi nếu việc truy vấn thất bại
     if (error) {
@@ -66,9 +69,20 @@ export const useDecks = () => {
 
   /**
    * Effect hook: Tự động tải danh sách bộ bài ngay sau khi component sử dụng hook này được mount (khởi tạo).
+   * Có tích hợp cleanup để ngăn race condition khi auth state thay đổi.
    */
   useEffect(() => {
-    fetchDecks();
+    const fetchState = { isActive: true };
+    
+    // Clear existing decks before fetching to prevent flickering of stale data
+    setAllDecks([]);
+    setTotalCards(0);
+    
+    fetchDecks(fetchState);
+    
+    return () => {
+      fetchState.isActive = false;
+    };
   }, [fetchDecks]);
 
   // Đếm số lượng các bộ bài mặc định của hệ thống (is_system = true)
