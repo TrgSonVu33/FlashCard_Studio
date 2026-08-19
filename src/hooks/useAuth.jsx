@@ -35,8 +35,10 @@ export function AuthProvider({ children }) {
       .single();
     
     if (data && !error) {
+      console.log('[fetchProfile] SUCCESS for user:', userId, 'Data:', data);
       setProfile(data);
     } else {
+      console.error('[fetchProfile] FAILED for user:', userId, 'Error:', error);
       setProfile({ plan_type: 'basic' }); // Fallback
     }
   };
@@ -135,10 +137,19 @@ export function AuthProvider({ children }) {
     setIsRecovery(false);
   };
 
+  /**
+   * Hàm: refreshUserPlan
+   * Cập nhật trạng thái plan_type local ngay lập tức (optimistic update).
+   * Đảm bảo giao diện (Navbar, các khóa) mở ra tức thì không độ trễ.
+   */
+  const refreshUserPlan = (planType) => {
+    setProfile(prev => prev ? { ...prev, plan_type: planType } : { plan_type: planType });
+  };
+
   const isPremium = profile?.plan_type === 'premium';
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, isPremium, loading, isRecovery, signOut, clearRecovery, refreshProfile }}>
+    <AuthContext.Provider value={{ user, session, profile, isPremium, loading, isRecovery, signOut, clearRecovery, refreshProfile, refreshUserPlan }}>
       {children}
     </AuthContext.Provider>
   );

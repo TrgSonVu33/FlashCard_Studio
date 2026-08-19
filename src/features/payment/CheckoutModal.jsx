@@ -18,7 +18,7 @@ import './CheckoutModal.css';
  * @param {function} onClose - Hàm callback đóng modal
  */
 export default function CheckoutModal({ isOpen, onClose }) {
-  const { user, isPremium, refreshProfile } = useAuth();
+  const { user, isPremium, refreshUserPlan, refreshProfile } = useAuth();
   
   // Trạng thái UI của modal
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
 
   /**
    * Xử lý khi user bấm nút "Simulate Payment Success"
-   * Gọi RPC -> Refresh profile -> Hiển thị success
+   * Gọi RPC -> Update local state -> Hiển thị success
    */
   const handleSimulate = async () => {
     setLoading(true);
@@ -45,8 +45,11 @@ export default function CheckoutModal({ isOpen, onClose }) {
       const result = await simulatePremiumUpgrade();
       setPaymentResult(result);
 
-      // Refresh profile trong AuthContext để isPremium cập nhật ngay
-      await refreshProfile();
+      // Cập nhật state local ngay lập tức (không độ trễ)
+      refreshUserPlan('premium');
+      
+      // Chạy refresh db ngầm
+      refreshProfile().catch(console.error);
 
       // Hiển thị trạng thái thành công
       setSuccess(true);
@@ -109,69 +112,75 @@ export default function CheckoutModal({ isOpen, onClose }) {
 
         {/* === TRƯỜNG HỢP 3: Hiển thị form thanh toán (chưa Premium, chưa thành công) === */}
         {!isPremium && !success && (
-          <>
-            {/* Header */}
-            <div className="checkout-header">
-              <span className="checkout-icon">💎</span>
-              <h2 className="checkout-title">Upgrade to Premium</h2>
-              <div className="checkout-price">
-                <span className="checkout-price-currency">$</span>
-                <span className="checkout-price-amount">4.99</span>
-                <span className="checkout-price-period">/mo</span>
+          <div className="checkout-content">
+            {/* Cột trái: Summary & Benefits */}
+            <div className="checkout-summary">
+              {/* Header */}
+              <div className="checkout-header">
+                <span className="checkout-icon">💎</span>
+                <h2 className="checkout-title">Upgrade to Premium</h2>
+                <div className="checkout-price">
+                  <span className="checkout-price-currency">$</span>
+                  <span className="checkout-price-amount">4.99</span>
+                  <span className="checkout-price-period">/mo</span>
+                </div>
+                <p className="checkout-subtitle">Supercharge your learning experience</p>
               </div>
-              <p className="checkout-subtitle">Supercharge your learning experience</p>
+
+              {/* Danh sách tính năng Premium */}
+              <ul className="checkout-benefits">
+                <li>✨ Create Unlimited Custom Decks</li>
+                <li>🔥 Advanced Study Modes (Normal, Hard)</li>
+                <li>📊 Detailed Practice History & Analytics</li>
+                <li>🚀 Priority Support</li>
+              </ul>
             </div>
 
-            {/* Danh sách tính năng Premium */}
-            <ul className="checkout-benefits">
-              <li>✨ Create Unlimited Custom Decks</li>
-              <li>🔥 Advanced Study Modes (Normal, Hard)</li>
-              <li>📊 Detailed Practice History & Analytics</li>
-              <li>🚀 Priority Support</li>
-            </ul>
-
-            {/* VietQR Code */}
-            <div className="checkout-qr-section">
-              <p className="checkout-qr-label">Scan to Pay via VietQR</p>
-              <div className="checkout-qr-wrapper">
-                <img
-                  className="checkout-qr-img"
-                  src={qrUrl}
-                  alt="VietQR Payment Code"
-                  loading="lazy"
-                />
+            {/* Cột phải: Payment */}
+            <div className="checkout-payment">
+              {/* VietQR Code */}
+              <div className="checkout-qr-section">
+                <p className="checkout-qr-label">Scan to Pay via VietQR</p>
+                <div className="checkout-qr-wrapper">
+                  <img
+                    className="checkout-qr-img"
+                    src={qrUrl}
+                    alt="VietQR Payment Code"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="checkout-qr-note">
+                  Test mode: Amount is set to 0 VND for development
+                </p>
               </div>
-              <p className="checkout-qr-note">
-                Test mode: Amount is set to 0 VND for development
-              </p>
-            </div>
 
-            {/* Divider */}
-            <div className="checkout-divider">or test without scanning</div>
+              {/* Divider */}
+              <div className="checkout-divider">or test without scanning</div>
 
-            {/* Error message */}
-            {error && (
-              <div className="checkout-error">
-                ⚠️ {error}
-              </div>
-            )}
-
-            {/* Nút mô phỏng thanh toán thành công */}
-            <button
-              className="checkout-simulate-btn"
-              onClick={handleSimulate}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <span className="checkout-spinner" />
-                  Processing...
-                </>
-              ) : (
-                '🧪 Test: Simulate Payment Success'
+              {/* Error message */}
+              {error && (
+                <div className="checkout-error">
+                  ⚠️ {error}
+                </div>
               )}
-            </button>
-          </>
+
+              {/* Nút mô phỏng thanh toán thành công */}
+              <button
+                className="checkout-simulate-btn"
+                onClick={handleSimulate}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <span className="checkout-spinner" />
+                    Processing...
+                  </>
+                ) : (
+                  '🧪 Test: Simulate Payment Success'
+                )}
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

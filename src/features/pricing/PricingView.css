@@ -56,9 +56,9 @@
 }
 
 .pricing-card--premium {
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid rgba(255, 79, 0, 0.3);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 79, 0, 0.1) inset;
+  background: linear-gradient(180deg, #201515 0%, #110909 100%);
+  border: 1px solid rgba(255, 79, 0, 0.4);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 79, 0, 0.2) inset;
 }
 
 .pricing-badge {
@@ -196,4 +196,159 @@
     width: 100%;
     max-width: 100%;
   }
+}
+
+/* =============================================
+   DOWNGRADE MODAL
+   ============================================= */
+.downgrade-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: downgradeFadeIn 0.3s ease-out;
+  padding: 1rem;
+}
+
+@keyframes downgradeFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.downgrade-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 24px;
+  padding: 2.5rem;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: downgradeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+@keyframes downgradeSlideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.downgrade-modal-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  background: var(--danger-bg);
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  border-radius: 50%;
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.downgrade-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0 0 1rem 0;
+}
+
+.downgrade-modal-desc {
+  font-size: 1rem;
+  color: var(--text-p);
+  line-height: 1.6;
+  margin: 0 0 2rem 0;
+}
+
+.downgrade-modal-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.downgrade-btn {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.downgrade-btn--cancel {
+  background: var(--bg-hover);
+  color: var(--text-h);
+  border: 1px solid var(--border-strong);
+}
+
+.downgrade-btn--cancel:hover {
+  background: var(--border);
+}
+
+.downgrade-btn--confirm {
+  background: var(--danger);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+}
+
+.downgrade-btn--confirm:hover {
+  background: #b91c1c; /* slightly darker red */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+.downgrade-btn--confirm:active {
+  transform: translateY(0);
+}
+
+.downgrade-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* =============================================
+   TOAST NOTIFICATION (ZAPIER STYLE)
+   ============================================= */
+.pricing-toast {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-xl);
+  z-index: 2000;
+  opacity: 0;
+  animation: toastFadeInCenter 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pricing-toast--success {
+  border-left: 4px solid #10b981; /* Emerald Green */
+}
+
+.pricing-toast--error {
+  border-left: 4px solid #ef4444; /* Red */
+}
+
+.pricing-toast-icon {
+  font-size: 1.5rem;
+}
+
+.pricing-toast-message {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+@keyframes toastFadeInCenter {
+  from { opacity: 0; transform: scale(0.90); }
+  to { opacity: 1; transform: scale(1); }
 }

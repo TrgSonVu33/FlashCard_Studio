@@ -13,8 +13,8 @@ import { supabase } from '@/services/supabase';
 // === CẤU HÌNH VIETQR (Thay thế bằng thông tin thật) ===
 const VIETQR_CONFIG = {
   BANK_BIN: '970436',            // Mã BIN ngân hàng (VD: 970436 = Vietcombank)
-  ACCOUNT_NO: '1234567890',      // Số tài khoản nhận tiền
-  ACCOUNT_NAME: 'FLASHCARD STUDIO', // Tên chủ tài khoản
+  ACCOUNT_NO: '1012743065',      // Số tài khoản nhận tiền
+  ACCOUNT_NAME: 'VU TRUONG SON', // Tên chủ tài khoản
   TEMPLATE: 'compact2',          // Template hiển thị QR (compact, compact2, qr_only, print)
 };
 
@@ -94,5 +94,34 @@ export async function fetchPaymentHistory() {
   } catch (err) {
     console.error('[PaymentService] fetchPaymentHistory failed:', err);
     return [];
+  }
+}
+
+/**
+ * Hàm hạ cấp người dùng về gói Basic.
+ * Cập nhật trực tiếp plan_type trong bảng profiles.
+ * 
+ * @param {string} userId - ID của người dùng
+ * @returns {boolean} true nếu thành công, false nếu thất bại
+ */
+export async function downgradeToBasic(userId) {
+  if (!userId) return false;
+  
+  try {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ plan_type: 'basic' })
+      .eq('id', userId);
+      
+    if (error) {
+      console.error('[PaymentService] downgradeToBasic error:', error);
+      throw error;
+    }
+    
+    console.log('[PaymentService] Successfully downgraded to basic for user:', userId);
+    return true;
+  } catch (err) {
+    console.error('[PaymentService] downgradeToBasic failed:', err);
+    return false;
   }
 }

@@ -10,7 +10,7 @@ import '@/features/auth/styles/auth.css';
  * 
  * @param {function} onNavigate - Hàm callback điều hướng sang các trang khác (login)
  */
-export default function SignUp({ onNavigate }) {
+export default function SignUp({ onNavigate, onSignupSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -26,11 +26,6 @@ export default function SignUp({ onNavigate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    if (selectedPlan === 'premium') {
-      alert('Payment integration is coming soon! Please sign up for the Basic plan for now.');
-      return;
-    }
 
     // Validate 1: Không để trống email
     if (!email.trim()) {
@@ -59,9 +54,13 @@ export default function SignUp({ onNavigate }) {
 
     if (signUpError) {
       setError(signUpError.message);
+    } else {
+      // Nếu thành công và email confirmation đã tắt,
+      // onAuthStateChange sẽ tự cập nhật → App chuyển sang Home
+      if (onSignupSuccess) {
+        onSignupSuccess(selectedPlan);
+      }
     }
-    // Nếu thành công và email confirmation đã tắt,
-    // onAuthStateChange sẽ tự cập nhật → App chuyển sang Home
 
     setLoading(false);
   };

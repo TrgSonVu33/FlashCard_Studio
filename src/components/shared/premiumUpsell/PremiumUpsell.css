@@ -8,14 +8,14 @@
 }
 
 .premium-upsell-card {
-  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-  border: 1px solid rgba(255, 79, 0, 0.2);
+  background: linear-gradient(180deg, #201515 0%, #110909 100%);
+  border: 1px solid rgba(255, 79, 0, 0.4);
   border-radius: 24px;
   padding: 3rem 2rem;
   max-width: 480px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 79, 0, 0.1) inset;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 79, 0, 0.2) inset;
   position: relative;
   overflow: hidden;
 }

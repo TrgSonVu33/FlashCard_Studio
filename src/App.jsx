@@ -22,6 +22,7 @@ import { StudySession } from '@/features/study/studySession/studySession';
 import { useFlashCards } from '@/hooks/useFlashCards';
 import { useHistory } from '@/hooks/useHistory';
 import { useDecks } from '@/hooks/useDecks';
+import { downgradeToBasic } from '@/services/paymentService';
 import '@/assets/styles/App.css';
 
 /**
@@ -36,7 +37,7 @@ import '@/assets/styles/App.css';
  */
 function App() {
   // === AUTH: Lấy thông tin xác thực từ AuthProvider ===
-  const { user, isPremium, loading: authLoading, isRecovery, clearRecovery } = useAuth();
+  const { user, isPremium, loading: authLoading, isRecovery, clearRecovery, refreshUserPlan } = useAuth();
 
   // Lấy các state và hàm xử lý liên quan đến phiên học flashcard từ custom hook useFlashcards
   const {
@@ -255,6 +256,18 @@ function App() {
     setViewStack(['home']);
   }, [clearRecovery]);
 
+  /**
+   * Xử lý hạ cấp về Basic
+   */
+  const handleDowngrade = async () => {
+    if (!user) return false;
+    const success = await downgradeToBasic(user.id);
+    if (success) {
+      refreshUserPlan('basic');
+    }
+    return success;
+  };
+
   // Hiển thị spinner khi đang tải thông tin xác thực ban đầu
   if (authLoading) {
     return (
@@ -290,7 +303,14 @@ function App() {
   if (currentView === 'signup') {
     return (
       <>
-        <SignUp onNavigate={(view) => setViewStack([view])} />
+        <SignUp 
+          onNavigate={(view) => setViewStack([view])} 
+          onSignupSuccess={(plan) => {
+            if (plan === 'premium') {
+              setShowCheckout(true);
+            }
+          }}
+        />
         <AuthActions />
       </>
     );
@@ -421,6 +441,7 @@ function App() {
               isPremium={isPremium} 
               onNavigate={navigateTo}
               onUpgrade={() => setShowCheckout(true)}
+              onDowngrade={handleDowngrade}
             />
           )}
         </main>
