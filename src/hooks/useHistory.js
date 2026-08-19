@@ -129,8 +129,8 @@ export function useHistory() {
    * @param {number} totalAmount - Tổng số câu trong phiên học
    * @param {string} mode - Chế độ học ('standard', 'easy', 'normal', 'hard')
    */
-  const saveResult = useCallback(async (selectedCategory, correct, totalAmount, mode = 'standard') => {
-    console.log('Saving result:', { score: correct, total: totalAmount, category: selectedCategory, mode });
+  const saveResult = useCallback(async (selectedDeck, correct, totalAmount, mode = 'standard') => {
+    console.log('Saving result:', { score: correct, total: totalAmount, deck: selectedDeck, mode });
     
     // Lấy thông tin user hiện tại để gắn user_id vào bản ghi lịch sử (bắt buộc cho RLS)
     const { data: { user } } = await supabase.auth.getUser();
@@ -139,15 +139,50 @@ export function useHistory() {
       return;
     }
     
-    // Định dạng chuỗi ngày tháng năm theo chuẩn DD/MM/YYYY để lưu vào DB (dạng chuỗi)
-    const dateObj = new Date();
-    const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()}`;
+    let categoryId = selectedDeck?.id;
+    const deckTitle = selectedDeck?.title || 'Unknown';
+
+    // RLS Policy Fix: Nếu là System Deck hoặc Mixed Mode (id = null hoặc 'mixed'), 
+    // user không có quyền ghi history vì policy bắt buộc `categories` phải là ID của deck thuộc sở hữu user.
+    // Giải pháp: Tạo tự động một Shadow Deck (deck ẩn) thuộc sở hữu user để gán history vào.
+    if (!categoryId || categoryId === 'mixed' || selectedDeck?.is_system) {
+      // Tìm xem user đã có shadow deck cho title này chưa
+      let { data: existingShadow } = await supabase
+        .from('decks')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('description', 'HIDDEN_SYSTEM_DECK_TRACKER')
+        .eq('title', deckTitle)
+        .maybeSingle();
+        
+      if (existingShadow) {
+        categoryId = existingShadow.id;
+      } else {
+        // Tạo shadow deck mới nếu chưa có
+        const shadowPayload = {
+          user_id: user.id,
+          title: deckTitle,
+          description: 'HIDDEN_SYSTEM_DECK_TRACKER',
+          is_system: false,
+        };
+        const { data: newShadow, error: shadowErr } = await supabase
+          .from('decks')
+          .insert([shadowPayload])
+          .select('id')
+          .single();
+          
+        if (shadowErr) {
+          console.error('Failed to create shadow deck:', shadowErr);
+        } else if (newShadow) {
+          categoryId = newShadow.id;
+        }
+      }
+    }
     
-    // Cấu trúc dữ liệu chuẩn bị gửi lên Supabase (bao gồm user_id cho multi-user)
+    // Cấu trúc dữ liệu chuẩn bị gửi lên Supabase
     const payload = {
       user_id: user.id,
-      created_at: formattedDate,
-      categories: selectedCategory,
+      categories: categoryId, // Đã được trỏ về deck hợp lệ của user
       score: correct,
       total: totalAmount,
       mode: mode
@@ -169,6 +204,7 @@ export function useHistory() {
     
     if (error) {
       console.error('Error saving result:', error);
+      alert(`Error saving history: ${error.message || JSON.stringify(error)}`);
     } else {
       console.log('Result saved successfully:', data);
     }

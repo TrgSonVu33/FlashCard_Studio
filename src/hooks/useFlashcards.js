@@ -89,13 +89,16 @@ export const useFlashCards = () => {
     
     const deckCards = fetchedCards || [];
     
-    // Nếu chế độ nhiều bộ bài thì nên xáo trộn thứ tự
+    // Giới hạn số lượng thẻ cho một phiên học
+    let limitedCards;
     if (Array.isArray(deckIds) && deckIds.length > 1) {
+      // Chế độ trộn bài (Mixed Decks): cố định 10 thẻ
       deckCards.sort(() => Math.random() - 0.5);
+      limitedCards = deckCards.slice(0, 10);
+    } else {
+      // Chế độ học 1 bộ bài (Standard): giới hạn 20 thẻ
+      limitedCards = deckCards.slice(0, 20);
     }
-    
-    // Giới hạn số lượng thẻ trong một phiên học (VD: 20 thẻ) để người dùng không bị mỏi
-    const limitedCards = deckCards.slice(0, 20);
     
     setCards(limitedCards);
     setCurrentIndex(0);
@@ -137,7 +140,7 @@ export const useFlashCards = () => {
     
     // Tạo đối tượng bộ bài ảo (activeDeck) đại diện cho phiên học
     const activeDeck = isMixedMode 
-      ? { id: 'mixed', title: `Mixed Study Set (${deckInput.length} Decks)` }
+      ? { id: null, title: `Mixed Study Set (${deckInput.length} Decks)` }
       : deckInput;
       
     // Đặt lại các trạng thái về trạng thái ban đầu để chuẩn bị phiên học

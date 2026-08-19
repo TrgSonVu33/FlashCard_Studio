@@ -122,17 +122,17 @@ export default function CheckoutModal({ isOpen, onClose }) {
                 <div className="checkout-price">
                   <span className="checkout-price-currency">$</span>
                   <span className="checkout-price-amount">4.99</span>
-                  <span className="checkout-price-period">/mo</span>
+                  <span className="checkout-price-period">/ mo</span>
                 </div>
                 <p className="checkout-subtitle">Supercharge your learning experience</p>
               </div>
 
               {/* Danh sách tính năng Premium */}
               <ul className="checkout-benefits">
-                <li>✨ Create Unlimited Custom Decks</li>
-                <li>🔥 Advanced Study Modes (Normal, Hard)</li>
-                <li>📊 Detailed Practice History & Analytics</li>
-                <li>🚀 Priority Support</li>
+                <li>✓ Create Unlimited Custom Decks</li>
+                <li>✓ Advanced Study Modes (Normal, Hard)</li>
+                <li>✓ Detailed Practice History & Analytics</li>
+                <li>✓ Priority Support</li>
               </ul>
             </div>
 
@@ -176,7 +176,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                     Processing...
                   </>
                 ) : (
-                  '🧪 Test: Simulate Payment Success'
+                  'Payment Success'
                 )}
               </button>
             </div>

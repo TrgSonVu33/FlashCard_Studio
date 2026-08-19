@@ -50,9 +50,9 @@ export default function PremiumUpsell({ featureName, onBack, onUpgrade, onLoginF
           </p>
         )}
         <ul className="premium-upsell-features">
-          <li>✨ Create and manage unlimited Custom Decks</li>
-          <li>🔥 Access Hard and Normal difficulty Study Sets</li>
-          <li>📊 View your detailed Practice History</li>
+          <li>✓ Create and manage unlimited Custom Decks</li>
+          <li>✓ Access Hard and Normal difficulty Study Sets</li>
+          <li>✓ View your detailed Practice History</li>
         </ul>
         <div className="premium-upsell-actions">
           {onBack && (

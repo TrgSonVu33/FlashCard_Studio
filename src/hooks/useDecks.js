@@ -19,6 +19,9 @@ export const useDecks = () => {
   // State lưu trữ danh sách các bộ bài do người dùng tạo (private)
   const [userDecks, setUserDecks] = useState([]);
   
+  // State ẩn lưu trữ các bộ bài "bóng" (shadow decks) để pass qua RLS của Supabase
+  const [shadowDecks, setShadowDecks] = useState([]);
+  
   // State lưu trữ tổng số lượng thẻ (flashcards) của tất cả các bộ bài cộng lại
   const [totalCards, setTotalCards] = useState(0);
 
@@ -82,14 +85,24 @@ export const useDecks = () => {
       } else {
         const formattedUserDecks = userRes.data.map(d => {
           const count = d.cards[0]?.count || 0;
-          tCards += count;
+          // Chỉ cộng dồn tCards cho các bộ bài thực sự (không phải shadow deck)
+          if (d.description !== 'HIDDEN_SYSTEM_DECK_TRACKER') {
+            tCards += count;
+          }
           return { ...d, card_count: count };
         });
-        setUserDecks(formattedUserDecks);
+        
+        // Tách riêng shadow decks để không hiển thị trong danh sách UI của user
+        const actualUserDecks = formattedUserDecks.filter(d => d.description !== 'HIDDEN_SYSTEM_DECK_TRACKER');
+        const shadowDecksList = formattedUserDecks.filter(d => d.description === 'HIDDEN_SYSTEM_DECK_TRACKER');
+        
+        setUserDecks(actualUserDecks);
+        setShadowDecks(shadowDecksList);
       }
     } else {
       // Đảm bảo xóa sạch custom decks khi user không đăng nhập (đã log out)
       setUserDecks([]);
+      setShadowDecks([]);
     }
 
     setTotalCards(tCards);
@@ -107,6 +120,7 @@ export const useDecks = () => {
     // Không clear systemDecks vì chúng vẫn phải hiển thị cho anonymous users
     if (!user) {
       setUserDecks([]);
+      setShadowDecks([]);
     }
     
     fetchDecks(fetchState);
@@ -116,8 +130,8 @@ export const useDecks = () => {
     };
   }, [fetchDecks, user]);
 
-  // Hợp nhất 2 danh sách lại cho các components cần hiển thị tất cả
-  const allDecks = [...systemDecks, ...userDecks];
+  // Hợp nhất 3 danh sách lại cho HistoryView có thể tìm thấy tên bộ bài
+  const allDecks = [...systemDecks, ...userDecks, ...shadowDecks];
 
   // Đếm số lượng
   const systemDeckCount = systemDecks.length;

@@ -64,11 +64,9 @@ export default function PricingView({ user, isPremium, onNavigate, onUpgrade, on
         {/* Basic Plan */}
         <div className="pricing-card pricing-card--basic">
           <div className="pricing-card-header">
-            <h2 className="pricing-card-title">Basic</h2>
+            <h2 className="pricing-card-title">Basic Plan</h2>
             <div className="pricing-price">
-              <span className="pricing-currency">$</span>
-              <span className="pricing-amount">0</span>
-              <span className="pricing-period">/mo</span>
+              <span className="pricing-amount">Free</span>
             </div>
           </div>
           <p className="pricing-desc">Everything you need to get started.</p>
@@ -90,19 +88,20 @@ export default function PricingView({ user, isPremium, onNavigate, onUpgrade, on
         <div className="pricing-card pricing-card--premium">
           <div className="pricing-badge">Most Popular</div>
           <div className="pricing-card-header">
-            <h2 className="pricing-card-title">Premium</h2>
+            <h2 className="pricing-card-title">Premium Plan</h2>
             <div className="pricing-price">
               <span className="pricing-currency">$</span>
               <span className="pricing-amount">4.99</span>
-              <span className="pricing-period">/mo</span>
+              <span className="pricing-period">/ mo</span>
             </div>
           </div>
-          <p className="pricing-desc">Supercharge your learning experience.</p>
+          <p className="pricing-desc">Improve your learning experience.</p>
           <ul className="pricing-features">
-            <li>✨ Create Unlimited Custom Decks</li>
-            <li>🔥 Advanced Study Modes (Normal, Hard)</li>
-            <li>📊 Detailed Practice History</li>
-            <li>🚀 Priority Support</li>
+            <li>✓ Everything In Basic Starter Pack</li>
+            <li>✓ Create Unlimited Custom Decks</li>
+            <li>✓ Advanced Study Modes</li>
+            <li>✓ Detailed Practice History</li>
+            <li>✓ Priority Support</li>
           </ul>
           <button 
             className="pricing-btn pricing-btn--premium"

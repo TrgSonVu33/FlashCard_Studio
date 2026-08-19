@@ -101,12 +101,12 @@ export const HistoryView = ({
                     
                   // Trường hợp 3b: Phiên học một bộ bài cụ thể (Tìm thấy thông tin bộ bài)
                   } else if (deckInfo) {
-                    const icon = deckInfo.icon || '📚'; // Sử dụng icon của bộ bài, nếu không có thì dùng mặc định '📚'
-                    displayCategory = <span className="history-category">&nbsp;{icon} {deckInfo.title}</span>;
+                    const icon = deckInfo.icon || '🌄'; // Sử dụng icon của bộ bài, nếu không có thì dùng mặc định '📚'
+                    displayCategory = <span className="history-category">&nbsp;{icon} : {deckInfo.title}</span>;
                     
                   // Trường hợp 3c: Phiên học nhưng không tìm thấy bộ bài (Có thể bộ bài đã bị xóa)
                   } else if (item.categories) {
-                    displayCategory = <span className="history-category">&nbsp;📚 {item.categories}</span>;
+                    displayCategory = <span className="history-category">&nbsp;🗑️ : Deleted Deck</span>;
                   }
                   
                   // -- 4. RENDER MỘT BẢN GHI LỊCH SỬ --

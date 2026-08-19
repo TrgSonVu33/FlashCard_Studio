@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AuthPromptModal from '@/components/shared/authPromptModal/AuthPromptModal';
 import PremiumUpsell from '@/components/shared/premiumUpsell/PremiumUpsell';
 import '@/features/decks/deckSelect/deckSelect.css';
@@ -14,11 +14,22 @@ import '@/features/decks/deckSelect/deckSelect.css';
  * @param {Array} decks - Danh sách toàn bộ các bộ bài được tải từ cơ sở dữ liệu
  * @param {function} onSelect - Hàm callback được gọi khi người dùng bấm chọn một bộ bài để học
  * @param {function} onCreateDeck - Hàm callback được gọi khi bấm nút "Create New Deck"
- * @param {function} onEditDeck - Hàm callback được gọi khi bấm nút cài đặt (dấu 3 chấm) trên một custom deck
+ * @param {function} onEditDeck - Hàm callback được gọi khi chọn "Edit Deck"
+ * @param {function} onDeleteDeck - Hàm callback được gọi khi chọn "Delete Deck"
  */
-export default function DeckSelect({ user, isPremium, onRedirectToLogin, decks, loadingDecks, onSelect, onLoginForStudy, onCreateDeck, onEditDeck, activeTab = 'system', onTabChange, onUpgrade }) {
+export default function DeckSelect({ user, isPremium, onRedirectToLogin, decks, loadingDecks, onSelect, onLoginForStudy, onCreateDeck, onEditDeck, onDeleteDeck, activeTab = 'system', onTabChange, onUpgrade }) {
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [pendingDeck, setPendingDeck] = useState(null);
+  const [menuOpenId, setMenuOpenId] = useState(null);
+
+  // Đóng menu khi click ra ngoài
+  useEffect(() => {
+    const handleClickOutside = () => setMenuOpenId(null);
+    if (menuOpenId) {
+      document.addEventListener('click', handleClickOutside);
+    }
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [menuOpenId]);
 
   // Lọc danh sách bộ bài thành 2 loại: System (Hệ thống) và Custom (Tự tạo)
   const systemDecks = decks.filter(d => d.is_system);
@@ -127,22 +138,50 @@ export default function DeckSelect({ user, isPremium, onRedirectToLogin, decks, 
                 <span className="deck-label">{deck.title}</span>
               </button>
               
-              {/* Nút chỉnh sửa bộ bài (Dấu ba chấm) - Chỉ hiển thị cho Custom Decks */}
+              {/* Nút tùy chọn (Dấu ba chấm) - Chỉ hiển thị cho Custom Decks */}
               {activeTab === 'custom' && (
-                <button
-                  className="deck-edit-btn"
-                  onClick={(e) => { 
-                    e.stopPropagation(); // Ngăn chặn sự kiện click lan truyền ra thẻ lớn (tránh bị nhảy vào học luôn)
-                    onEditDeck?.(deck);  // Gọi hàm mở Modal Edit
-                  }}
-                  title="Edit Deck Settings"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="1.5" />
-                    <circle cx="12" cy="5" r="1.5" />
-                    <circle cx="12" cy="19" r="1.5" />
-                  </svg>
-                </button>
+                <div className="deck-menu-container">
+                  <button
+                    className="deck-edit-btn"
+                    onClick={(e) => { 
+                      e.stopPropagation();
+                      setMenuOpenId(menuOpenId === deck.id ? null : deck.id);
+                    }}
+                    title="Deck Options"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="1.5" />
+                      <circle cx="12" cy="5" r="1.5" />
+                      <circle cx="12" cy="19" r="1.5" />
+                    </svg>
+                  </button>
+                  
+                  {/* Dropdown Menu */}
+                  {menuOpenId === deck.id && (
+                    <div className="deck-menu-dropdown">
+                      <button 
+                        className="deck-menu-item"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setMenuOpenId(null);
+                          onEditDeck?.(deck);
+                        }}
+                      >
+                        Edit Deck
+                      </button>
+                      <button 
+                        className="deck-menu-item deck-menu-item--delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setMenuOpenId(null);
+                          onDeleteDeck?.(deck);
+                        }}
+                      >
+                        Delete Deck
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           ))}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/services/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import Navbar from '@/components/layout/navbar/navbar';
 import Footer from '@/components/layout/footer/footer';
@@ -19,6 +20,7 @@ import PremiumUpsell from '@/components/shared/premiumUpsell/PremiumUpsell';
 import PricingView from '@/features/pricing/PricingView';
 import CheckoutModal from '@/features/payment/CheckoutModal';
 import { StudySession } from '@/features/study/studySession/studySession';
+import ConfirmModal from '@/components/shared/confirmModal/ConfirmModal';
 import { useFlashCards } from '@/hooks/useFlashCards';
 import { useHistory } from '@/hooks/useHistory';
 import { useDecks } from '@/hooks/useDecks';
@@ -95,6 +97,8 @@ function App() {
   const [showEditDeck, setShowEditDeck] = useState(false);
   // State lưu trữ thông tin bộ bài đang được chọn để chỉnh sửa
   const [deckToEdit, setDeckToEdit] = useState(null);
+  // State lưu trữ thông tin bộ bài chuẩn bị bị xóa để hiển thị modal xác nhận
+  const [deckToDelete, setDeckToDelete] = useState(null);
 
   // State quản lý việc hiển thị CheckoutModal (thanh toán Premium)
   const [showCheckout, setShowCheckout] = useState(false);
@@ -210,7 +214,7 @@ function App() {
    */
   const onFinishSession = () => {
     // Lưu kết quả phiên học
-    saveResult(selectedDeck?.title || 'Unknown', correctCount, cards.length, studyMode);
+    saveResult(selectedDeck, correctCount, cards.length, studyMode);
     // Đánh dấu kết thúc phiên
     handleFinish();
   };
@@ -256,6 +260,37 @@ function App() {
     clearRecovery();
     setViewStack(['home']);
   }, [clearRecovery]);
+
+  /**
+   * Xử lý click xóa bộ bài (hiển thị modal xác nhận)
+   */
+  const handleDeleteDeck = (deck) => {
+    setDeckToDelete(deck);
+  };
+
+  /**
+   * Xác nhận xóa bộ bài từ modal
+   */
+  const confirmDeleteDeck = async () => {
+    if (!deckToDelete) return;
+    
+    try {
+      const { error } = await supabase
+        .from('decks')
+        .delete()
+        .eq('id', deckToDelete.id);
+        
+      if (error) throw error;
+      
+      // Tải lại danh sách sau khi xóa thành công
+      fetchDecks();
+    } catch (error) {
+      console.error('Error deleting deck:', error);
+      alert('Failed to delete deck. Please try again.');
+    } finally {
+      setDeckToDelete(null);
+    }
+  };
 
   /**
    * Xử lý hạ cấp về Basic
@@ -364,7 +399,7 @@ function App() {
                 allDecks={allDecks}
                 loadMore={loadMore}
                 showLess={showLess}
-                onBack={goBack}
+                onBack={() => setViewStack(['home'])}
               />
             )
           )}
@@ -392,6 +427,7 @@ function App() {
                   else setShowCreateDeck(true);
                 }}
                 onEditDeck={(deck) => { setDeckToEdit(deck); setShowEditDeck(true); }}
+                onDeleteDeck={handleDeleteDeck}
                 activeTab={deckTab}
                 onTabChange={setDeckTab}
                 onUpgrade={() => setShowCheckout(true)}
@@ -461,17 +497,30 @@ function App() {
         {/* Modal chỉnh sửa bộ bài */}
         {showEditDeck && (
           <ProtectedRoute onRedirectToLogin={() => { setShowEditDeck(false); redirectToLogin('deckSelect'); }}>
-            <EditDeck
-              isOpen={showEditDeck}
-              deck={deckToEdit}
-              onClose={() => setShowEditDeck(false)}
+            <EditDeck 
+              isOpen={showEditDeck} 
+              onClose={() => setShowEditDeck(false)} 
               onDeckUpdated={(updatedDeck) => {
-                // Cập nhật lại state danh sách bộ bài sau khi sửa thành công
-                setAllDecks((prev) => prev.map(d => d.id === updatedDeck.id ? updatedDeck : d));
-              }}
+                fetchDecks();
+                if (currentView === 'study' && selectedDeck?.id === updatedDeck.id) {
+                   handleDeckSelect(updatedDeck);
+                }
+              }} 
+              deck={deckToEdit} 
             />
           </ProtectedRoute>
         )}
+
+        <ConfirmModal
+          isOpen={!!deckToDelete}
+          title="Delete Deck"
+          message={`Are you sure you want to delete "${deckToDelete?.title}"? This action cannot be undone.`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          isDestructive={true}
+          onConfirm={confirmDeleteDeck}
+          onCancel={() => setDeckToDelete(null)}
+        />
         
         {/* Modal Checkout (thanh toán Premium) */}
         <CheckoutModal 
