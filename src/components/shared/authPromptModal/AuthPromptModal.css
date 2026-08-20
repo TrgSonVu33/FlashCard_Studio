@@ -17,20 +17,20 @@
 
 /* Modal Box */
 .auth-prompt-modal {
-  background: linear-gradient(145deg, #2C2C2E, #1C1C1E);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-xl);
   padding: 2.5rem 2rem;
   width: 90%;
   max-width: 400px;
   text-align: center;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  box-shadow: var(--shadow-lg);
   animation: authPromptSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Icon Wrapper */
 .auth-prompt-icon-wrapper {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--accent-bg);
   width: 72px;
   height: 72px;
   border-radius: 50%;
@@ -38,8 +38,8 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.5rem;
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  border: 1px solid var(--accent-border);
+  box-shadow: 0 0 20px var(--accent-bg);
 }
 
 .auth-prompt-icon {
@@ -48,7 +48,7 @@
 
 /* Typography */
 .auth-prompt-title {
-  color: #F5F5F7;
+  color: var(--text-h);
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0 0 0.75rem 0;
@@ -56,7 +56,7 @@
 }
 
 .auth-prompt-desc {
-  color: #A1A1A6;
+  color: var(--text);
   font-size: 0.95rem;
   line-height: 1.6;
   margin: 0 0 2rem 0;
@@ -80,26 +80,26 @@
 }
 
 .auth-prompt-btn--cancel {
-  background: rgba(255, 255, 255, 0.05);
-  color: #A1A1A6;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 1px solid var(--border);
 }
 
 .auth-prompt-btn--cancel:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #F5F5F7;
+  background: var(--btn-secondary-hover);
+  border-color: var(--border-strong);
 }
 
 .auth-prompt-btn--login {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: #ffffff;
-  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.35);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  box-shadow: 0 4px 14px 0 var(--accent-border);
 }
 
 .auth-prompt-btn--login:hover {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  background: var(--btn-primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 20px var(--accent-border);
 }
 
 .auth-prompt-btn--login:active {

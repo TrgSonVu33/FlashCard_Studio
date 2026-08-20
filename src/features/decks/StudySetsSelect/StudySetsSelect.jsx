@@ -122,7 +122,18 @@ export default function StudySetsSelect({ user, isPremium, onRedirectToLogin, on
       
       {/* Màn hình Upsell Premium */}
       {showPremiumUpsell && (
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--bg-app)', zIndex: 10 }}>
+        <div style={{ 
+          position: 'fixed', 
+          inset: 0, 
+          background: 'rgba(0, 0, 0, 0.5)', 
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          zIndex: 9999, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          padding: '1rem'
+        }}>
           <PremiumUpsell featureName="Advanced Study Modes" onBack={() => setShowPremiumUpsell(false)} onUpgrade={onUpgrade} onLoginForUpgrade={onRedirectToLogin} />
         </div>
       )}
