@@ -1,19 +1,16 @@
 <div align="center">
-  <h1>FlashCard Studio 🧠</h1>
+  <h1>FlashCard Studio 🧠</h1> <br />
   <p><strong>The most professional way to master new vocabulary with spaced repetition.</strong></p>
-</div>
-
-<br />
+</div> <br />
 
 <!-- 📸 Add your project screenshot below -->
 <!-- Replace the path with your actual screenshot file -->
 <div align="center">
-  <img src="src/assets/images/FlashCard_Studio_Homepage.png" alt="FlashCard Studio Preview" width="800" />
-</div>
-
-<br />
-
-FlashCard Studio is a modern SaaS flashcard app built with React 19 and Supabase. It features a freemium model, VietQR payment integration, and a polished dark/light theme system.
+  <figure>
+    <img src="src/assets/images/FlashCard_Studio_Homepage.png" alt="FlashCard Studio Preview" width="800" />
+    <figcaption><i>FlashCard Studio is a modern SaaS flashcard app built with React 19 and Supabase. It features a freemium model, VietQR payment integration, and a polished dark/light theme system.</i></figcaption>
+  </figure>
+</div> <br />
 
 ## Features
 
