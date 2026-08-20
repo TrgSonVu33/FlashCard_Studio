@@ -37,8 +37,8 @@ export default function PricingView({ user, isPremium, onNavigate, onUpgrade, on
       setToast({ type: 'error', message: 'Failed to downgrade. Please try again later.' });
     }
     
-    // Ẩn toast sau 4 giây
-    setTimeout(() => setToast(null), 4000);
+    // Ẩn toast sau 1.5 giây
+    setTimeout(() => setToast(null), 1500);
   };
 
   return (

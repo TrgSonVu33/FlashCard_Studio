@@ -211,9 +211,15 @@ function App() {
    * Hàm xử lý khi người dùng hoàn thành một phiên học
    * Tính toán tổng số thẻ đã học và lưu kết quả vào CSDL
    */
-  const onFinishSession = () => {
+  const onFinishSession = async () => {
     // Lưu kết quả phiên học
-    saveResult(selectedDeck, correctCount, cards.length, studyMode);
+    await saveResult(selectedDeck, correctCount, cards.length, studyMode);
+    
+    // Refresh danh sách bộ bài để đảm bảo shadow deck (nếu được tạo) có sẵn cho HistoryView
+    if (selectedDeck?.is_system) {
+      fetchDecks();
+    }
+    
     // Đánh dấu kết thúc phiên
     handleFinish();
   };
