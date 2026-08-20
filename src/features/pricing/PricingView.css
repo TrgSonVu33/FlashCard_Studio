@@ -1,30 +1,36 @@
 .pricing-view {
-  padding: 4rem 2rem;
+  padding: 2rem;
   max-width: 1000px;
   margin: 0 auto;
   min-height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .pricing-header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
 }
 
 .pricing-title {
   font-size: 2.5rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text-h);
   margin: 0 0 1rem 0;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
 }
 
 .pricing-subtitle {
   font-size: 1.1rem;
-  color: var(--text-p);
+  color: var(--text);
   margin: 0;
 }
 
@@ -42,8 +48,8 @@
   max-width: 400px;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 2.5rem;
+  border-radius: var(--radius-xl);
+  padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -51,14 +57,14 @@
 }
 
 .pricing-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
 }
 
 .pricing-card--premium {
-  background: linear-gradient(180deg, #201515 0%, #110909 100%);
-  border: 1px solid rgba(255, 79, 0, 0.4);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 79, 0, 0.2) inset;
+  background: linear-gradient(180deg, #2C2C2E 0%, #1C1C1E 100%);
+  border: 1px solid rgba(255, 106, 34, 0.3);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 106, 34, 0.15) inset;
 }
 
 .pricing-badge {
@@ -66,7 +72,7 @@
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #FF4F00 0%, #E64700 100%);
+  background: linear-gradient(135deg, #FF6A22 0%, #E85D1C 100%);
   color: #fff;
   font-size: 0.75rem;
   font-weight: 700;
@@ -74,7 +80,7 @@
   border-radius: 9999px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  box-shadow: 0 4px 10px rgba(255, 79, 0, 0.3);
+  box-shadow: 0 4px 10px rgba(255, 106, 34, 0.3);
 }
 
 .pricing-card-title {
@@ -85,7 +91,7 @@
 }
 
 .pricing-card--premium .pricing-card-title {
-  color: #FF7233;
+  color: #FF8A50;
 }
 
 .pricing-price {
@@ -96,7 +102,7 @@
 }
 
 .pricing-card--premium .pricing-price {
-  color: #fff;
+  color: #F5F5F7;
 }
 
 .pricing-currency {
@@ -106,39 +112,39 @@
 
 .pricing-amount {
   font-size: 3rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.05em;
 }
 
 .pricing-period {
   font-size: 1rem;
-  color: var(--text-p);
+  color: var(--text);
   margin-left: 0.25rem;
 }
 
 .pricing-desc {
   font-size: 0.95rem;
-  color: var(--text-p);
-  margin: 0 0 2rem 0;
-  padding-bottom: 2rem;
+  color: var(--text);
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--border);
 }
 
 .pricing-card--premium .pricing-desc {
-  color: #cbd5e1;
-  border-bottom-color: rgba(255,255,255,0.1);
+  color: #A1A1A6;
+  border-bottom-color: rgba(255,255,255,0.08);
 }
 
 .pricing-features {
   list-style: none;
   padding: 0;
-  margin: 0 0 2.5rem 0;
+  margin: 0 0 1.5rem 0;
   flex: 1;
 }
 
 .pricing-features li {
   margin-bottom: 1rem;
-  color: var(--text-p);
+  color: var(--text);
   font-size: 0.95rem;
   display: flex;
   align-items: center;
@@ -146,13 +152,13 @@
 }
 
 .pricing-card--premium .pricing-features li {
-  color: #e2e8f0;
+  color: #A1A1A6;
 }
 
 .pricing-btn {
   width: 100%;
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
@@ -172,19 +178,19 @@
 }
 
 .pricing-btn--basic:not(:disabled):hover {
-  background: var(--border);
+  background: var(--btn-secondary-hover);
 }
 
 .pricing-btn--premium {
-  background: linear-gradient(135deg, #FF4F00 0%, #E64700 100%);
+  background: linear-gradient(135deg, #FF6A22 0%, #E85D1C 100%);
   color: #ffffff;
-  box-shadow: 0 4px 14px 0 rgba(255, 79, 0, 0.3);
+  box-shadow: 0 4px 14px 0 rgba(255, 106, 34, 0.3);
 }
 
 .pricing-btn--premium:not(:disabled):hover {
-  background: linear-gradient(135deg, #FF7233 0%, #FF4F00 100%);
+  background: linear-gradient(135deg, #FF8A50 0%, #FF6A22 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 79, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 106, 34, 0.4);
 }
 
 @media (max-width: 768px) {
@@ -208,7 +214,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   animation: downgradeFadeIn 0.3s ease-out;
@@ -223,7 +229,7 @@
 .downgrade-modal {
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
-  border-radius: 24px;
+  border-radius: var(--radius-xl);
   padding: 2.5rem;
   max-width: 440px;
   width: 100%;
@@ -247,7 +253,7 @@
   height: 80px;
   line-height: 80px;
   border-radius: 50%;
-  border: 1px solid rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(255, 59, 48, 0.2);
 }
 
 .downgrade-modal-title {
@@ -259,7 +265,7 @@
 
 .downgrade-modal-desc {
   font-size: 1rem;
-  color: var(--text-p);
+  color: var(--text);
   line-height: 1.6;
   margin: 0 0 2rem 0;
 }
@@ -272,7 +278,7 @@
 .downgrade-btn {
   flex: 1;
   padding: 0.875rem 1rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
@@ -287,19 +293,19 @@
 }
 
 .downgrade-btn--cancel:hover {
-  background: var(--border);
+  background: var(--btn-secondary-hover);
 }
 
 .downgrade-btn--confirm {
   background: var(--danger);
   color: #ffffff;
-  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 14px rgba(255, 59, 48, 0.3);
 }
 
 .downgrade-btn--confirm:hover {
-  background: #b91c1c; /* slightly darker red */
+  filter: brightness(0.9);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 59, 48, 0.4);
 }
 
 .downgrade-btn--confirm:active {
@@ -314,28 +320,28 @@
 }
 
 /* =============================================
-   TOAST NOTIFICATION (ZAPIER STYLE)
+   TOAST NOTIFICATION
    ============================================= */
 .pricing-toast {
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 1.5rem 2.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-lg);
   z-index: 2000;
   opacity: 0;
   animation: toastFadeInCenter 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .pricing-toast--success {
-  border-left: 4px solid #10b981; /* Emerald Green */
+  border-left: 4px solid var(--success);
 }
 
 .pricing-toast--error {
-  border-left: 4px solid #ef4444; /* Red */
+  border-left: 4px solid var(--danger);
 }
 
 .pricing-toast-icon {

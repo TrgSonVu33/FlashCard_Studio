@@ -189,7 +189,7 @@ export function useHistory() {
     };
     
     // Thực hiện lệnh INSERT vào bảng 'history'
-    let { data, error } = await supabase.from('history').insert([payload]).select();
+    let { data, error } = await supabase.from('history').insert([payload]);
     
     // Fallback: Xử lý tương thích ngược cho CSDL cũ. 
     // Nếu bảng 'history' trong CSDL chưa có cột 'mode' (Lỗi mã 42703), thử lưu lại mà không có cột 'mode'.
@@ -197,9 +197,9 @@ export function useHistory() {
       console.warn('Mode column not found, falling back to legacy insert without mode.');
       const fallbackPayload = { ...payload };
       delete fallbackPayload.mode; // Xóa key mode
-      const fallbackRes = await supabase.from('history').insert([fallbackPayload]).select();
-      data = fallbackRes.data;
+      const fallbackRes = await supabase.from('history').insert([fallbackPayload]);
       error = fallbackRes.error;
+      data = fallbackRes.data;
     }
     
     if (error) {

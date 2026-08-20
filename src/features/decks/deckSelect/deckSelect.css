@@ -12,8 +12,8 @@
   background: var(--bg-hover);
   border: none;
   border-radius: var(--radius-full);
-  padding: 6px;
-  gap: 6px;
+  padding: 4px;
+  gap: 4px;
   margin-bottom: 28px;
 }
 .deck-tab {
@@ -30,12 +30,11 @@
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
   font-family: inherit;
 }
 .deck-tab:hover {
   color: var(--text-h);
-  background: var(--bg-hover);
 }
 .deck-tab--active {
   background: var(--bg-card);
@@ -86,13 +85,13 @@
   justify-content: center;
   gap: 8px;
   padding: 24px 16px;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: var(--bg-card);
   color: var(--text-h);
-  border: none;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   width: 100%;
   height: 100%;
   min-height: 125px;
@@ -100,6 +99,7 @@
 .deck-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+  border-color: var(--border-strong);
 }
 .deck-card:active {
   transform: translateY(0);
@@ -121,7 +121,7 @@
   opacity: 0;
   transition: all 0.2s ease;
   z-index: 2;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
 }
 .deck-card-wrapper:hover .deck-edit-btn {
   opacity: 1;
@@ -157,7 +157,7 @@
   width: 100%;
   background: var(--bg-card);
   border: 1px dashed var(--border-strong);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
 }
 .deck-empty-icon {
   font-size: 2rem;
@@ -175,6 +175,7 @@
   margin: 0;
 }
 
+/* ── Deck Menu ── */
 .deck-menu-container {
   position: absolute;
   top: 8px;
@@ -222,10 +223,10 @@
 }
 
 .deck-menu-item--delete {
-  color: #ef4444; /* red text for delete */
+  color: var(--danger);
 }
 
 .deck-menu-item--delete:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: var(--danger-bg);
+  color: var(--danger);
 }

@@ -29,12 +29,14 @@
   flex: 1;
   justify-content: center;
 }
+
+/* ── Hero Section ── */
 .hero-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 40px 24px 32px;
+  padding: 48px 24px 36px;
   width: 100%;
   max-width: 640px;
   @media (max-width: 768px) {
@@ -45,25 +47,27 @@
   font-size: 3rem;
   font-weight: 700;
   color: var(--text-h);
-  line-height: 1.1;
+  line-height: 1.08;
   letter-spacing: -0.04em;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
   @media (max-width: 768px) {
     font-size: 2rem;
   }
 }
 .hero-subtitle {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 400;
   color: var(--text);
   line-height: 1.6;
   max-width: 480px;
   margin-bottom: 0;
 }
+
+/* ── Dashboard Grid ── */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 16px;
   width: 100%;
   max-width: 720px;
   margin-top: 0;
@@ -80,20 +84,21 @@
   gap: 12px;
   padding: 36px 24px;
   background: var(--bg-card);
-  border: none;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
   border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: all 0.22s ease;
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   text-align: center;
 }
 .dashboard-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-3px);
+  border-color: var(--border-strong);
 }
 .dashboard-card:active {
   transform: translateY(0);
-  box-shadow: 0 0 0 2px var(--accent-bg);
+  box-shadow: var(--shadow-sm);
 }
 .dashboard-card-icon {
   font-size: 2rem;
@@ -121,6 +126,8 @@
   color: var(--text);
   line-height: 1.5;
 }
+
+/* ── Section Headers ── */
 .section-header {
   text-align: center;
   margin-bottom: 8px;
@@ -136,6 +143,8 @@
   font-weight: 400;
   color: var(--text);
 }
+
+/* ── Study Session ── */
 .progress {
   font-size: 0.8rem;
   font-weight: 600;
@@ -156,13 +165,19 @@
     margin: 20px 0;
   }
 }
-.study-header {
+.deck-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 600px;
+}
+.study-header-text {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding-top: 40px;
-  margin-bottom: 8px;
+  align-items: flex-end;
+  text-align: right;
 }
 .study-title {
   font-size: 1.5rem;
@@ -175,6 +190,8 @@
   font-size: 0.875rem;
   color: var(--text);
 }
+
+/* ── Buttons ── */
 .button-group {
   display: flex;
   justify-content: center;
@@ -211,7 +228,7 @@
   cursor: pointer;
   border: none;
   box-shadow: 0 4px 14px var(--accent-border);
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   &:hover {
     background: var(--btn-primary-hover);
     box-shadow: 0 6px 20px var(--accent-border);
@@ -273,6 +290,8 @@
 .quit-button:active {
   transform: translateY(0);
 }
+
+/* ── History ── */
 .history-page {
   width: 100%;
   max-width: 720px;
@@ -331,14 +350,15 @@
   align-items: center;
   padding: 14px 20px;
   background: var(--bg-card);
-  border: none;
-  box-shadow: var(--shadow-sm);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xs);
+  border-radius: var(--radius-md);
   transition: all 0.2s ease;
 }
 .history-item:hover {
   transform: translateY(-1px);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--border-strong);
 }
 .history-info {
   display: flex;
@@ -392,6 +412,8 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* ── Empty States ── */
 .empty-state {
   display: flex;
   flex-direction: column;

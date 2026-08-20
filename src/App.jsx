@@ -16,7 +16,7 @@ import StudySetsSelect from '@/features/decks/studySetsSelect/studySetsSelect';
 import DeckSelect from '@/features/decks/deckSelect/deckSelect';
 import { HomeView } from '@/features/home/homeView/homeView';
 import { HistoryView } from '@/features/history/historyView/historyView';
-import PremiumUpsell from '@/components/shared/premiumUpsell/PremiumUpsell';
+
 import PricingView from '@/features/pricing/PricingView';
 import CheckoutModal from '@/features/payment/CheckoutModal';
 import { StudySession } from '@/features/study/studySession/studySession';
@@ -74,7 +74,6 @@ function App() {
   // Lấy danh sách bộ bài và số lượng tổng hợp từ custom hook useDecks
   const {
     allDecks,
-    setAllDecks,
     fetchDecks,
     systemDeckCount,
     customDeckCount,
@@ -381,17 +380,10 @@ function App() {
           
           {/* Render màn hình Lịch sử học */}
           {currentView === 'history' && (
-            !isPremium ? (
-              <PremiumUpsell 
-                featureName="Practice History" 
-                onBack={goBack} 
-                onUpgrade={() => setShowCheckout(true)} 
-                onLoginForUpgrade={() => redirectToLogin('history')}
-              />
-            ) : (
               <HistoryView 
-                user={user}
+                isPremium={isPremium}
                 onRedirectToLogin={() => redirectToLogin('history')}
+                onUpgrade={() => setShowCheckout(true)}
                 history={history}
                 loadingHistory={loadingHistory}
                 page={page}
@@ -401,15 +393,19 @@ function App() {
                 showLess={showLess}
                 onBack={() => setViewStack(['home'])}
               />
-            )
           )}
           
           {/* Render màn hình Chọn bộ bài cụ thể */}
           {currentView === 'deckSelect' && (
             <div className="view-centered view-full-height">
-              <div className="study-header">
-                <h2 className="study-title">Select a Deck</h2>
-                <p className="study-subtitle">Pick a topic to practice</p>
+              <div className="deck-page-header">
+                <button className="quit-button header-back-btn" onClick={() => setViewStack(['home'])}>
+                  ← Back
+                </button>
+                <div className="study-header-text">
+                  <h2 className="study-title">Select a Deck</h2>
+                  <p className="study-subtitle">Pick a topic to practice</p>
+                </div>
               </div>
               <DeckSelect 
                 user={user}
@@ -431,8 +427,8 @@ function App() {
                 activeTab={deckTab}
                 onTabChange={setDeckTab}
                 onUpgrade={() => setShowCheckout(true)}
+                onBack={() => setViewStack(['home'])}
               />
-              <button className="quit-button" onClick={goBack}>← Back</button>
             </div>
           )}
           
@@ -446,7 +442,7 @@ function App() {
                 onSelectMode={onStudySetSelect}
                 onUpgrade={() => setShowCheckout(true)}
               />
-              <button className="quit-button" onClick={goBack}>← Back</button>
+              <button className="quit-button" onClick={() => setViewStack(['home'])}>← Back</button>
             </div>
           )}
           

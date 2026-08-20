@@ -17,7 +17,7 @@ import '@/features/decks/deckSelect/deckSelect.css';
  * @param {function} onEditDeck - Hàm callback được gọi khi chọn "Edit Deck"
  * @param {function} onDeleteDeck - Hàm callback được gọi khi chọn "Delete Deck"
  */
-export default function DeckSelect({ user, isPremium, onRedirectToLogin, decks, loadingDecks, onSelect, onLoginForStudy, onCreateDeck, onEditDeck, onDeleteDeck, activeTab = 'system', onTabChange, onUpgrade }) {
+export default function DeckSelect({ user, isPremium, onRedirectToLogin, decks, loadingDecks, onSelect, onLoginForStudy, onCreateDeck, onEditDeck, onDeleteDeck, activeTab = 'system', onTabChange, onUpgrade, onBack }) {
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [pendingDeck, setPendingDeck] = useState(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
@@ -101,7 +101,7 @@ export default function DeckSelect({ user, isPremium, onRedirectToLogin, decks, 
           <p className="deck-empty-desc">Check back later for new study topics.</p>
         </div>
       ) : activeTab === 'custom' && !isPremium ? (
-        <PremiumUpsell featureName="Custom Decks" onUpgrade={onUpgrade} onLoginForUpgrade={onRedirectToLogin} />
+        <PremiumUpsell featureName="Custom Decks" onUpgrade={onUpgrade} onLoginForUpgrade={onRedirectToLogin} onBack={onBack} />
       ) : visibleDecks.length > 0 || activeTab === 'custom' ? (
         <div className="deck-grid">
           

@@ -41,8 +41,8 @@
   background: var(--bg-hover);
   border: none;
   border-radius: var(--radius-full);
-  padding: 6px;
-  gap: 6px;
+  padding: 4px;
+  gap: 4px;
 }
 .mode-toggle-btn {
   flex: 1;
@@ -58,12 +58,11 @@
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
   font-family: inherit;
 }
 .mode-toggle-btn:hover {
   color: var(--text-h);
-  background: var(--bg-hover);
 }
 .mode-toggle-btn--active {
   background: var(--bg-card);
@@ -105,18 +104,18 @@
   padding: 16px 24px;
   font-size: 1.05rem;
   font-weight: 700;
-  color: var(--text-inverse);
-  background: var(--accent);
+  color: var(--btn-primary-text);
+  background: var(--btn-primary-bg);
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(255, 79, 0, 0.3);
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 14px var(--accent-border);
   font-family: inherit;
 }
 .start-session-btn:hover:not(:disabled) {
-  background: var(--accent-hover);
-  box-shadow: 0 6px 20px rgba(255, 79, 0, 0.4);
+  background: var(--btn-primary-hover);
+  box-shadow: 0 6px 20px var(--accent-border);
   transform: translateY(-2px);
 }
 .start-session-btn:active:not(:disabled) {

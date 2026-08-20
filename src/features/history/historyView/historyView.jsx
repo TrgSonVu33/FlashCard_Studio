@@ -1,3 +1,4 @@
+import PremiumUpsell from '@/components/shared/premiumUpsell/PremiumUpsell';
 
 /**
  * Component: HistoryView
@@ -15,8 +16,10 @@
  * @param {function} onBack - Hàm callback quay lại màn hình trước đó (thường là Dashboard/Home).
  */
 export const HistoryView = ({ 
-  user,
+
+  isPremium,
   onRedirectToLogin,
+  onUpgrade,
   history, 
   loadingHistory, 
   page, 
@@ -44,16 +47,13 @@ export const HistoryView = ({
         {/* === NỘI DUNG CHÍNH (Dashboard) === */}
         <div className="history-dashboard">
           
-          {/* TRƯỜNG HỢP 0: Chưa đăng nhập */}
-          {!user ? (
-            <div className="empty-state">
-              <span className="empty-state-icon">🔒</span>
-              <p className="empty-state-title">Login Required</p>
-              <p className="empty-state-desc">Please log in to view your study history.</p>
-              <button className="auth-submit-btn" style={{ marginTop: '1rem', width: 'auto', padding: '0.5rem 1.5rem' }} onClick={onRedirectToLogin}>
-                Login
-              </button>
-            </div>
+          {/* TRƯỜNG HỢP 0: Chưa đăng nhập hoặc chưa có Premium */}
+          {!isPremium ? (
+            <PremiumUpsell 
+              featureName="Practice History" 
+              onUpgrade={onUpgrade} 
+              onLoginForUpgrade={onRedirectToLogin}
+            />
           ) : loadingHistory && page === 0 ? (
             <div className="empty-state">
               <span className="empty-state-icon">⏳</span>
